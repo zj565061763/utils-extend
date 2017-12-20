@@ -4,12 +4,12 @@ import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.LruCache;
 
-public class BitmapLruCache
+public class FBitmapLruCache
 {
     private LruCache<String, Bitmap> mCache;
     private int mMaxCacheSize;
 
-    public BitmapLruCache()
+    public FBitmapLruCache()
     {
         this((int) ((double) Runtime.getRuntime().maxMemory() / 16));
     }
@@ -17,7 +17,7 @@ public class BitmapLruCache
     /**
      * @param maxSize 缓存的最大值
      */
-    public BitmapLruCache(int maxSize)
+    public FBitmapLruCache(int maxSize)
     {
         this.mMaxCacheSize = maxSize;
     }

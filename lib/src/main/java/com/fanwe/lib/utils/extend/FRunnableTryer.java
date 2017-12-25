@@ -1,5 +1,9 @@
 package com.fanwe.lib.utils.extend;
 
+
+import android.os.Handler;
+import android.os.Looper;
+
 /**
  * 可以限制Runnable最大重试次数
  */
@@ -7,6 +11,7 @@ public class FRunnableTryer
 {
     private static final int DEFAULT_TRY_COUNT = 3;
 
+    private Handler mHandler;
     /**
      * 最大重试次数
      */
@@ -51,6 +56,15 @@ public class FRunnableTryer
         return mTryCount;
     }
 
+    private Handler getHandler()
+    {
+        if (mHandler == null)
+        {
+            mHandler = new Handler(Looper.getMainLooper());
+        }
+        return mHandler;
+    }
+
     /**
      * 执行重试Runnable
      *
@@ -79,12 +93,19 @@ public class FRunnableTryer
         } else
         {
             mTryCount++;
-            mDelayRunnable.runDelayOrImmediately(delay);
+
+            if (delay <= 0)
+            {
+                mDelayRunnable.run();
+            } else
+            {
+                getHandler().postDelayed(mDelayRunnable, delay);
+            }
             return true;
         }
     }
 
-    private FDelayRunnable mDelayRunnable = new FDelayRunnable()
+    private Runnable mDelayRunnable = new Runnable()
     {
         @Override
         public void run()
@@ -112,7 +133,11 @@ public class FRunnableTryer
      */
     public void onDestroy()
     {
-        mDelayRunnable.removeDelay();
+        if (mHandler != null)
+        {
+            mHandler.removeCallbacks(mDelayRunnable);
+            mHandler = null;
+        }
         mTryRunnable = null;
     }
 }

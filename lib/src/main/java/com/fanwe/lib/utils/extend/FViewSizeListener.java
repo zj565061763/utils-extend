@@ -6,7 +6,7 @@ import android.view.ViewTreeObserver;
 import java.lang.ref.WeakReference;
 
 /**
- * 可以监听view宽高变化的类
+ * 监听view宽高变化
  */
 public class FViewSizeListener
 {

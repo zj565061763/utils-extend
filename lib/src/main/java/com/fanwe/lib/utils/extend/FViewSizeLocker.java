@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 /**
- * 可以锁定和解锁view宽高的类
+ * 锁定和解锁view宽高的类
  */
 public class FViewSizeLocker
 {

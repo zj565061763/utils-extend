@@ -8,14 +8,26 @@ import android.util.LruCache;
  */
 public class FBitmapLruCache extends LruCache<String, Bitmap>
 {
-    public FBitmapLruCache()
+    private static FBitmapLruCache sInstance;
+
+    private FBitmapLruCache()
     {
-        this((int) ((double) Runtime.getRuntime().maxMemory() / 16));
+        super((int) ((double) Runtime.getRuntime().maxMemory() / 16));
     }
 
-    public FBitmapLruCache(int maxSize)
+    public static FBitmapLruCache getInstance()
     {
-        super(maxSize);
+        if (sInstance == null)
+        {
+            synchronized (FBitmapLruCache.class)
+            {
+                if (sInstance == null)
+                {
+                    sInstance = new FBitmapLruCache();
+                }
+            }
+        }
+        return sInstance;
     }
 
     @Override

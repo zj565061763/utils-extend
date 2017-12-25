@@ -8,22 +8,33 @@ import java.io.InputStream;
 public abstract class FInputStreamReadThread extends Thread
 {
     private InputStream mInputStream;
+    private ReadConfig mReadConfig;
 
-    private byte[] mBuffer;
-    private int mBufferSize;
-    private long mSleepMillis;
-
-    public FInputStreamReadThread(int bufferSize, long sleepMillis)
+    public FInputStreamReadThread(ReadConfig readConfig)
     {
         super("FInputStreamReadThread");
-        if (bufferSize <= 0)
+        if (readConfig == null)
         {
-            throw new IllegalArgumentException("bufferSize must > 0");
+            readConfig = new ReadConfig();
+        } else
+        {
+            if (readConfig.buffer == null)
+            {
+                throw new NullPointerException("ReadConfig.buffer must not be null");
+            }
+            if (readConfig.buffer.length <= 0)
+            {
+                throw new NullPointerException("ReadConfig.buffer length must not be > 0");
+            }
         }
-        mBufferSize = bufferSize;
-        mSleepMillis = sleepMillis;
+        mReadConfig = readConfig;
     }
 
+    /**
+     * 设置输入流
+     *
+     * @param inputStream
+     */
     public void setInputStream(InputStream inputStream)
     {
         mInputStream = inputStream;
@@ -31,23 +42,14 @@ public abstract class FInputStreamReadThread extends Thread
 
     private void trySleep() throws InterruptedException
     {
-        if (mSleepMillis > 0)
+        if (mReadConfig.sleepTime > 0)
         {
-            sleep(mSleepMillis);
+            sleep(mReadConfig.sleepTime);
         }
-    }
-
-    private byte[] getBuffer()
-    {
-        if (mBuffer == null)
-        {
-            mBuffer = new byte[mBufferSize];
-        }
-        return mBuffer;
     }
 
     @Override
-    public void run()
+    public final void run()
     {
         super.run();
 
@@ -60,10 +62,10 @@ public abstract class FInputStreamReadThread extends Thread
                     trySleep();
                 } else
                 {
-                    int readSize = mInputStream.read(getBuffer());
+                    int readSize = mInputStream.read(mReadConfig.buffer);
                     if (readSize > 0)
                     {
-                        onReadData(getBuffer(), readSize);
+                        onReadData(mReadConfig.buffer, readSize);
                     } else
                     {
                         trySleep();
@@ -76,14 +78,14 @@ public abstract class FInputStreamReadThread extends Thread
                     return;
                 } else
                 {
-                    onError(e);
+                    onReadError(e);
                 }
             }
         }
     }
 
     /**
-     * 读取到输入流数据
+     * 读取到数据
      *
      * @param data
      * @param readSize
@@ -91,9 +93,21 @@ public abstract class FInputStreamReadThread extends Thread
     protected abstract void onReadData(byte[] data, int readSize);
 
     /**
-     * 异常
+     * 读取异常
      *
      * @param e
      */
-    protected abstract void onError(Exception e);
+    protected abstract void onReadError(Exception e);
+
+    /**
+     * 读取配置
+     */
+    public static class ReadConfig
+    {
+        /**
+         * 用于接收读取数据的字节数组
+         */
+        public byte[] buffer = new byte[64];
+        public long sleepTime = 1000;
+    }
 }

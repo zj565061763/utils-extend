@@ -52,12 +52,10 @@ public class FViewSizeListener
      * 设置回调
      *
      * @param callback
-     * @return
      */
-    public FViewSizeListener setCallback(Callback callback)
+    public void setCallback(Callback callback)
     {
         mCallback = callback;
-        return this;
     }
 
     /**
@@ -66,7 +64,7 @@ public class FViewSizeListener
      * @param view
      * @return
      */
-    public FViewSizeListener setView(View view)
+    public void setView(View view)
     {
         final View oldView = getView();
         if (oldView != view)
@@ -86,7 +84,6 @@ public class FViewSizeListener
                 mView = null;
             }
         }
-        return this;
     }
 
     private void reset()

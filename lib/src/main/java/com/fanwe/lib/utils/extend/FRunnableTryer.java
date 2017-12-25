@@ -1,6 +1,5 @@
 package com.fanwe.lib.utils.extend;
 
-
 import android.os.Handler;
 import android.os.Looper;
 

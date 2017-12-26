@@ -22,19 +22,13 @@ public class MainActivity extends AppCompatActivity
 
         mCompressor = new FBitmapCompressor(this);
 
-        if (mCompressor.decodeToBitmap("/sdcard/test.png"))
+        File file = mCompressor.compressFileToFile("/sdcard/test.png");
+        if (file != null)
         {
-            File file = mCompressor.saveBitmapToFile();
-            if (file != null)
-            {
-                Log.i(TAG, file.getAbsolutePath());
-            } else
-            {
-                Log.e(TAG, "saveBitmapToFile:" + mCompressor.getException());
-            }
+            Log.i(TAG, file.getAbsolutePath());
         } else
         {
-            Log.e(TAG, "decodeToBitmap:" + mCompressor.getException());
+            Log.e(TAG, "saveBitmapToFile:" + mCompressor.getException());
         }
     }
 }

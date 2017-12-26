@@ -22,8 +22,6 @@ public class FBitmapCompressor
     private int mMaxWidth;
     private int mMaxHeight;
 
-    private Bitmap mBitmap;
-
     private Context mContext;
     private File mCompressedFileDir;
 
@@ -89,12 +87,12 @@ public class FBitmapCompressor
     }
 
     /**
-     * 把图片文件按照设置压缩成bitmap
+     * 把图片文件按照设置压缩成bitmap后返回
      *
-     * @param filePath 图片文件路径
-     * @return
+     * @param filePath 要压缩的图片文件路径
+     * @return 压缩好的bitmap对象
      */
-    public boolean decodeToBitmap(String filePath)
+    public Bitmap compressFileToBitmap(String filePath)
     {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -113,45 +111,35 @@ public class FBitmapCompressor
             }
 
             Bitmap bitmapCompressed = compressBitmapToFileSize(bitmapScaled, mMaxFileSize, 5);
-            if (bitmapCompressed != null)
-            {
-                if (bitmapCompressed != bitmapScaled)
-                {
-                    bitmapScaled.recycle();
-                }
-                mBitmap = bitmapCompressed;
-                return true;
-            } else
-            {
-                return false;
-            }
+            return bitmapCompressed;
         } catch (Exception e)
         {
             mException = e;
-            return false;
+            return null;
         }
     }
 
     /**
-     * 把压缩好的bitmap保存到文件
+     * 把图片文件按照设置压缩后保存成文件返回
      *
-     * @return
+     * @param filePath 要压缩的图片文件路径
+     * @return 压缩好的图片文件
      */
-    public File saveBitmapToFile()
+    public File compressFileToFile(String filePath)
     {
-        if (mBitmap == null)
+        Bitmap bitmap = compressFileToBitmap(filePath);
+        if (bitmap == null)
         {
             return null;
         }
+
         File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
         FileOutputStream fos = null;
         try
         {
             fos = new FileOutputStream(file);
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            mBitmap.recycle();
-            mBitmap = null;
-
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmap.recycle();
             return file;
         } catch (FileNotFoundException e)
         {
@@ -161,11 +149,6 @@ public class FBitmapCompressor
         {
             closeQuietly(fos);
         }
-    }
-
-    public Bitmap getBitmap()
-    {
-        return mBitmap;
     }
 
     public Exception getException()

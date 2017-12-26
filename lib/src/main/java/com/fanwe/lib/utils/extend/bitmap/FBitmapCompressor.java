@@ -42,7 +42,7 @@ public class FBitmapCompressor
         mMaxHeight = displayMetrics.heightPixels;
     }
 
-    public File getCompressedFileDir()
+    private File getCompressedFileDir()
     {
         if (mCompressedFileDir == null)
         {
@@ -55,16 +55,31 @@ public class FBitmapCompressor
         return mCompressedFileDir;
     }
 
+    /**
+     * 设置图片的最大宽度
+     *
+     * @param maxWidth
+     */
     public void setMaxWidth(int maxWidth)
     {
         mMaxWidth = maxWidth;
     }
 
+    /**
+     * 设置图片最大高度
+     *
+     * @param maxHeight
+     */
     public void setMaxHeight(int maxHeight)
     {
         mMaxHeight = maxHeight;
     }
 
+    /**
+     * 设置压缩后图片文件大小的最大值
+     *
+     * @param maxFileSize
+     */
     public void setMaxFileSize(int maxFileSize)
     {
         if (maxFileSize > 0)
@@ -73,15 +88,12 @@ public class FBitmapCompressor
         }
     }
 
-    private void saveBitmap(Bitmap bitmap)
-    {
-        if (mBitmap != null)
-        {
-            mBitmap.recycle();
-        }
-        mBitmap = bitmap;
-    }
-
+    /**
+     * 把图片文件按照设置压缩成bitmap
+     *
+     * @param filePath 图片文件路径
+     * @return
+     */
     public boolean decodeFile(String filePath)
     {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -107,7 +119,7 @@ public class FBitmapCompressor
                 {
                     bitmapScaled.recycle();
                 }
-                saveBitmap(bitmapCompressed);
+                mBitmap = bitmapCompressed;
                 return true;
             } else
             {
@@ -120,6 +132,11 @@ public class FBitmapCompressor
         }
     }
 
+    /**
+     * 把压缩好的bitmap保存到文件
+     *
+     * @return
+     */
     public File saveToFile()
     {
         if (mBitmap == null)
@@ -134,6 +151,7 @@ public class FBitmapCompressor
             mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             mBitmap.recycle();
             mBitmap = null;
+
             return file;
         } catch (FileNotFoundException e)
         {

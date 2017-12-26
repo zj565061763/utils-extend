@@ -94,7 +94,7 @@ public class FBitmapCompressor
      * @param filePath 图片文件路径
      * @return
      */
-    public boolean decodeFile(String filePath)
+    public boolean decodeToBitmap(String filePath)
     {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -137,7 +137,7 @@ public class FBitmapCompressor
      *
      * @return
      */
-    public File saveToFile()
+    public File saveBitmapToFile()
     {
         if (mBitmap == null)
         {

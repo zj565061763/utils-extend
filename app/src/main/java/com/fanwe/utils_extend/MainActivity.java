@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity
 {
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private FBitmapCompressor mBitmapCompressor;
+    private FBitmapCompressor mCompressor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -20,12 +20,21 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mBitmapCompressor = new FBitmapCompressor(this);
+        mCompressor = new FBitmapCompressor(this);
 
-        if (mBitmapCompressor.decodeFile("/sdcard/test.png"))
+        if (mCompressor.decodeToBitmap("/sdcard/test.png"))
         {
-            File file = mBitmapCompressor.saveToFile();
-            Log.i(TAG, file.getAbsolutePath());
+            File file = mCompressor.saveBitmapToFile();
+            if (file != null)
+            {
+                Log.i(TAG, file.getAbsolutePath());
+            } else
+            {
+                Log.e(TAG, "saveBitmapToFile:" + mCompressor.getException());
+            }
+        } else
+        {
+            Log.e(TAG, "decodeToBitmap:" + mCompressor.getException());
         }
     }
 }

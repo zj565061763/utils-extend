@@ -10,6 +10,8 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/12/26.
@@ -24,6 +26,7 @@ public class FBitmapCompressor
 
     private Context mContext;
     private File mCompressedFileDir;
+    private List<File> mListCompressedFile = new ArrayList<>();
 
     private Exception mException;
 
@@ -140,6 +143,7 @@ public class FBitmapCompressor
             fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             bitmap.recycle();
+            mListCompressedFile.add(file);
             return file;
         } catch (FileNotFoundException e)
         {
@@ -154,6 +158,22 @@ public class FBitmapCompressor
     public Exception getException()
     {
         return mException;
+    }
+
+    /**
+     * 删除保存的压缩文件
+     */
+    public void deleteCompressedFiles()
+    {
+        try
+        {
+            for (File item : mListCompressedFile)
+            {
+                item.delete();
+            }
+        } catch (Exception e)
+        {
+        }
     }
 
     /**

@@ -7,6 +7,11 @@ public abstract class FLoopThread extends Thread
 {
     private boolean mIsPaused = false;
 
+    /**
+     * 是否处于暂停循环状态
+     *
+     * @return
+     */
     public synchronized final boolean isPaused()
     {
         return mIsPaused;
@@ -57,7 +62,7 @@ public abstract class FLoopThread extends Thread
             }
         } catch (Exception e)
         {
-            onException(e);
+            onError(e);
         } finally
         {
             onFinally();
@@ -82,7 +87,7 @@ public abstract class FLoopThread extends Thread
     {
     }
 
-    protected void onException(Exception e)
+    protected void onError(Exception e)
     {
     }
 }

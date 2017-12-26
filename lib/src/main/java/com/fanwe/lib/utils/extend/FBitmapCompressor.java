@@ -1,4 +1,4 @@
-package com.fanwe.lib.utils.extend.bitmap;
+package com.fanwe.lib.utils.extend;
 
 import android.content.Context;
 import android.graphics.Bitmap;

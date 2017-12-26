@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.fanwe.lib.utils.extend.bitmap.FBitmapCompressor;
+import com.fanwe.lib.utils.extend.FBitmapCompressor;
 
 import java.io.File;
 

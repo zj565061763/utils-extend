@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/12/26.
+ * 图片压缩处理类
  */
 public class FBitmapCompressor
 {
-    public static final String COMPRESSED_FILE_DIR_NAME = "compressed_image";
+    private static final String COMPRESSED_FILE_DIR_NAME = "compressed_image";
 
     private int mMaxFileSize = 1024 * 1024;
     private int mMaxWidth;

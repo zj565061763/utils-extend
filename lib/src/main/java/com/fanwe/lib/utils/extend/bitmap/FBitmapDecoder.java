@@ -2,7 +2,6 @@ package com.fanwe.lib.utils.extend.bitmap;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 
 /**
  * Created by Administrator on 2017/12/26.
@@ -103,7 +102,7 @@ public class FBitmapDecoder
             return bitmap;
         } else
         {
-            Bitmap result = ThumbnailUtils.extractThumbnail(bitmap, targetWidth, targetHeight);
+            Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
             if (recycle)
             {
                 bitmap.recycle();

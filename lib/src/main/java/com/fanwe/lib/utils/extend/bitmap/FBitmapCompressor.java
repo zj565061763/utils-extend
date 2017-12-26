@@ -1,41 +1,65 @@
 package com.fanwe.lib.utils.extend.bitmap;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 /**
  * Created by Administrator on 2017/12/26.
  */
-public class FBitmapDecoder
+public class FBitmapCompressor
 {
+    private int mMaxWidth;
+    private int mMaxFileSize = 1024 * 1024;
+
     private Bitmap mBitmap;
 
-    public FBitmapDecoder()
+    private FBitmapCompressor(Context context)
     {
+        mMaxWidth = context.getResources().getDisplayMetrics().widthPixels;
     }
 
-    public FBitmapDecoder(Bitmap bitmap)
+    public void setMaxWidth(int maxWidth)
     {
+        if (maxWidth > 0)
+        {
+            mMaxWidth = maxWidth;
+        }
+    }
+
+    public void setMaxFileSize(int maxFileSize)
+    {
+        if (maxFileSize > 0)
+        {
+            mMaxFileSize = maxFileSize;
+        }
+    }
+
+    private void saveBitmap(Bitmap bitmap)
+    {
+        if (mBitmap != null)
+        {
+            mBitmap.recycle();
+        }
         mBitmap = bitmap;
     }
 
-    public FBitmapDecoder decodeFile(String filePath, int targetWidth)
+    public FBitmapCompressor decodeFile(String filePath)
     {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
 
-        int originalWidth = options.outWidth;
-        int originalHeight = options.outHeight;
-        int targetHeight = getScaleHeight(originalWidth, originalHeight, targetWidth);
+        int maxHeight = getScaleHeight(options.outWidth, options.outHeight, mMaxWidth);
 
-        options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight);
+        options.inSampleSize = calculateInSampleSize(options, mMaxWidth, maxHeight);
         options.inJustDecodeBounds = false;
 
         try
         {
-            Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
-            mBitmap = scaleBitmapIfNeed(bmp, targetWidth, targetHeight, true);
+            Bitmap bitmap = scaleBitmapIfNeed(BitmapFactory.decodeFile(filePath, options),
+                    mMaxWidth, maxHeight, true);
+            saveBitmap(bitmap);
         } catch (Throwable e)
         {
         }
@@ -97,10 +121,7 @@ public class FBitmapDecoder
 
     private static Bitmap scaleBitmapIfNeed(Bitmap bitmap, int targetWidth, int targetHeight, boolean recycle)
     {
-        if (bitmap.getWidth() == targetHeight && bitmap.getHeight() == targetHeight)
-        {
-            return bitmap;
-        } else
+        if (bitmap.getWidth() > targetHeight || bitmap.getHeight() > targetHeight)
         {
             Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
             if (recycle)
@@ -108,6 +129,9 @@ public class FBitmapDecoder
                 bitmap.recycle();
             }
             return result;
+        } else
+        {
+            return bitmap;
         }
     }
 }

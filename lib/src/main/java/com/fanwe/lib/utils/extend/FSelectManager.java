@@ -662,6 +662,23 @@ public class FSelectManager<T>
         void setSelected(boolean selected);
     }
 
+    public static class SelectableModel implements Selectable
+    {
+        private boolean selected;
+
+        @Override
+        public boolean isSelected()
+        {
+            return selected;
+        }
+
+        @Override
+        public void setSelected(boolean selected)
+        {
+            this.selected = selected;
+        }
+    }
+
     public interface Callback<T>
     {
         /**

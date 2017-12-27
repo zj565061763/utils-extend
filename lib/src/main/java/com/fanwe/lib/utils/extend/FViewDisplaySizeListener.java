@@ -6,7 +6,7 @@ import android.view.View;
 /**
  * 监听view宽高变化
  */
-public class FViewDisplayFrameListener extends FViewSizeListener
+public class FViewDisplaySizeListener extends FViewSizeListener
 {
     private Rect mRect = new Rect();
 

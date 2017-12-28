@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 图片压缩处理类
  */
-public class FBitmapCompressor
+public class FImageCompressor
 {
     private static final String COMPRESSED_FILE_DIR_NAME = "compressed_image";
 
@@ -30,7 +30,7 @@ public class FBitmapCompressor
 
     private Exception mException;
 
-    public FBitmapCompressor(Context context)
+    public FImageCompressor(Context context)
     {
         if (context == null)
         {

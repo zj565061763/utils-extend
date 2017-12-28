@@ -26,7 +26,7 @@ public class FImageCompressor
 
     private Context mContext;
     private File mCompressedFileDir;
-    private List<File> mListCompressedFile = new ArrayList<>();
+    private List<File> mListCompressedFile;
 
     private Exception mException;
 
@@ -143,7 +143,8 @@ public class FImageCompressor
             fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             bitmap.recycle();
-            mListCompressedFile.add(file);
+
+            addCompressedFile(file);
             return file;
         } catch (FileNotFoundException e)
         {
@@ -155,13 +156,22 @@ public class FImageCompressor
         }
     }
 
+    private void addCompressedFile(File file)
+    {
+        if (mListCompressedFile == null)
+        {
+            mListCompressedFile = new ArrayList<>();
+        }
+        mListCompressedFile.add(file);
+    }
+
     public Exception getException()
     {
         return mException;
     }
 
     /**
-     * 删除保存的压缩文件
+     * 删除当前对象保存的压缩文件
      */
     public void deleteCompressedFiles()
     {
@@ -173,6 +183,17 @@ public class FImageCompressor
             }
         } catch (Exception e)
         {
+        }
+    }
+
+    /**
+     * 删除目录下所有保存的压缩文件
+     */
+    public void deleteAllCompressedFile()
+    {
+        if (mCompressedFileDir != null)
+        {
+            deleteFileOrDir(mCompressedFileDir);
         }
     }
 
@@ -323,5 +344,26 @@ public class FImageCompressor
             {
             }
         }
+    }
+
+    private static boolean deleteFileOrDir(File file)
+    {
+        if (file == null || !file.exists())
+        {
+            return true;
+        }
+        if (file.isFile())
+        {
+            return file.delete();
+        }
+        File[] files = file.listFiles();
+        if (files != null)
+        {
+            for (File item : files)
+            {
+                deleteFileOrDir(item);
+            }
+        }
+        return file.delete();
     }
 }

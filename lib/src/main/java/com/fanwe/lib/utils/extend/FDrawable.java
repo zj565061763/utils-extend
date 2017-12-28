@@ -243,7 +243,7 @@ public class FDrawable extends LayerDrawable
      * @param pressed  按下drawable
      * @return
      */
-    public static StateListDrawable getStateListDrawable(Drawable normal, Drawable focus, Drawable selected, Drawable pressed)
+    public static StateListDrawable getDrawableStateList(Drawable normal, Drawable focus, Drawable selected, Drawable pressed)
     {
         StateListDrawable stateListDrawable = new StateListDrawable();
         if (normal != null)
@@ -265,9 +265,9 @@ public class FDrawable extends LayerDrawable
         return stateListDrawable;
     }
 
-    public static ColorStateList getStateListColor(int normal, int pressed)
+    public static ColorStateList getColorStateList(int normal, int pressed)
     {
-        return getStateListColor(normal, 0, 0, pressed);
+        return getColorStateList(normal, 0, 0, pressed);
     }
 
     /**
@@ -279,7 +279,7 @@ public class FDrawable extends LayerDrawable
      * @param pressed  按下颜色
      * @return
      */
-    public static ColorStateList getStateListColor(int normal, int focus, int selected, int pressed)
+    public static ColorStateList getColorStateList(int normal, int focus, int selected, int pressed)
     {
         int[][] states = new int[4][];
         states[0] = getStateNormal();

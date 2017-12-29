@@ -101,7 +101,7 @@ public class FPhotoGetter
         }
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         if (mCallback == null)
         {
@@ -119,12 +119,12 @@ public class FPhotoGetter
             case REQUEST_CODE_GET_PHOTO_FROM_ALBUM:
                 if (resultCode == Activity.RESULT_OK)
                 {
-                    if (intent == null)
+                    if (data == null)
                     {
                         mCallback.onError("从相册获取图片失败(intent为空)");
                         return;
                     }
-                    Uri uri = intent.getData();
+                    Uri uri = data.getData();
                     if (uri == null)
                     {
                         mCallback.onError("从相册获取图片失败(intent数据为空)");

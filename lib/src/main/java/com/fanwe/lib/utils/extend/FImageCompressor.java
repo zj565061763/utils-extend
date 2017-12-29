@@ -47,7 +47,12 @@ public class FImageCompressor
     {
         if (mCompressedFileDir == null)
         {
-            mCompressedFileDir = new File(mContext.getExternalCacheDir(), COMPRESSED_FILE_DIR_NAME);
+            File cacheDir = mContext.getExternalCacheDir();
+            if (cacheDir == null)
+            {
+                cacheDir = mContext.getCacheDir();
+            }
+            mCompressedFileDir = new File(cacheDir, COMPRESSED_FILE_DIR_NAME);
         }
         if (!mCompressedFileDir.exists())
         {

@@ -292,7 +292,7 @@ public class FImageCompressor
      * @param maxHeight 最大高度
      * @return
      */
-    private static Bitmap scaleBitmapIfNeed(Bitmap bitmap, int maxWidth, int maxHeight)
+    protected Bitmap scaleBitmapIfNeed(Bitmap bitmap, int maxWidth, int maxHeight)
     {
         if (maxWidth <= 0 || maxHeight <= 0)
         {

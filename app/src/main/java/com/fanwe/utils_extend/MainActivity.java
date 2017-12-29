@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e(TAG, desc);
             }
         });
-        mImageGetter.getImageFromCamera();
+        mImageGetter.getImageFromAlbum();
     }
 
     @Override

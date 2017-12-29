@@ -3,9 +3,11 @@ package com.fanwe.lib.utils.extend;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import java.io.File;
 
@@ -130,6 +132,19 @@ public class FImageGetter
                         mCallback.onError("从相册获取图片失败(intent数据为空)");
                         return;
                     }
+                    try
+                    {
+                        String path = getDataColumn(mActivity, uri, null, null);
+                        if (TextUtils.isEmpty(path))
+                        {
+                            mCallback.onError("从相册获取图片失败(路径为空)");
+                            return;
+                        }
+                        mCallback.onResultFromAlbum(new File(path));
+                    } catch (Exception e)
+                    {
+                        mCallback.onError("从相册获取图片失败:" + e);
+                    }
                 }
                 break;
             default:
@@ -167,6 +182,29 @@ public class FImageGetter
         intent.setAction(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.fromFile(file));
         context.sendBroadcast(intent);
+    }
+
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs)
+    {
+        Cursor cursor = null;
+        String column = MediaStore.Images.Media.DATA;
+        String[] projection = {column};
+        try
+        {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor.moveToFirst())
+            {
+                int columnIndex = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(columnIndex);
+            }
+        } finally
+        {
+            if (cursor != null)
+            {
+                cursor.close();
+            }
+        }
+        return null;
     }
 
     public interface Callback

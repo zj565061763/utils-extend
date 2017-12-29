@@ -258,18 +258,6 @@ public class FImageCompressor
 
         if (width > maxWidth || height > maxHeight)
         {
-//            float original = (float) width / (float) height;
-//            float target = (float) maxWidth / (float) maxHeight;
-//            float differ = original - target;
-//            if (differ >= 0)
-//            {
-//                inSampleSize = Math.round((float) width / (float) maxWidth);
-//            } else
-//            {
-//                inSampleSize = Math.round((float) height / (float) maxHeight);
-//            }
-
-
             if (width > height)
             {
                 inSampleSize = Math.round((float) height / (float) maxHeight);
@@ -297,16 +285,36 @@ public class FImageCompressor
      * @param maxHeight 最大高度
      * @return
      */
-    protected Bitmap scaleBitmapIfNeed(Bitmap bitmap, int maxWidth, int maxHeight)
+    protected Bitmap scaleBitmapIfNeed(Bitmap bitmap, final int maxWidth, final int maxHeight)
     {
         if (maxWidth <= 0 || maxHeight <= 0)
         {
             return bitmap;
         }
 
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
+
+        int targetWidth = 0;
+        int targetHeight = 0;
+
         if (bitmap.getWidth() > maxHeight || bitmap.getHeight() > maxHeight)
         {
-            return Bitmap.createScaledBitmap(bitmap, maxWidth, maxHeight, true);
+            float ratio = (float) width / (float) height;
+            float maxRatio = (float) maxWidth / (float) maxHeight;
+            float differ = ratio - maxRatio;
+
+            if (differ >= 0)
+            {
+                targetWidth = maxWidth;
+                targetHeight = (int) (targetWidth / ratio);
+            } else
+            {
+                targetHeight = maxHeight;
+                targetWidth = (int) (targetHeight * ratio);
+            }
+
+            return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
         } else
         {
             return bitmap;

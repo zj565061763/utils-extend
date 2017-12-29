@@ -9,18 +9,18 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
-public class FPhotoGetter
+public class FImageGetter
 {
-    public static final int REQUEST_CODE_GET_PHOTO_FROM_CAMERA = 16542;
-    public static final int REQUEST_CODE_GET_PHOTO_FROM_ALBUM = REQUEST_CODE_GET_PHOTO_FROM_CAMERA + 1;
+    public static final int REQUEST_CODE_GET_IMAGE_FROM_CAMERA = 16542;
+    public static final int REQUEST_CODE_GET_IMAGE_FROM_ALBUM = REQUEST_CODE_GET_IMAGE_FROM_CAMERA + 1;
 
     private Activity mActivity;
-    private File mTakePhotoDir;
-    private File mTakePhotoFile;
+    private File mCameraImageDir;
+    private File mCameraImageFile;
 
     private Callback mCallback;
 
-    public FPhotoGetter(Activity activity)
+    public FImageGetter(Activity activity)
     {
         mActivity = activity;
         if (activity == null)
@@ -34,35 +34,35 @@ public class FPhotoGetter
         mCallback = callback;
     }
 
-    private File getTakePhotoDir()
+    private File getCameraImageDir()
     {
-        if (mTakePhotoDir == null)
+        if (mCameraImageDir == null)
         {
             File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             if (dir == null)
             {
                 dir = mActivity.getCacheDir();
             }
-            mTakePhotoDir = dir;
+            mCameraImageDir = dir;
         }
-        if (!mTakePhotoDir.exists())
+        if (!mCameraImageDir.exists())
         {
-            mTakePhotoDir.mkdirs();
+            mCameraImageDir.mkdirs();
         }
-        return mTakePhotoDir;
+        return mCameraImageDir;
     }
 
     /**
      * 跳转到系统相册获取图片
      */
-    public void getPhotoFromAlbum()
+    public void getImageFromAlbum()
     {
         try
         {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_PICK);
             intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            mActivity.startActivityForResult(intent, REQUEST_CODE_GET_PHOTO_FROM_ALBUM);
+            mActivity.startActivityForResult(intent, REQUEST_CODE_GET_IMAGE_FROM_ALBUM);
         } catch (Exception e)
         {
             if (mCallback != null)
@@ -75,9 +75,9 @@ public class FPhotoGetter
     /**
      * 打开相机拍照
      */
-    public void getPhotoFromCamera()
+    public void getImageFromCamera()
     {
-        if (getTakePhotoDir() == null)
+        if (getCameraImageDir() == null)
         {
             if (mCallback != null)
             {
@@ -87,11 +87,11 @@ public class FPhotoGetter
         }
         try
         {
-            mTakePhotoFile = newFileUnderDir(getTakePhotoDir(), ".jpg");
+            mCameraImageFile = newFileUnderDir(getCameraImageDir(), ".jpg");
             Intent intent = new Intent();
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTakePhotoFile));
-            mActivity.startActivityForResult(intent, REQUEST_CODE_GET_PHOTO_FROM_CAMERA);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mCameraImageFile));
+            mActivity.startActivityForResult(intent, REQUEST_CODE_GET_IMAGE_FROM_CAMERA);
         } catch (Exception e)
         {
             if (mCallback != null)
@@ -109,14 +109,14 @@ public class FPhotoGetter
         }
         switch (requestCode)
         {
-            case REQUEST_CODE_GET_PHOTO_FROM_CAMERA:
+            case REQUEST_CODE_GET_IMAGE_FROM_CAMERA:
                 if (resultCode == Activity.RESULT_OK)
                 {
-                    scanFile(mActivity, mTakePhotoFile);
-                    mCallback.onResultFromCamera(mTakePhotoFile);
+                    scanFile(mActivity, mCameraImageFile);
+                    mCallback.onResultFromCamera(mCameraImageFile);
                 }
                 break;
-            case REQUEST_CODE_GET_PHOTO_FROM_ALBUM:
+            case REQUEST_CODE_GET_IMAGE_FROM_ALBUM:
                 if (resultCode == Activity.RESULT_OK)
                 {
                     if (data == null)

@@ -175,14 +175,13 @@ public class FImageCompressor
      */
     public void deleteCompressedFiles()
     {
-        try
+        if (mListCompressedFile == null || mListCompressedFile.isEmpty())
         {
-            for (File item : mListCompressedFile)
-            {
-                item.delete();
-            }
-        } catch (Exception e)
+            return;
+        }
+        for (File item : mListCompressedFile)
         {
+            item.delete();
         }
     }
 
@@ -191,10 +190,7 @@ public class FImageCompressor
      */
     public void deleteAllCompressedFile()
     {
-        if (mCompressedFileDir != null)
-        {
-            deleteFileOrDir(mCompressedFileDir);
-        }
+        deleteFileOrDir(mCompressedFileDir);
     }
 
     /**

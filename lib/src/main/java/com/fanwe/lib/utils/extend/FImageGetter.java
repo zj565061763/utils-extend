@@ -132,19 +132,22 @@ public class FImageGetter
                         mCallback.onError("从相册获取图片失败(intent数据为空)");
                         return;
                     }
+                    String path = null;
                     try
                     {
-                        String path = getDataColumn(mActivity, uri, null, null);
-                        if (TextUtils.isEmpty(path))
-                        {
-                            mCallback.onError("从相册获取图片失败(路径为空)");
-                            return;
-                        }
-                        mCallback.onResultFromAlbum(new File(path));
+                        path = getDataColumn(mActivity, uri, null, null);
                     } catch (Exception e)
                     {
                         mCallback.onError("从相册获取图片失败:" + e);
+                        return;
                     }
+
+                    if (TextUtils.isEmpty(path))
+                    {
+                        mCallback.onError("从相册获取图片失败(路径为空)");
+                        return;
+                    }
+                    mCallback.onResultFromAlbum(new File(path));
                 }
                 break;
             default:

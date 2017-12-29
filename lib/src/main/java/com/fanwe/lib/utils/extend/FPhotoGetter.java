@@ -9,7 +9,7 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
-public class FPhotoHandler
+public class FPhotoGetter
 {
     public static final int REQUEST_CODE_GET_PHOTO_FROM_CAMERA = 16542;
     public static final int REQUEST_CODE_GET_PHOTO_FROM_ALBUM = REQUEST_CODE_GET_PHOTO_FROM_CAMERA + 1;
@@ -20,7 +20,7 @@ public class FPhotoHandler
 
     private Callback mCallback;
 
-    public FPhotoHandler(Activity activity)
+    public FPhotoGetter(Activity activity)
     {
         mActivity = activity;
         if (activity == null)

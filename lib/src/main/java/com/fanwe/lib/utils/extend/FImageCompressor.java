@@ -295,30 +295,40 @@ public class FImageCompressor
         final int width = bitmap.getWidth();
         final int height = bitmap.getHeight();
 
-        int targetWidth = 0;
-        int targetHeight = 0;
-
-        if (bitmap.getWidth() > maxHeight || bitmap.getHeight() > maxHeight)
+        if (width > maxHeight || height > maxHeight)
         {
-            float ratio = (float) width / (float) height;
-            float maxRatio = (float) maxWidth / (float) maxHeight;
-            float differ = ratio - maxRatio;
-
-            if (differ >= 0)
-            {
-                targetWidth = maxWidth;
-                targetHeight = (int) (targetWidth / ratio);
-            } else
-            {
-                targetHeight = maxHeight;
-                targetWidth = (int) (targetHeight * ratio);
-            }
-
-            return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
+            int[] arrTarget = calculateFitSize(new int[]{width, height}, new int[]{maxWidth, maxHeight});
+            return Bitmap.createScaledBitmap(bitmap, arrTarget[0], arrTarget[1], true);
         } else
         {
             return bitmap;
         }
+    }
+
+    /**
+     * 根据源宽高和限制宽高，计算出适应限制的宽高
+     *
+     * @param source 源宽高
+     * @param limit  限制宽高
+     * @return
+     */
+    private static int[] calculateFitSize(int[] source, int[] limit)
+    {
+        float sourceRatio = (float) source[0] / (float) source[1];
+        float limitRatio = (float) limit[0] / (float) limit[1];
+        float differRatio = sourceRatio - limitRatio;
+
+        int[] result = new int[2];
+        if (differRatio >= 0)
+        {
+            result[0] = limit[0];
+            result[1] = (int) (result[0] / sourceRatio);
+        } else
+        {
+            result[1] = limit[1];
+            result[0] = (int) (result[1] * sourceRatio);
+        }
+        return result;
     }
 
     private static File newFileUnderDir(File dir, String ext)

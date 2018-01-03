@@ -18,34 +18,17 @@ public class FCookieManager
     private static final String KEY_GROUP = ";";
     private static final String KEY_PAIR = "=";
 
-    private static FCookieManager sInstance;
-
-    public static FCookieManager getInstance()
-    {
-        if (sInstance == null)
-        {
-            synchronized (FCookieManager.class)
-            {
-                if (sInstance == null)
-                {
-                    sInstance = new FCookieManager();
-                }
-            }
-        }
-        return sInstance;
-    }
-
-    public void init(Context context)
+    public static void init(Context context)
     {
         CookieSyncManager.createInstance(context);
     }
 
-    public String getCookie(String url)
+    public static String getCookie(String url)
     {
         return CookieManager.getInstance().getCookie(url);
     }
 
-    public List<HttpCookie> getHttpCookie(String url)
+    public static List<HttpCookie> getHttpCookie(String url)
     {
         String cookie = getCookie(url);
         if (TextUtils.isEmpty(cookie))
@@ -77,7 +60,7 @@ public class FCookieManager
         return listCookie;
     }
 
-    public void setCookie(String url, String value)
+    public static void setCookie(String url, String value)
     {
         if (TextUtils.isEmpty(url) || TextUtils.isEmpty(value))
         {
@@ -86,16 +69,16 @@ public class FCookieManager
         CookieManager.getInstance().setCookie(url, value);
     }
 
-    public void setCookie(String url, HttpCookie cookie)
+    public static void setCookie(String url, HttpCookie cookie)
     {
         if (cookie == null)
         {
             return;
         }
-        setCookie(url, cookie.getName() + "=" + cookie.getValue());
+        setCookie(url, cookie.getName() + KEY_PAIR + cookie.getValue());
     }
 
-    public void setCookie(String url, List<HttpCookie> listCookie)
+    public static void setCookie(String url, List<HttpCookie> listCookie)
     {
         if (listCookie == null || listCookie.isEmpty())
         {
@@ -107,12 +90,12 @@ public class FCookieManager
         }
     }
 
-    public void removeSessionCookie()
+    public static void removeSessionCookie()
     {
         CookieManager.getInstance().removeSessionCookie();
     }
 
-    public void removeAllCookie()
+    public static void removeAllCookie()
     {
         CookieManager.getInstance().removeAllCookie();
     }
@@ -120,9 +103,8 @@ public class FCookieManager
     /**
      * 将webview cookie持久化到本地
      */
-    public void flush()
+    public static void flush()
     {
         CookieSyncManager.getInstance().sync();
     }
-
 }

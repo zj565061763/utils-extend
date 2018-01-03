@@ -1,6 +1,9 @@
 package com.fanwe.lib.utils.extend;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.os.Bundle;
 
 import java.util.Iterator;
 import java.util.Stack;
@@ -8,6 +11,8 @@ import java.util.Stack;
 public class FActivityStack
 {
     private static FActivityStack sInstance;
+
+    private Context mContext;
     private Stack<Activity> mStackActivity = new Stack<>();
 
     private FActivityStack()
@@ -29,29 +34,73 @@ public class FActivityStack
         return sInstance;
     }
 
-    // ----------------------------activity life method
-
-    public void onCreate(Activity activity)
+    public void init(Context context)
     {
-        addActivity(activity);
+        if (mContext != null)
+        {
+            return;
+        }
+
+        synchronized (this)
+        {
+            if (mContext == null)
+            {
+                mContext = context.getApplicationContext();
+
+                Application application = (Application) mContext;
+                application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+                application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+            }
+        }
     }
 
-    public void onResume(Activity activity)
+    private Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
     {
-        addActivity(activity);
-    }
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState)
+        {
+            addActivity(activity);
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity)
+        {
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity)
+        {
+            addActivity(activity);
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity)
+        {
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity)
+        {
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState)
+        {
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity)
+        {
+            removeActivity(activity);
+        }
+    };
 
     /**
-     * finish()和onDestroy()都要调用
+     * onCreate()和onResume()都要调用
      *
      * @param activity
      */
-    public void onDestroy(Activity activity)
-    {
-        removeActivity(activity);
-    }
-
-    private void addActivity(Activity activity)
+    public void addActivity(Activity activity)
     {
         if (mStackActivity.contains(activity))
         {
@@ -60,7 +109,12 @@ public class FActivityStack
         mStackActivity.add(activity);
     }
 
-    private void removeActivity(Activity activity)
+    /**
+     * finish()和onDestroy()都要调用
+     *
+     * @param activity
+     */
+    public void removeActivity(Activity activity)
     {
         try
         {

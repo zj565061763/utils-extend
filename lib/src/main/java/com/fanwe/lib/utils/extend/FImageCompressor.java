@@ -95,7 +95,38 @@ public class FImageCompressor
     }
 
     /**
-     * 把图片文件按照设置压缩成bitmap后返回
+     * 按照设置参数压缩后返回
+     *
+     * @param bitmap
+     * @return 压缩好的bitmap对象
+     */
+    public Bitmap compressBitmapToBitmap(Bitmap bitmap)
+    {
+        try
+        {
+            boolean hasScaled = false;
+            Bitmap bitmapScaled = scaleBitmapIfNeed(bitmap, mMaxWidth, mMaxHeight);
+            if (bitmapScaled != bitmap)
+            {
+                hasScaled = true;
+            }
+
+            Bitmap bitmapCompressed = compressBitmapToFileSize(bitmapScaled, mMaxFileSize, 5);
+            if (bitmapCompressed != bitmapScaled && hasScaled)
+            {
+                bitmapScaled.recycle();
+            }
+
+            return bitmapCompressed;
+        } catch (Exception e)
+        {
+            mException = e;
+            return null;
+        }
+    }
+
+    /**
+     * 按照设置参数压缩后返回
      *
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的bitmap对象
@@ -112,14 +143,7 @@ public class FImageCompressor
         try
         {
             Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-            Bitmap bitmapScaled = scaleBitmapIfNeed(bitmap, mMaxWidth, mMaxHeight);
-            if (bitmapScaled != bitmap)
-            {
-                bitmap.recycle();
-            }
-
-            Bitmap bitmapCompressed = compressBitmapToFileSize(bitmapScaled, mMaxFileSize, 5);
-            return bitmapCompressed;
+            return compressBitmapToBitmap(bitmap);
         } catch (Exception e)
         {
             mException = e;

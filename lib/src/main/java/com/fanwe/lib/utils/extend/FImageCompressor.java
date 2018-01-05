@@ -157,7 +157,7 @@ public class FImageCompressor
     }
 
     /**
-     * 把图片文件按照设置压缩后保存成文件返回
+     * 按照设置参数压缩后返回
      *
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的图片文件

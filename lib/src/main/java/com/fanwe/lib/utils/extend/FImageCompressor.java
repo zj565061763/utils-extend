@@ -179,7 +179,10 @@ public class FImageCompressor
     {
         Bitmap bitmapCompressed = compressFileToBitmap(filePath);
         File file = bitmapToFile(bitmapCompressed);
-        bitmapCompressed.recycle();
+        if (bitmapCompressed != null)
+        {
+            bitmapCompressed.recycle();
+        }
         return file;
     }
 

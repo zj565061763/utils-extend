@@ -133,7 +133,8 @@ public class FImageCompressor
     public File compressBitmapToFile(Bitmap bitmap)
     {
         Bitmap bitmapCompressed = compressBitmapToBitmap(bitmap);
-        return bitmapToFile(bitmapCompressed);
+        File file = bitmapToFile(bitmapCompressed);
+        return file;
     }
 
     /**

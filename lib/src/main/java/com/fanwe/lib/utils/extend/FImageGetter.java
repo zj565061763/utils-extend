@@ -187,7 +187,7 @@ public class FImageGetter
         context.sendBroadcast(intent);
     }
 
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs)
+    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs)
     {
         Cursor cursor = null;
         String column = MediaStore.Images.Media.DATA;

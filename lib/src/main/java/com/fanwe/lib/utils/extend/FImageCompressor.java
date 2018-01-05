@@ -197,29 +197,7 @@ public class FImageCompressor
     public File compressFileToFile(String filePath)
     {
         Bitmap bitmap = compressFileToBitmap(filePath);
-        if (bitmap == null)
-        {
-            return null;
-        }
-
-        File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
-        FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            bitmap.recycle();
-
-            addCompressedFile(file);
-            return file;
-        } catch (FileNotFoundException e)
-        {
-            mException = e;
-            return null;
-        } finally
-        {
-            closeQuietly(fos);
-        }
+        return bitmapToFile(bitmap);
     }
 
     private void addCompressedFile(File file)
@@ -363,6 +341,38 @@ public class FImageCompressor
         } else
         {
             return bitmap;
+        }
+    }
+
+    /**
+     * 把bitmap保存到File
+     *
+     * @param bitmap
+     * @return
+     */
+    protected File bitmapToFile(Bitmap bitmap)
+    {
+        if (bitmap == null)
+        {
+            return null;
+        }
+
+        File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
+        FileOutputStream fos = null;
+        try
+        {
+            fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+            addCompressedFile(file);
+            return file;
+        } catch (FileNotFoundException e)
+        {
+            mException = e;
+            return null;
+        } finally
+        {
+            closeQuietly(fos);
         }
     }
 

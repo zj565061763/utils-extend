@@ -132,28 +132,8 @@ public class FImageCompressor
      */
     public File compressBitmapToFile(Bitmap bitmap)
     {
-        if (bitmap == null)
-        {
-            return null;
-        }
-
-        File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
-        FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-
-            addCompressedFile(file);
-            return file;
-        } catch (FileNotFoundException e)
-        {
-            mException = e;
-            return null;
-        } finally
-        {
-            closeQuietly(fos);
-        }
+        Bitmap bitmapCompressed = compressBitmapToBitmap(bitmap);
+        return bitmapToFile(bitmapCompressed);
     }
 
     /**

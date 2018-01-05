@@ -95,9 +95,9 @@ public class FImageCompressor
     }
 
     /**
-     * 按照设置参数压缩后返回
+     * 按照设置参数压缩
      *
-     * @param bitmap
+     * @param bitmap 要压缩的bitmap对象
      * @return 压缩好的bitmap对象
      */
     public Bitmap compressBitmapToBitmap(Bitmap bitmap)
@@ -125,7 +125,39 @@ public class FImageCompressor
     }
 
     /**
-     * 按照设置参数压缩后返回
+     * 按照设置参数压缩
+     *
+     * @param bitmap 要压缩的bitmap对象
+     * @return 压缩好的图片文件
+     */
+    public File compressBitmapToFile(Bitmap bitmap)
+    {
+        if (bitmap == null)
+        {
+            return null;
+        }
+
+        File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
+        FileOutputStream fos = null;
+        try
+        {
+            fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+            addCompressedFile(file);
+            return file;
+        } catch (FileNotFoundException e)
+        {
+            mException = e;
+            return null;
+        } finally
+        {
+            closeQuietly(fos);
+        }
+    }
+
+    /**
+     * 按照设置参数压缩
      *
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的bitmap对象
@@ -157,7 +189,7 @@ public class FImageCompressor
     }
 
     /**
-     * 按照设置参数压缩后返回
+     * 按照设置参数压缩
      *
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的图片文件

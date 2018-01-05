@@ -176,8 +176,10 @@ public class FImageCompressor
      */
     public File compressFileToFile(String filePath)
     {
-        Bitmap bitmap = compressFileToBitmap(filePath);
-        return bitmapToFile(bitmap);
+        Bitmap bitmapCompressed = compressFileToBitmap(filePath);
+        File file = bitmapToFile(bitmapCompressed);
+        bitmapCompressed.recycle();
+        return file;
     }
 
     private void addCompressedFile(File file)

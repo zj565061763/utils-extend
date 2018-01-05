@@ -116,7 +116,6 @@ public class FImageCompressor
             {
                 bitmapScaled.recycle();
             }
-
             return bitmapCompressed;
         } catch (Exception e)
         {

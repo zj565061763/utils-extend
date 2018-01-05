@@ -143,7 +143,13 @@ public class FImageCompressor
         try
         {
             Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-            return compressBitmapToBitmap(bitmap);
+
+            Bitmap bitmapCompressed = compressBitmapToBitmap(bitmap);
+            if (bitmapCompressed != bitmap)
+            {
+                bitmap.recycle();
+            }
+            return bitmapCompressed;
         } catch (Exception e)
         {
             mException = e;

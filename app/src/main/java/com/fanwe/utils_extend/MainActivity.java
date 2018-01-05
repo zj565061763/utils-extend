@@ -81,4 +81,14 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         mImageGetter.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (mImageCompressor != null)
+        {
+            mImageCompressor.deleteAllCompressedFile();
+        }
+    }
 }

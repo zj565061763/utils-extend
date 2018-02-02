@@ -119,12 +119,15 @@ public class FActivityStack
         }
     };
 
-    private void printCurrentStack()
+    private String getCurrentStack()
     {
         Object[] arrActivity = mActivityHolder.toArray();
         if (arrActivity != null)
         {
-            Log.i(FActivityStack.class.getSimpleName(), Arrays.toString(arrActivity));
+            return Arrays.toString(arrActivity);
+        } else
+        {
+            return "";
         }
     }
 
@@ -142,8 +145,7 @@ public class FActivityStack
         mActivityHolder.add(activity);
         if (mIsDebug)
         {
-            Log.i(FActivityStack.class.getSimpleName(), "addActivity:" + activity);
-            printCurrentStack();
+            Log.i(FActivityStack.class.getSimpleName(), "+++++ " + activity + " " + getCurrentStack());
         }
     }
 
@@ -158,8 +160,7 @@ public class FActivityStack
         {
             if (mIsDebug)
             {
-                Log.i(FActivityStack.class.getSimpleName(), "removeActivity:" + activity);
-                printCurrentStack();
+                Log.e(FActivityStack.class.getSimpleName(), "----- " + activity + " " + getCurrentStack());
             }
         }
     }

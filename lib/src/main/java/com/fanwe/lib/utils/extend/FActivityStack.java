@@ -4,16 +4,17 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FActivityStack
 {
     private static FActivityStack sInstance;
 
     private Context mContext;
-    private Stack<Activity> mStackActivity = new Stack<>();
+    private List<Activity> mActivityHolder = new CopyOnWriteArrayList<>();
 
     private FActivityStack()
     {
@@ -70,7 +71,18 @@ public class FActivityStack
         @Override
         public void onActivityResumed(Activity activity)
         {
-            addActivity(activity);
+            final int index = mActivityHolder.indexOf(activity);
+            if (index < 0)
+            {
+                return;
+            }
+
+            if (index != (mActivityHolder.size() - 1))
+            {
+                removeActivity(activity);
+                addActivity(activity);
+                Log.i(FActivityStack.class.getSimpleName(), activity + "is order to top, old index " + index + " current index " + mActivityHolder.indexOf(activity));
+            }
         }
 
         @Override
@@ -96,101 +108,81 @@ public class FActivityStack
     };
 
     /**
-     * onCreate()和onResume()都要调用
+     * 添加对象
      *
      * @param activity
      */
     public void addActivity(Activity activity)
     {
-        if (mStackActivity.contains(activity))
+        if (mActivityHolder.contains(activity))
         {
             return;
         }
-        mStackActivity.add(activity);
+        mActivityHolder.add(activity);
     }
 
     /**
-     * finish()和onDestroy()都要调用
+     * 移除对象
      *
      * @param activity
      */
     public void removeActivity(Activity activity)
     {
-        try
-        {
-            if (mStackActivity.contains(activity))
-            {
-                mStackActivity.remove(activity);
-            }
-        } catch (Exception e)
-        {
-        }
+        mActivityHolder.remove(activity);
     }
 
-    public Activity getActivity(Class<?> clazz)
-    {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
-        {
-            Activity item = it.next();
-            if (item.getClass() == clazz)
-            {
-                return item;
-            }
-        }
-        return null;
-    }
-
+    /**
+     * 返回最后一个对象
+     *
+     * @return
+     */
     public Activity getLastActivity()
     {
         try
         {
-            return mStackActivity.lastElement();
+            return mActivityHolder.get(mActivityHolder.size() - 1);
         } catch (Exception e)
         {
             return null;
         }
     }
 
-    public boolean isLastActivity(Activity activity)
-    {
-        if (activity == null)
-        {
-            return false;
-        }
-        return activity == getLastActivity();
-    }
-
+    /**
+     * 是否为空
+     *
+     * @return
+     */
     public boolean isEmpty()
     {
-        return mStackActivity.isEmpty();
+        return mActivityHolder.isEmpty();
     }
 
     /**
-     * 结束指定类的Activity
+     * 结束指定类的对象
      *
      * @param clazz
      */
     public void finishActivity(Class<?> clazz)
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity item = it.next();
             if (item.getClass() == clazz)
             {
-                it.remove();
                 item.finish();
             }
         }
     }
 
+    /**
+     * 是否包含指定类的对象
+     *
+     * @param clazz
+     * @return
+     */
     public boolean containActivity(Class<?> clazz)
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity item = it.next();
             if (item.getClass() == clazz)
             {
                 return true;
@@ -199,55 +191,64 @@ public class FActivityStack
         return false;
     }
 
+    /**
+     * 结束除了activity外的所有对象
+     *
+     * @param activity
+     */
     public void finishAllActivityExcept(Activity activity)
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity act = it.next();
-            if (act != activity)
+            if (item != activity)
             {
-                it.remove();
-                act.finish();
+                item.finish();
             }
         }
     }
 
+    /**
+     * 结束除了指定类外的所有对象
+     *
+     * @param clazz
+     */
     public void finishAllActivityExcept(Class<?> clazz)
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity item = it.next();
             if (item.getClass() != clazz)
             {
-                it.remove();
                 item.finish();
             }
         }
     }
 
+    /**
+     * 结束除了activity外的所有activity类的对象
+     *
+     * @param activity
+     */
     public void finishAllClassActivityExcept(Activity activity)
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity item = it.next();
-            if (item.getClass() == activity.getClass() && item != activity)
+            if (item.getClass() == activity.getClass())
             {
-                it.remove();
-                item.finish();
+                if (item != activity)
+                {
+                    item.finish();
+                }
             }
         }
     }
 
+    /**
+     * 结束所有对象
+     */
     public void finishAllActivity()
     {
-        Iterator<Activity> it = mStackActivity.iterator();
-        while (it.hasNext())
+        for (Activity item : mActivityHolder)
         {
-            Activity item = it.next();
-            it.remove();
             item.finish();
         }
     }

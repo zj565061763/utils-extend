@@ -87,12 +87,17 @@ public class FActivityStack
 
             if (index != (mActivityHolder.size() - 1))
             {
+                if (mIsDebug)
+                {
+                    Log.e(FActivityStack.class.getSimpleName(), "start order activity " + activity + " old index " + index);
+                }
+
                 removeActivity(activity);
                 addActivity(activity);
 
                 if (mIsDebug)
                 {
-                    Log.e(FActivityStack.class.getSimpleName(), activity + "is order to top, old index " + index + " current index " + mActivityHolder.indexOf(activity));
+                    Log.e(FActivityStack.class.getSimpleName(), "end order activity " + activity + " new index " + mActivityHolder.indexOf(activity));
                 }
             }
         }

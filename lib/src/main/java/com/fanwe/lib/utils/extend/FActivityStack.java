@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -15,6 +16,8 @@ public class FActivityStack
 
     private Context mContext;
     private List<Activity> mActivityHolder = new CopyOnWriteArrayList<>();
+
+    private boolean mIsDebug;
 
     private FActivityStack()
     {
@@ -33,6 +36,11 @@ public class FActivityStack
             }
         }
         return sInstance;
+    }
+
+    public void setDebug(boolean debug)
+    {
+        mIsDebug = debug;
     }
 
     public void init(Context context)
@@ -81,7 +89,11 @@ public class FActivityStack
             {
                 removeActivity(activity);
                 addActivity(activity);
-                Log.i(FActivityStack.class.getSimpleName(), activity + "is order to top, old index " + index + " current index " + mActivityHolder.indexOf(activity));
+
+                if (mIsDebug)
+                {
+                    Log.e(FActivityStack.class.getSimpleName(), activity + "is order to top, old index " + index + " current index " + mActivityHolder.indexOf(activity));
+                }
             }
         }
 
@@ -107,6 +119,15 @@ public class FActivityStack
         }
     };
 
+    private void printCurrentStack()
+    {
+        Object[] arrActivity = mActivityHolder.toArray();
+        if (arrActivity != null)
+        {
+            Log.i(FActivityStack.class.getSimpleName(), Arrays.toString(arrActivity));
+        }
+    }
+
     /**
      * 添加对象
      *
@@ -119,6 +140,11 @@ public class FActivityStack
             return;
         }
         mActivityHolder.add(activity);
+        if (mIsDebug)
+        {
+            Log.i(FActivityStack.class.getSimpleName(), "addActivity:" + activity);
+            printCurrentStack();
+        }
     }
 
     /**
@@ -128,7 +154,14 @@ public class FActivityStack
      */
     public void removeActivity(Activity activity)
     {
-        mActivityHolder.remove(activity);
+        if (mActivityHolder.remove(activity))
+        {
+            if (mIsDebug)
+            {
+                Log.i(FActivityStack.class.getSimpleName(), "removeActivity:" + activity);
+                printCurrentStack();
+            }
+        }
     }
 
     /**

@@ -38,6 +38,10 @@ public class FViewVisibilityHandler
 
     private FViewVisibilityHandler(View view)
     {
+        if (view == null)
+        {
+            throw new NullPointerException("view is null");
+        }
         mView = new WeakReference<>(view);
 
         mVisibility = view.getVisibility();
@@ -53,6 +57,10 @@ public class FViewVisibilityHandler
      */
     public static FViewVisibilityHandler get(View view)
     {
+        if (view == null)
+        {
+            return null;
+        }
         FViewVisibilityHandler handler = MAP_HANDLER.get(view);
         if (handler == null)
         {

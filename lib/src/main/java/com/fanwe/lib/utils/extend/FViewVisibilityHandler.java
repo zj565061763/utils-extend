@@ -4,15 +4,20 @@ import android.animation.Animator;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * view的显示隐藏处理
  */
 public class FViewVisibilityHandler
 {
-    private View mView;
+    private static final Map<View, FViewVisibilityHandler> MAP_HANDLER = new WeakHashMap<>();
+
+    private WeakReference<View> mView;
     /**
      * 显示动画
      */
@@ -29,57 +34,42 @@ public class FViewVisibilityHandler
      * 当前view的visibility状态
      */
     private int mVisibility;
-    private List<VisibilityCallback> mListVisibilityCallback = new ArrayList<>();
+    private final List<Callback> mListCallback = new CopyOnWriteArrayList<>();
 
-    public FViewVisibilityHandler(View view)
+    private FViewVisibilityHandler(View view)
     {
-        setView(view);
+        mView = new WeakReference<>(view);
+
+        mVisibility = view.getVisibility();
+        view.getViewTreeObserver().removeOnPreDrawListener(mInternalOnPreDrawListener);
+        view.getViewTreeObserver().addOnPreDrawListener(mInternalOnPreDrawListener);
     }
 
     /**
-     * 设置要处理的view
+     * 返回view对应的处理类
      *
      * @param view
+     * @return
      */
-    public void setView(View view)
+    public static FViewVisibilityHandler get(View view)
     {
-        if (mView != view)
+        FViewVisibilityHandler handler = MAP_HANDLER.get(view);
+        if (handler == null)
         {
-            releaseView();
-            mView = view;
-            initView();
+            handler = new FViewVisibilityHandler(view);
+            MAP_HANDLER.put(view, handler);
         }
+        return handler;
     }
 
     /**
-     * 初始化view
+     * 获得设置的view
+     *
+     * @return
      */
-    private void initView()
+    public final View getView()
     {
-        if (mView != null)
-        {
-            mVisibility = mView.getVisibility();
-
-            mView.getViewTreeObserver().removeOnPreDrawListener(mInternalOnPreDrawListener);
-            mView.getViewTreeObserver().addOnPreDrawListener(mInternalOnPreDrawListener);
-        }
-    }
-
-    /**
-     * 释放view资源等
-     */
-    private void releaseView()
-    {
-        if (mView != null)
-        {
-            mView.getViewTreeObserver().removeOnPreDrawListener(mInternalOnPreDrawListener);
-        }
-        reset();
-    }
-
-    private void reset()
-    {
-        mIsGoneMode = true;
+        return mView == null ? null : mView.get();
     }
 
     private ViewTreeObserver.OnPreDrawListener mInternalOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
@@ -97,28 +87,18 @@ public class FViewVisibilityHandler
      */
     private void notifyVisiblityCallbackIfNeed()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
 
-        if (mVisibility == mView.getVisibility())
+        final int visibility = view.getVisibility();
+        if (mVisibility != visibility)
         {
-            return;
+            mVisibility = visibility;
+            notifyVisiblityCallback();
         }
-
-        mVisibility = mView.getVisibility();
-        notifyVisiblityCallback();
-    }
-
-    /**
-     * 获得设置的view
-     *
-     * @return
-     */
-    public View getView()
-    {
-        return mView;
     }
 
     /**
@@ -126,13 +106,13 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void addVisibilityCallback(VisibilityCallback callback)
+    public void addCallback(Callback callback)
     {
-        if (callback == null || mListVisibilityCallback.contains(callback))
+        if (callback == null || mListCallback.contains(callback))
         {
             return;
         }
-        mListVisibilityCallback.add(callback);
+        mListCallback.add(callback);
     }
 
     /**
@@ -140,17 +120,17 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void removeVisibilityCallback(VisibilityCallback callback)
+    public void removeCallback(Callback callback)
     {
-        mListVisibilityCallback.remove(callback);
+        mListCallback.remove(callback);
     }
 
     /**
      * 清空回调
      */
-    public void clearVisibilityCallback()
+    public void clearCallback()
     {
-        mListVisibilityCallback.clear();
+        mListCallback.clear();
     }
 
     /**
@@ -202,11 +182,7 @@ public class FViewVisibilityHandler
      */
     public void setVisible(boolean anim)
     {
-        if (mView == null)
-        {
-            return;
-        }
-        if (isVisible())
+        if (getView() == null || isVisible())
         {
             return;
         }
@@ -230,6 +206,7 @@ public class FViewVisibilityHandler
             return;
         }
 
+        cancelInvisibleAnimatorIfNeed();
         if (mVisibleAnimator != null)
         {
             mVisibleAnimator.start();
@@ -241,11 +218,12 @@ public class FViewVisibilityHandler
 
     private void setVisibleInternal()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
-        mView.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
         notifyVisiblityCallbackIfNeed();
     }
 
@@ -256,11 +234,7 @@ public class FViewVisibilityHandler
      */
     public void setGone(boolean anim)
     {
-        if (mView == null)
-        {
-            return;
-        }
-        if (isGone())
+        if (getView() == null || isGone())
         {
             return;
         }
@@ -276,11 +250,12 @@ public class FViewVisibilityHandler
 
     private void setGoneInternal()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
-        mView.setVisibility(View.GONE);
+        view.setVisibility(View.GONE);
         notifyVisiblityCallbackIfNeed();
     }
 
@@ -296,10 +271,10 @@ public class FViewVisibilityHandler
             return;
         }
 
-        this.mIsGoneMode = isGoneMode;
+        mIsGoneMode = isGoneMode;
+        cancelVisibleAnimatorIfNeed();
         if (mInvisibleAnimator != null)
         {
-            cancelVisibleAnimator();
             mInvisibleAnimator.start();
         } else
         {
@@ -320,11 +295,7 @@ public class FViewVisibilityHandler
      */
     public void setInvisible(boolean anim)
     {
-        if (mView == null)
-        {
-            return;
-        }
-        if (isInvisible())
+        if (getView() == null || isInvisible())
         {
             return;
         }
@@ -340,11 +311,12 @@ public class FViewVisibilityHandler
 
     private void setInvisibleInternal()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
-        mView.setVisibility(View.INVISIBLE);
+        view.setVisibility(View.INVISIBLE);
         notifyVisiblityCallbackIfNeed();
     }
 
@@ -369,28 +341,22 @@ public class FViewVisibilityHandler
     /**
      * 取消显示动画
      */
-    private void cancelVisibleAnimator()
+    private void cancelVisibleAnimatorIfNeed()
     {
-        if (isVisibleAnimatorStarted())
+        if (mVisibleAnimator != null)
         {
-            if (mVisibleAnimator != null)
-            {
-                mVisibleAnimator.cancel();
-            }
+            mVisibleAnimator.cancel();
         }
     }
 
     /**
      * 取消隐藏动画
      */
-    private void cancelInvisibleAnimator()
+    private void cancelInvisibleAnimatorIfNeed()
     {
-        if (isInvisibleAnimatorStarted())
+        if (mInvisibleAnimator != null)
         {
-            if (mInvisibleAnimator != null)
-            {
-                mInvisibleAnimator.cancel();
-            }
+            mInvisibleAnimator.cancel();
         }
     }
 
@@ -441,7 +407,7 @@ public class FViewVisibilityHandler
             {
                 setInvisibleInternal();
             }
-            resetView(mView);
+            resetView(getView());
         }
 
         @Override
@@ -454,7 +420,7 @@ public class FViewVisibilityHandler
             {
                 setInvisibleInternal();
             }
-            resetView(mView);
+            resetView(getView());
         }
 
         @Override
@@ -483,15 +449,16 @@ public class FViewVisibilityHandler
      */
     public final void notifyVisiblityCallback()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
 
-        final int visibility = mView.getVisibility();
-        for (VisibilityCallback item : mListVisibilityCallback)
+        int visibility = view.getVisibility();
+        for (Callback item : mListCallback)
         {
-            item.onViewVisibilityChanged(mView, visibility);
+            item.onViewVisibilityChanged(view, visibility);
         }
     }
 
@@ -502,11 +469,12 @@ public class FViewVisibilityHandler
      */
     public boolean isVisible()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return false;
         }
-        return mView.getVisibility() == View.VISIBLE;
+        return view.getVisibility() == View.VISIBLE;
     }
 
     /**
@@ -516,11 +484,12 @@ public class FViewVisibilityHandler
      */
     public boolean isGone()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return false;
         }
-        return mView.getVisibility() == View.GONE;
+        return view.getVisibility() == View.GONE;
     }
 
     /**
@@ -530,11 +499,12 @@ public class FViewVisibilityHandler
      */
     public boolean isInvisible()
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return false;
         }
-        return mView.getVisibility() == View.INVISIBLE;
+        return view.getVisibility() == View.INVISIBLE;
     }
 
     /**
@@ -544,7 +514,8 @@ public class FViewVisibilityHandler
      */
     public void toggleVisibleOrGone(boolean anim)
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
@@ -565,7 +536,8 @@ public class FViewVisibilityHandler
      */
     public void toggleVisibleOrInvisible(boolean anim)
     {
-        if (mView == null)
+        final View view = getView();
+        if (view == null)
         {
             return;
         }
@@ -579,17 +551,7 @@ public class FViewVisibilityHandler
         }
     }
 
-    public Animator getVisibleAnimator()
-    {
-        return mVisibleAnimator;
-    }
-
-    public Animator getInvisibleAnimator()
-    {
-        return mInvisibleAnimator;
-    }
-
-    public interface VisibilityCallback
+    public interface Callback
     {
         void onViewVisibilityChanged(View view, int visibility);
     }

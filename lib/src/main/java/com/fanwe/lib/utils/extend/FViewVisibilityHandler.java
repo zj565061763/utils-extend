@@ -5,10 +5,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * view的显示隐藏处理
@@ -34,7 +32,7 @@ public class FViewVisibilityHandler
      * 当前view的visibility状态
      */
     private int mVisibility;
-    private final List<Callback> mListCallback = new CopyOnWriteArrayList<>();
+    private final Map<Callback, Object> mCallbackHolder = new WeakHashMap<>();
 
     private FViewVisibilityHandler(View view)
     {
@@ -116,11 +114,11 @@ public class FViewVisibilityHandler
      */
     public void addCallback(Callback callback)
     {
-        if (callback == null || mListCallback.contains(callback))
+        if (callback == null)
         {
             return;
         }
-        mListCallback.add(callback);
+        mCallbackHolder.put(callback, 0);
     }
 
     /**
@@ -130,7 +128,7 @@ public class FViewVisibilityHandler
      */
     public void removeCallback(Callback callback)
     {
-        mListCallback.remove(callback);
+        mCallbackHolder.remove(callback);
     }
 
     /**
@@ -138,7 +136,7 @@ public class FViewVisibilityHandler
      */
     public void clearCallback()
     {
-        mListCallback.clear();
+        mCallbackHolder.clear();
     }
 
     /**
@@ -464,7 +462,7 @@ public class FViewVisibilityHandler
         }
 
         int visibility = view.getVisibility();
-        for (Callback item : mListCallback)
+        for (Callback item : mCallbackHolder.keySet())
         {
             item.onViewVisibilityChanged(view, visibility);
         }

@@ -32,7 +32,7 @@ public class FViewVisibilityHandler
      * 当前view的visibility状态
      */
     private int mVisibility;
-    private final Map<Callback, Object> mCallbackHolder = new WeakHashMap<>();
+    private final Map<VisibilityChangeCallback, Object> mVisibilityChangeCallbackHolder = new WeakHashMap<>();
 
     private FViewVisibilityHandler(View view)
     {
@@ -112,13 +112,13 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void addCallback(Callback callback)
+    public void addVisibilityChangeCallback(VisibilityChangeCallback callback)
     {
         if (callback == null)
         {
             return;
         }
-        mCallbackHolder.put(callback, 0);
+        mVisibilityChangeCallbackHolder.put(callback, 0);
     }
 
     /**
@@ -126,17 +126,17 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void removeCallback(Callback callback)
+    public void removeVisibilityChangeCallback(VisibilityChangeCallback callback)
     {
-        mCallbackHolder.remove(callback);
+        mVisibilityChangeCallbackHolder.remove(callback);
     }
 
     /**
      * 清空回调
      */
-    public void clearCallback()
+    public void clearVisibilityChangeCallback()
     {
-        mCallbackHolder.clear();
+        mVisibilityChangeCallbackHolder.clear();
     }
 
     /**
@@ -462,7 +462,7 @@ public class FViewVisibilityHandler
         }
 
         int visibility = view.getVisibility();
-        for (Callback item : mCallbackHolder.keySet())
+        for (VisibilityChangeCallback item : mVisibilityChangeCallbackHolder.keySet())
         {
             item.onViewVisibilityChanged(view, visibility);
         }
@@ -557,7 +557,7 @@ public class FViewVisibilityHandler
         }
     }
 
-    public interface Callback
+    public interface VisibilityChangeCallback
     {
         void onViewVisibilityChanged(View view, int visibility);
     }

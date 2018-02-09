@@ -19,10 +19,10 @@ public class TestActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FViewVisibilityHandler.get(findViewById(R.id.iv_image)).addCallback(mVisibilityCallback);
+        FViewVisibilityHandler.get(findViewById(R.id.iv_image)).addVisibilityChangeCallback(mVisibilityChangeCallback);
     }
 
-    private FViewVisibilityHandler.Callback mVisibilityCallback = new FViewVisibilityHandler.Callback()
+    private FViewVisibilityHandler.VisibilityChangeCallback mVisibilityChangeCallback = new FViewVisibilityHandler.VisibilityChangeCallback()
     {
         @Override
         public void onViewVisibilityChanged(View view, int visibility)

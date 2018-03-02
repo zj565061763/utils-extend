@@ -43,8 +43,7 @@ public class FViewVisibilityHandler
         mView = new WeakReference<>(view);
 
         mVisibility = view.getVisibility();
-        view.getViewTreeObserver().removeOnPreDrawListener(mInternalOnPreDrawListener);
-        view.getViewTreeObserver().addOnPreDrawListener(mInternalOnPreDrawListener);
+        view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
     }
 
     /**
@@ -78,7 +77,7 @@ public class FViewVisibilityHandler
         return mView == null ? null : mView.get();
     }
 
-    private ViewTreeObserver.OnPreDrawListener mInternalOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
+    private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
     {
         @Override
         public boolean onPreDraw()
@@ -112,7 +111,7 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void addVisibilityChangeCallback(VisibilityChangeCallback callback)
+    public synchronized void addVisibilityChangeCallback(VisibilityChangeCallback callback)
     {
         if (callback == null)
         {
@@ -126,7 +125,7 @@ public class FViewVisibilityHandler
      *
      * @param callback
      */
-    public void removeVisibilityChangeCallback(VisibilityChangeCallback callback)
+    public synchronized void removeVisibilityChangeCallback(VisibilityChangeCallback callback)
     {
         mVisibilityChangeCallbackHolder.remove(callback);
     }
@@ -134,7 +133,7 @@ public class FViewVisibilityHandler
     /**
      * 清空回调
      */
-    public void clearVisibilityChangeCallback()
+    public synchronized void clearVisibilityChangeCallback()
     {
         mVisibilityChangeCallbackHolder.clear();
     }
@@ -453,7 +452,7 @@ public class FViewVisibilityHandler
     /**
      * 通知回调
      */
-    public final void notifyVisiblityCallback()
+    public synchronized final void notifyVisiblityCallback()
     {
         final View view = getView();
         if (view == null)

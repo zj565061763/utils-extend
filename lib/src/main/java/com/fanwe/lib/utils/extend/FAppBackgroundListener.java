@@ -6,13 +6,13 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * app前后台切换监听
  */
-public final class FAppBackgroundListener
+public class FAppBackgroundListener
 {
     private static FAppBackgroundListener sInstance;
 
@@ -20,7 +20,7 @@ public final class FAppBackgroundListener
     private boolean mIsBackground;
     private long mBackgroundTime;
 
-    private List<Callback> mListCallback = new ArrayList<>();
+    private List<Callback> mListCallback = new CopyOnWriteArrayList<>();
 
     private FAppBackgroundListener()
     {
@@ -41,23 +41,15 @@ public final class FAppBackgroundListener
         return sInstance;
     }
 
-    public void init(Context context)
+    public synchronized void init(Context context)
     {
-        if (mContext != null)
+        if (mContext == null)
         {
-            return;
-        }
+            mContext = context.getApplicationContext();
 
-        synchronized (this)
-        {
-            if (mContext == null)
-            {
-                mContext = context.getApplicationContext();
-
-                Application application = (Application) mContext;
-                application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
-                application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
-            }
+            Application application = (Application) mContext;
+            application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+            application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
         }
     }
 
@@ -76,24 +68,18 @@ public final class FAppBackgroundListener
 
     public void addCallback(Callback callback)
     {
-        synchronized (this)
+        if (callback == null || mListCallback.contains(callback))
         {
-            if (callback == null || mListCallback.contains(callback))
-            {
-                return;
-            }
-            checkContext();
-            mListCallback.add(callback);
+            return;
         }
+        checkContext();
+        mListCallback.add(callback);
     }
 
     public void removeCallback(Callback callback)
     {
-        synchronized (this)
-        {
-            checkContext();
-            mListCallback.remove(callback);
-        }
+        checkContext();
+        mListCallback.remove(callback);
     }
 
     private Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
@@ -117,14 +103,10 @@ public final class FAppBackgroundListener
             {
                 mIsBackground = false;
 
-                synchronized (FAppBackgroundListener.this)
+                for (Callback item : mListCallback)
                 {
-                    for (Callback item : mListCallback)
-                    {
-                        item.onResumeFromBackground();
-                    }
+                    item.onResumeFromBackground();
                 }
-
                 mBackgroundTime = 0;
             }
         }
@@ -145,12 +127,9 @@ public final class FAppBackgroundListener
                     mIsBackground = true;
                     mBackgroundTime = System.currentTimeMillis();
 
-                    synchronized (FAppBackgroundListener.this)
+                    for (Callback item : mListCallback)
                     {
-                        for (Callback item : mListCallback)
-                        {
-                            item.onBackground();
-                        }
+                        item.onBackground();
                     }
                 }
             }

@@ -45,23 +45,15 @@ public class FActivityStack
         mIsDebug = debug;
     }
 
-    public void init(Context context)
+    public synchronized void init(Context context)
     {
-        if (mContext != null)
+        if (mContext == null)
         {
-            return;
-        }
+            mContext = context.getApplicationContext();
 
-        synchronized (this)
-        {
-            if (mContext == null)
-            {
-                mContext = context.getApplicationContext();
-
-                Application application = (Application) mContext;
-                application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
-                application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
-            }
+            Application application = (Application) mContext;
+            application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+            application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
         }
     }
 

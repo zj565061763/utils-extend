@@ -141,7 +141,7 @@ public class FActivityStack
      *
      * @param activity
      */
-    public void addActivity(Activity activity)
+    private void addActivity(Activity activity)
     {
         if (mActivityHolder.contains(activity))
         {
@@ -159,7 +159,7 @@ public class FActivityStack
      *
      * @param activity
      */
-    public void removeActivity(Activity activity)
+    private void removeActivity(Activity activity)
     {
         if (mActivityHolder.remove(activity))
         {
@@ -184,6 +184,33 @@ public class FActivityStack
         {
             return null;
         }
+    }
+
+    /**
+     * 返回指定位置的对象
+     *
+     * @param index
+     * @return
+     */
+    public Activity getActivity(int index)
+    {
+        if (index >= 0 && index < size())
+        {
+            return mActivityHolder.get(index);
+        } else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * 返回当前保存的对象个数
+     *
+     * @return
+     */
+    public int size()
+    {
+        return mActivityHolder.size();
     }
 
     /**
@@ -228,6 +255,17 @@ public class FActivityStack
             }
         }
         return false;
+    }
+
+    /**
+     * 是否包含指定对象
+     *
+     * @param activity
+     * @return
+     */
+    public boolean containActivity(Activity activity)
+    {
+        return mActivityHolder.contains(activity);
     }
 
     /**

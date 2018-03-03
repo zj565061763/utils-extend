@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -71,8 +70,8 @@ public class FActivityStack
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState)
         {
-            addActivity(activity);
             mMapActivityInfo.put(activity, ActivityState.Created);
+            addActivity(activity);
         }
 
         @Override
@@ -139,7 +138,19 @@ public class FActivityStack
         Object[] arrActivity = mActivityHolder.toArray();
         if (arrActivity != null)
         {
-            return Arrays.toString(arrActivity);
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (Object item : arrActivity)
+            {
+                Activity activity = (Activity) item;
+
+                sb.append(activity.toString())
+                        .append("(").append(getActivityState(activity)).append(")")
+                        .append(",");
+            }
+            sb.setLength(sb.length() - 1);
+            sb.append("]");
+            return sb.toString();
         } else
         {
             return "";

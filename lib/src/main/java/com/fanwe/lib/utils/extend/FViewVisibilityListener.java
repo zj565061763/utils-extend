@@ -98,5 +98,11 @@ public abstract class FViewVisibilityListener
         }
     }
 
+    /**
+     * View的可见状态发生变化
+     *
+     * @param view
+     * @param visibility
+     */
     protected abstract void onViewVisibilityChanged(View view, int visibility);
 }

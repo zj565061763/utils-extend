@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.fanwe.lib.animator.FAnimatorSet;
+import com.fanwe.lib.utils.extend.FViewVisibilityHandler;
 import com.fanwe.lib.utils.extend.FViewVisibilityListener;
 
 /**
@@ -27,9 +29,16 @@ public class TestActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                v.setVisibility(View.GONE);
+                FViewVisibilityHandler.get(v).setGone(true);
             }
         });
+
+        FViewVisibilityHandler.get(findViewById(R.id.btn)).setInvisibleAnimator(
+                new FAnimatorSet(findViewById(R.id.btn))
+                        .translationX(0, findViewById(R.id.btn).getWidth())
+                        .setDuration(1000)
+                        .getSet()
+        );
     }
 
     private FViewVisibilityListener mViewVisibilityListener = new FViewVisibilityListener()

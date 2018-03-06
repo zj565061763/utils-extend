@@ -2,7 +2,6 @@ package com.fanwe.lib.utils.extend;
 
 import android.animation.Animator;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -28,11 +27,6 @@ public class FViewVisibilityHandler
      * true-gone，false-invisible
      */
     private boolean mIsGoneMode = true;
-    /**
-     * 当前view的visibility状态
-     */
-    private int mVisibility;
-    private final Map<VisibilityChangeCallback, Object> mVisibilityChangeCallbackHolder = new WeakHashMap<>();
 
     private FViewVisibilityHandler(View view)
     {
@@ -41,9 +35,6 @@ public class FViewVisibilityHandler
             throw new NullPointerException("view is null");
         }
         mView = new WeakReference<>(view);
-
-        mVisibility = view.getVisibility();
-        view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
     }
 
     /**
@@ -67,75 +58,9 @@ public class FViewVisibilityHandler
         return handler;
     }
 
-    /**
-     * 获得设置的view
-     *
-     * @return
-     */
-    public final View getView()
+    private final View getView()
     {
         return mView == null ? null : mView.get();
-    }
-
-    private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
-    {
-        @Override
-        public boolean onPreDraw()
-        {
-            notifyVisiblityCallbackIfNeed();
-            return true;
-        }
-    };
-
-    /**
-     * 当visibility发生变化的时候通知回调
-     */
-    private void notifyVisiblityCallbackIfNeed()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return;
-        }
-
-        final int visibility = view.getVisibility();
-        if (mVisibility != visibility)
-        {
-            mVisibility = visibility;
-            notifyVisiblityCallback();
-        }
-    }
-
-    /**
-     * 添加回调
-     *
-     * @param callback
-     */
-    public synchronized void addVisibilityChangeCallback(VisibilityChangeCallback callback)
-    {
-        if (callback == null)
-        {
-            return;
-        }
-        mVisibilityChangeCallbackHolder.put(callback, 0);
-    }
-
-    /**
-     * 移除回调
-     *
-     * @param callback
-     */
-    public synchronized void removeVisibilityChangeCallback(VisibilityChangeCallback callback)
-    {
-        mVisibilityChangeCallbackHolder.remove(callback);
-    }
-
-    /**
-     * 清空回调
-     */
-    public synchronized void clearVisibilityChangeCallback()
-    {
-        mVisibilityChangeCallbackHolder.clear();
     }
 
     /**
@@ -229,7 +154,6 @@ public class FViewVisibilityHandler
             return;
         }
         view.setVisibility(View.VISIBLE);
-        notifyVisiblityCallbackIfNeed();
     }
 
     /**
@@ -261,7 +185,6 @@ public class FViewVisibilityHandler
             return;
         }
         view.setVisibility(View.GONE);
-        notifyVisiblityCallbackIfNeed();
     }
 
     /**
@@ -322,7 +245,6 @@ public class FViewVisibilityHandler
             return;
         }
         view.setVisibility(View.INVISIBLE);
-        notifyVisiblityCallbackIfNeed();
     }
 
     /**
@@ -450,24 +372,6 @@ public class FViewVisibilityHandler
     }
 
     /**
-     * 通知回调
-     */
-    public synchronized final void notifyVisiblityCallback()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return;
-        }
-
-        int visibility = view.getVisibility();
-        for (VisibilityChangeCallback item : mVisibilityChangeCallbackHolder.keySet())
-        {
-            item.onViewVisibilityChanged(view, visibility);
-        }
-    }
-
-    /**
      * view的状态是否处于View.VISIBLE
      *
      * @return
@@ -554,10 +458,5 @@ public class FViewVisibilityHandler
         {
             setVisible(anim);
         }
-    }
-
-    public interface VisibilityChangeCallback
-    {
-        void onViewVisibilityChanged(View view, int visibility);
     }
 }

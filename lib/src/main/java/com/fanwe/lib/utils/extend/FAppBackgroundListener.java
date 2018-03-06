@@ -20,7 +20,7 @@ public class FAppBackgroundListener
     private boolean mIsBackground;
     private long mBackgroundTime;
 
-    private List<Callback> mListCallback = new CopyOnWriteArrayList<>();
+    private final List<Callback> mListCallback = new CopyOnWriteArrayList<>();
 
     private FAppBackgroundListener()
     {
@@ -53,6 +53,11 @@ public class FAppBackgroundListener
         }
     }
 
+    /**
+     * 返回最后一次App进入后台的时间点
+     *
+     * @return
+     */
     public long getBackgroundTime()
     {
         return mBackgroundTime;
@@ -107,7 +112,6 @@ public class FAppBackgroundListener
                 {
                     item.onResumeFromBackground();
                 }
-                mBackgroundTime = 0;
             }
         }
 

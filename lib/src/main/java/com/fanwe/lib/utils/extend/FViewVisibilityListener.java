@@ -75,29 +75,27 @@ public abstract class FViewVisibilityListener
         @Override
         public boolean onPreDraw()
         {
-            notifyVisiblityCallbackIfNeed();
+            final View view = getView();
+            if (view != null)
+            {
+                if (mVisibility != view.getVisibility())
+                {
+                    notifyVisiblityChanged();
+                }
+            }
+
             return true;
         }
     };
 
-    /**
-     * 当visibility发生变化的时候通知回调
-     */
-    private void notifyVisiblityCallbackIfNeed()
+    public final void notifyVisiblityChanged()
     {
         final View view = getView();
-        if (view == null)
+        if (view != null)
         {
-            return;
+            mVisibility = view.getVisibility();
+            onViewVisibilityChanged(view, mVisibility);
         }
-        final int visibility = view.getVisibility();
-        if (mVisibility == visibility)
-        {
-            return;
-        }
-
-        mVisibility = visibility;
-        onViewVisibilityChanged(view, visibility);
     }
 
     protected abstract void onViewVisibilityChanged(View view, int visibility);

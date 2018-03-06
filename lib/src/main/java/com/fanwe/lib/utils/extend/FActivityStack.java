@@ -6,9 +6,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FActivityStack
@@ -17,7 +16,6 @@ public class FActivityStack
 
     private Context mContext;
     private final List<Activity> mActivityHolder = new CopyOnWriteArrayList<>();
-    private final Map<Activity, ActivityState> mMapActivityInfo = new WeakHashMap<>();
 
     private boolean mIsDebug;
 
@@ -62,21 +60,17 @@ public class FActivityStack
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState)
         {
-            mMapActivityInfo.put(activity, ActivityState.Created);
             addActivity(activity);
         }
 
         @Override
         public void onActivityStarted(Activity activity)
         {
-            mMapActivityInfo.put(activity, ActivityState.Started);
         }
 
         @Override
         public void onActivityResumed(Activity activity)
         {
-            mMapActivityInfo.put(activity, ActivityState.Resumed);
-
             final int index = mActivityHolder.indexOf(activity);
             if (index < 0)
             {
@@ -103,13 +97,11 @@ public class FActivityStack
         @Override
         public void onActivityPaused(Activity activity)
         {
-            mMapActivityInfo.put(activity, ActivityState.Paused);
         }
 
         @Override
         public void onActivityStopped(Activity activity)
         {
-            mMapActivityInfo.put(activity, ActivityState.Stopped);
         }
 
         @Override
@@ -120,7 +112,6 @@ public class FActivityStack
         @Override
         public void onActivityDestroyed(Activity activity)
         {
-            mMapActivityInfo.put(activity, ActivityState.Destroyed);
             removeActivity(activity);
         }
     };
@@ -130,19 +121,7 @@ public class FActivityStack
         Object[] arrActivity = mActivityHolder.toArray();
         if (arrActivity != null)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            for (Object item : arrActivity)
-            {
-                Activity activity = (Activity) item;
-
-                sb.append(activity.toString())
-                        .append("(").append(getActivityState(activity)).append(")")
-                        .append(",");
-            }
-            sb.setLength(sb.length() - 1);
-            sb.append("]");
-            return sb.toString();
+            return Arrays.toString(arrActivity);
         } else
         {
             return "";
@@ -331,26 +310,5 @@ public class FActivityStack
         {
             item.finish();
         }
-    }
-
-    /**
-     * 返回Activity当前所处的状态
-     *
-     * @param activity
-     * @return
-     */
-    public ActivityState getActivityState(Activity activity)
-    {
-        return mMapActivityInfo.get(activity);
-    }
-
-    public enum ActivityState
-    {
-        Created,
-        Started,
-        Resumed,
-        Paused,
-        Stopped,
-        Destroyed,
     }
 }

@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity
                 mImageGetter.getImageFromAlbum();
             }
         });
-
-        startActivity(new Intent(this, TestActivity.class));
     }
 
     private void testImageGetter()

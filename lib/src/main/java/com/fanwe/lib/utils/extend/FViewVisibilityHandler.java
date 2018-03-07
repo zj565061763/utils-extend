@@ -24,7 +24,7 @@ public class FViewVisibilityHandler
      */
     private boolean mIsGoneMode = true;
 
-    private ViewVisibilityInvoker mViewVisibilityInvoker;
+    private VisibilityInvoker mVisibilityInvoker;
 
     public FViewVisibilityHandler(View view)
     {
@@ -40,18 +40,18 @@ public class FViewVisibilityHandler
         return mView == null ? null : mView.get();
     }
 
-    public void setViewVisibilityInvoker(ViewVisibilityInvoker viewVisibilityInvoker)
+    public void setVisibilityInvoker(VisibilityInvoker visibilityInvoker)
     {
-        mViewVisibilityInvoker = viewVisibilityInvoker;
+        mVisibilityInvoker = visibilityInvoker;
     }
 
-    private ViewVisibilityInvoker getViewVisibilityInvoker()
+    private VisibilityInvoker getVisibilityInvoker()
     {
-        if (mViewVisibilityInvoker == null)
+        if (mVisibilityInvoker == null)
         {
-            mViewVisibilityInvoker = ViewVisibilityInvoker.DEFAULT;
+            mVisibilityInvoker = VisibilityInvoker.DEFAULT;
         }
-        return mViewVisibilityInvoker;
+        return mVisibilityInvoker;
     }
 
     /**
@@ -215,7 +215,7 @@ public class FViewVisibilityHandler
         {
             return;
         }
-        getViewVisibilityInvoker().setVisibility(view, visibility);
+        getVisibilityInvoker().setVisibility(view, visibility);
     }
 
     /**
@@ -386,9 +386,9 @@ public class FViewVisibilityHandler
         }
     }
 
-    public interface ViewVisibilityInvoker
+    public interface VisibilityInvoker
     {
-        ViewVisibilityInvoker DEFAULT = new ViewVisibilityInvoker()
+        VisibilityInvoker DEFAULT = new VisibilityInvoker()
         {
             @Override
             public void setVisibility(View view, int visibility)

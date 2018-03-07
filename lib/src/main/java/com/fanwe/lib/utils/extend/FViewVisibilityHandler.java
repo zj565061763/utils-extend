@@ -142,7 +142,7 @@ public class FViewVisibilityHandler
             startVisibleAnimator();
         } else
         {
-            setVisibleReal();
+            setVisibilityDirectly(View.VISIBLE);
         }
     }
 
@@ -162,18 +162,19 @@ public class FViewVisibilityHandler
             mVisibleAnimator.start();
         } else
         {
-            setVisibleReal();
+            setVisibilityDirectly(View.VISIBLE);
         }
     }
 
-    private void setVisibleReal()
+    private void setInvisible(boolean anim)
     {
-        final View view = getView();
-        if (view == null)
+        if (anim)
         {
-            return;
+            startInvisibleAnimator(false);
+        } else
+        {
+            setVisibilityDirectly(View.INVISIBLE);
         }
-        view.setVisibility(View.VISIBLE);
     }
 
     private void setGone(boolean anim)
@@ -183,18 +184,8 @@ public class FViewVisibilityHandler
             startInvisibleAnimator(true);
         } else
         {
-            setGoneReal();
+            setVisibilityDirectly(View.GONE);
         }
-    }
-
-    private void setGoneReal()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return;
-        }
-        view.setVisibility(View.GONE);
     }
 
     /**
@@ -218,33 +209,22 @@ public class FViewVisibilityHandler
         {
             if (isGoneMode)
             {
-                setGoneReal();
+                setVisibilityDirectly(View.GONE);
             } else
             {
-                setInvisibleReal();
+                setVisibilityDirectly(View.INVISIBLE);
             }
         }
     }
 
-    private void setInvisible(boolean anim)
-    {
-        if (anim)
-        {
-            startInvisibleAnimator(false);
-        } else
-        {
-            setInvisibleReal();
-        }
-    }
-
-    private void setInvisibleReal()
+    private void setVisibilityDirectly(int visibility)
     {
         final View view = getView();
         if (view == null)
         {
             return;
         }
-        view.setVisibility(View.INVISIBLE);
+        view.setVisibility(visibility);
     }
 
     /**
@@ -295,7 +275,7 @@ public class FViewVisibilityHandler
         @Override
         public void onAnimationStart(Animator animation)
         {
-            setVisibleReal();
+            setVisibilityDirectly(View.VISIBLE);
         }
 
         @Override
@@ -329,10 +309,10 @@ public class FViewVisibilityHandler
         {
             if (mIsGoneMode)
             {
-                setGoneReal();
+                setVisibilityDirectly(View.GONE);
             } else
             {
-                setInvisibleReal();
+                setVisibilityDirectly(View.INVISIBLE);
             }
             resetView(getView());
         }
@@ -342,10 +322,10 @@ public class FViewVisibilityHandler
         {
             if (mIsGoneMode)
             {
-                setGoneReal();
+                setVisibilityDirectly(View.GONE);
             } else
             {
-                setInvisibleReal();
+                setVisibilityDirectly(View.INVISIBLE);
             }
             resetView(getView());
         }

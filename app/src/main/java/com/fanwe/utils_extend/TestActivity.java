@@ -15,30 +15,49 @@ public class TestActivity extends AppCompatActivity
 {
     public static final String TAG = TestActivity.class.getSimpleName();
 
+    private FViewVisibilityHandler mViewVisibilityHandler;
+    private FViewVisibilityListener mViewVisibilityListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_test);
 
-        mViewVisibilityListener.setView(findViewById(R.id.btn));
+        getViewVisibilityListener().setView(findViewById(R.id.btn));
 
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                FViewVisibilityHandler.get(v).setVisibility(View.GONE, true);
+                getViewVisibilityHandler().setVisibility(View.GONE, true);
             }
         });
     }
 
-    private FViewVisibilityListener mViewVisibilityListener = new FViewVisibilityListener()
+    public FViewVisibilityHandler getViewVisibilityHandler()
     {
-        @Override
-        protected void onViewVisibilityChanged(View view, int visibility)
+        if (mViewVisibilityHandler == null)
         {
-            Log.i(TAG, view + ":" + visibility);
+            mViewVisibilityHandler = new FViewVisibilityHandler(findViewById(R.id.btn));
         }
-    };
+        return mViewVisibilityHandler;
+    }
+
+    public FViewVisibilityListener getViewVisibilityListener()
+    {
+        if (mViewVisibilityListener == null)
+        {
+            mViewVisibilityListener = new FViewVisibilityListener()
+            {
+                @Override
+                protected void onViewVisibilityChanged(View view, int visibility)
+                {
+                    Log.i(TAG, view + ":" + visibility);
+                }
+            };
+        }
+        return mViewVisibilityListener;
+    }
 }

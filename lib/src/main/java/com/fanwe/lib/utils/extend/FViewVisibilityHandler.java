@@ -4,16 +4,12 @@ import android.animation.Animator;
 import android.view.View;
 
 import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * view的显示隐藏处理
  */
 public class FViewVisibilityHandler
 {
-    private static final Map<View, FViewVisibilityHandler> MAP_HANDLER = new WeakHashMap<>();
-
     private WeakReference<View> mView;
     /**
      * 显示动画
@@ -28,7 +24,9 @@ public class FViewVisibilityHandler
      */
     private boolean mIsGoneMode = true;
 
-    private FViewVisibilityHandler(View view)
+    private ViewVisibilityInvoker mViewVisibilityInvoker;
+
+    public FViewVisibilityHandler(View view)
     {
         if (view == null)
         {
@@ -37,30 +35,23 @@ public class FViewVisibilityHandler
         mView = new WeakReference<>(view);
     }
 
-    /**
-     * 返回view对应的处理类
-     *
-     * @param view
-     * @return
-     */
-    public static FViewVisibilityHandler get(View view)
-    {
-        if (view == null)
-        {
-            return null;
-        }
-        FViewVisibilityHandler handler = MAP_HANDLER.get(view);
-        if (handler == null)
-        {
-            handler = new FViewVisibilityHandler(view);
-            MAP_HANDLER.put(view, handler);
-        }
-        return handler;
-    }
-
-    private final View getView()
+    private View getView()
     {
         return mView == null ? null : mView.get();
+    }
+
+    public void setViewVisibilityInvoker(ViewVisibilityInvoker viewVisibilityInvoker)
+    {
+        mViewVisibilityInvoker = viewVisibilityInvoker;
+    }
+
+    private ViewVisibilityInvoker getViewVisibilityInvoker()
+    {
+        if (mViewVisibilityInvoker == null)
+        {
+            mViewVisibilityInvoker = ViewVisibilityInvoker.DEFAULT;
+        }
+        return mViewVisibilityInvoker;
     }
 
     /**
@@ -224,7 +215,7 @@ public class FViewVisibilityHandler
         {
             return;
         }
-        view.setVisibility(visibility);
+        getViewVisibilityInvoker().setVisibility(view, visibility);
     }
 
     /**
@@ -393,5 +384,19 @@ public class FViewVisibilityHandler
         {
             setVisible(anim);
         }
+    }
+
+    public interface ViewVisibilityInvoker
+    {
+        ViewVisibilityInvoker DEFAULT = new ViewVisibilityInvoker()
+        {
+            @Override
+            public void setVisibility(View view, int visibility)
+            {
+                view.setVisibility(View.VISIBLE);
+            }
+        };
+
+        void setVisibility(View view, int visibility);
     }
 }

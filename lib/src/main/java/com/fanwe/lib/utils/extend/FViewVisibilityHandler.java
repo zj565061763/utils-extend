@@ -106,23 +106,43 @@ public class FViewVisibilityHandler
     }
 
     /**
-     * 显示view（View.VISIBLE）
+     * 设置View的可见状态
      *
-     * @param anim true-执行动画
+     * @param visibility
+     * @param anim
      */
-    public void setVisible(boolean anim)
+    public void setVisibility(int visibility, boolean anim)
     {
-        if (getView() == null || isVisible())
+        final View view = getView();
+        if (view == null)
+        {
+            return;
+        }
+        if (visibility == view.getVisibility())
         {
             return;
         }
 
+        if (visibility == View.VISIBLE)
+        {
+            setVisible(anim);
+        } else if (visibility == View.INVISIBLE)
+        {
+            setInvisible(anim);
+        } else if (visibility == View.GONE)
+        {
+            setGone(anim);
+        }
+    }
+
+    private void setVisible(boolean anim)
+    {
         if (anim)
         {
             startVisibleAnimator();
         } else
         {
-            setVisibleInternal();
+            setVisibleReal();
         }
     }
 
@@ -142,11 +162,11 @@ public class FViewVisibilityHandler
             mVisibleAnimator.start();
         } else
         {
-            setVisibleInternal();
+            setVisibleReal();
         }
     }
 
-    private void setVisibleInternal()
+    private void setVisibleReal()
     {
         final View view = getView();
         if (view == null)
@@ -156,28 +176,18 @@ public class FViewVisibilityHandler
         view.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * 隐藏view（View.GONE）
-     *
-     * @param anim
-     */
-    public void setGone(boolean anim)
+    private void setGone(boolean anim)
     {
-        if (getView() == null || isGone())
-        {
-            return;
-        }
-
         if (anim)
         {
             startInvisibleAnimator(true);
         } else
         {
-            setGoneInternal();
+            setGoneReal();
         }
     }
 
-    private void setGoneInternal()
+    private void setGoneReal()
     {
         final View view = getView();
         if (view == null)
@@ -208,36 +218,26 @@ public class FViewVisibilityHandler
         {
             if (isGoneMode)
             {
-                setGoneInternal();
+                setGoneReal();
             } else
             {
-                setInvisibleInternal();
+                setInvisibleReal();
             }
         }
     }
 
-    /**
-     * 隐藏view（View.INVISIBLE）
-     *
-     * @param anim
-     */
-    public void setInvisible(boolean anim)
+    private void setInvisible(boolean anim)
     {
-        if (getView() == null || isInvisible())
-        {
-            return;
-        }
-
         if (anim)
         {
             startInvisibleAnimator(false);
         } else
         {
-            setInvisibleInternal();
+            setInvisibleReal();
         }
     }
 
-    private void setInvisibleInternal()
+    private void setInvisibleReal()
     {
         final View view = getView();
         if (view == null)
@@ -295,7 +295,7 @@ public class FViewVisibilityHandler
         @Override
         public void onAnimationStart(Animator animation)
         {
-            setVisibleInternal();
+            setVisibleReal();
         }
 
         @Override
@@ -329,10 +329,10 @@ public class FViewVisibilityHandler
         {
             if (mIsGoneMode)
             {
-                setGoneInternal();
+                setGoneReal();
             } else
             {
-                setInvisibleInternal();
+                setInvisibleReal();
             }
             resetView(getView());
         }
@@ -342,10 +342,10 @@ public class FViewVisibilityHandler
         {
             if (mIsGoneMode)
             {
-                setGoneInternal();
+                setGoneReal();
             } else
             {
-                setInvisibleInternal();
+                setInvisibleReal();
             }
             resetView(getView());
         }
@@ -372,51 +372,6 @@ public class FViewVisibilityHandler
     }
 
     /**
-     * view的状态是否处于View.VISIBLE
-     *
-     * @return
-     */
-    public boolean isVisible()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return false;
-        }
-        return view.getVisibility() == View.VISIBLE;
-    }
-
-    /**
-     * view的状态是否处于View.GONE
-     *
-     * @return
-     */
-    public boolean isGone()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return false;
-        }
-        return view.getVisibility() == View.GONE;
-    }
-
-    /**
-     * view的状态是否处于View.INVISIBLE
-     *
-     * @return
-     */
-    public boolean isInvisible()
-    {
-        final View view = getView();
-        if (view == null)
-        {
-            return false;
-        }
-        return view.getVisibility() == View.INVISIBLE;
-    }
-
-    /**
      * 在View.VISIBLE和View.GONE之前切换
      *
      * @param anim
@@ -429,7 +384,7 @@ public class FViewVisibilityHandler
             return;
         }
 
-        if (isVisible())
+        if (view.getVisibility() == View.VISIBLE)
         {
             setGone(anim);
         } else
@@ -451,7 +406,7 @@ public class FViewVisibilityHandler
             return;
         }
 
-        if (isVisible())
+        if (view.getVisibility() == View.VISIBLE)
         {
             setInvisible(anim);
         } else

@@ -28,7 +28,7 @@ public class TestActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                FViewVisibilityHandler.get(v).setGone(true);
+                FViewVisibilityHandler.get(v).setVisibility(View.GONE, true);
             }
         });
     }

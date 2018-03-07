@@ -393,7 +393,7 @@ public class FViewVisibilityHandler
             @Override
             public void setVisibility(View view, int visibility)
             {
-                view.setVisibility(View.VISIBLE);
+                view.setVisibility(visibility);
             }
         };
 

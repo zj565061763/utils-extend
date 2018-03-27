@@ -16,7 +16,7 @@ public class FAppBackgroundListener
 {
     private static FAppBackgroundListener sInstance;
 
-    private Context mContext;
+    private Application mApplication;
     private boolean mIsBackground;
     private long mBackgroundTime;
 
@@ -41,13 +41,12 @@ public class FAppBackgroundListener
         return sInstance;
     }
 
-    public synchronized void init(Context context)
+    public synchronized void init(Application application)
     {
-        if (mContext == null)
+        if (mApplication == null)
         {
-            mContext = context.getApplicationContext();
+            mApplication = application;
 
-            Application application = (Application) mContext;
             application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
             application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
         }
@@ -65,9 +64,9 @@ public class FAppBackgroundListener
 
     private void checkContext()
     {
-        if (mContext == null)
+        if (mApplication == null)
         {
-            throw new NullPointerException("you must invoke init(context) method before this");
+            throw new NullPointerException("you must invoke init(Application) method before this");
         }
     }
 
@@ -83,7 +82,6 @@ public class FAppBackgroundListener
 
     public void removeCallback(Callback callback)
     {
-        checkContext();
         mListCallback.remove(callback);
     }
 
@@ -126,7 +124,7 @@ public class FAppBackgroundListener
         {
             if (!mIsBackground)
             {
-                if (isAppBackground(mContext))
+                if (isAppBackground(mApplication))
                 {
                     mIsBackground = true;
                     mBackgroundTime = System.currentTimeMillis();
@@ -154,21 +152,15 @@ public class FAppBackgroundListener
 
     public static boolean isAppBackground(Context context)
     {
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> listProcess = activityManager.getRunningAppProcesses();
+        final ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        final List<ActivityManager.RunningAppProcessInfo> list = manager.getRunningAppProcesses();
 
-        String packageName = context.getPackageName();
-        for (ActivityManager.RunningAppProcessInfo item : listProcess)
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo item : list)
         {
             if (item.processName.equals(packageName))
             {
-                if (item.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND)
-                {
-                    return true;
-                } else
-                {
-                    return false;
-                }
+                return item.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
             }
         }
         return false;

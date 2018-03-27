@@ -49,7 +49,14 @@ public class FViewVisibilityHandler
     {
         if (mVisibilityInvoker == null)
         {
-            mVisibilityInvoker = VisibilityInvoker.DEFAULT;
+            mVisibilityInvoker = new VisibilityInvoker()
+            {
+                @Override
+                public void setVisibility(View view, int visibility)
+                {
+                    view.setVisibility(visibility);
+                }
+            };
         }
         return mVisibilityInvoker;
     }
@@ -388,15 +395,6 @@ public class FViewVisibilityHandler
 
     public interface VisibilityInvoker
     {
-        VisibilityInvoker DEFAULT = new VisibilityInvoker()
-        {
-            @Override
-            public void setVisibility(View view, int visibility)
-            {
-                view.setVisibility(visibility);
-            }
-        };
-
         void setVisibility(View view, int visibility);
     }
 }

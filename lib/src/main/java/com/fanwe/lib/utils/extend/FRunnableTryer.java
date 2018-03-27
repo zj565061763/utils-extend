@@ -32,7 +32,7 @@ public class FRunnableTryer
      */
     public synchronized void setMaxTryCount(int maxTryCount)
     {
-        this.mMaxTryCount = maxTryCount;
+        mMaxTryCount = maxTryCount;
     }
 
     /**
@@ -40,7 +40,7 @@ public class FRunnableTryer
      *
      * @return
      */
-    public synchronized int getMaxTryCount()
+    public int getMaxTryCount()
     {
         return mMaxTryCount;
     }
@@ -50,7 +50,7 @@ public class FRunnableTryer
      *
      * @return
      */
-    public synchronized int getTryCount()
+    public int getTryCount()
     {
         return mTryCount;
     }
@@ -130,7 +130,7 @@ public class FRunnableTryer
     /**
      * 销毁
      */
-    public void onDestroy()
+    public synchronized void onDestroy()
     {
         if (mHandler != null)
         {

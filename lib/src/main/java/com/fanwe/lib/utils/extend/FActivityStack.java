@@ -2,7 +2,6 @@ package com.fanwe.lib.utils.extend;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,7 +13,7 @@ public class FActivityStack
 {
     private static FActivityStack sInstance;
 
-    private Context mContext;
+    private Application mApplication;
     private final List<Activity> mActivityHolder = new CopyOnWriteArrayList<>();
 
     private boolean mIsDebug;
@@ -43,13 +42,12 @@ public class FActivityStack
         mIsDebug = debug;
     }
 
-    public synchronized void init(Context context)
+    public synchronized void init(Application application)
     {
-        if (mContext == null)
+        if (mApplication == null)
         {
-            mContext = context.getApplicationContext();
+            mApplication = application;
 
-            Application application = (Application) mContext;
             application.unregisterActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
             application.registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
         }

@@ -38,39 +38,26 @@ public abstract class FViewVisibilityListener
         {
             if (old != null)
             {
-                addUpdateListener(old, false);
+                final ViewTreeObserver observer = view.getViewTreeObserver();
+                if (observer.isAlive())
+                    observer.removeOnPreDrawListener(mOnPreDrawListener);
             }
+
+            mView = view == null ? null : new WeakReference<>(view);
 
             if (view != null)
             {
-                mView = new WeakReference<>(view);
-
                 mVisibility = view.getVisibility();
-                addUpdateListener(view, true);
-            } else
-            {
-                mView = null;
+                notifyVisiblityChanged();
+
+                final ViewTreeObserver observer = view.getViewTreeObserver();
+                if (observer.isAlive())
+                    observer.addOnPreDrawListener(mOnPreDrawListener);
             }
         }
     }
 
-    private void addUpdateListener(View view, boolean add)
-    {
-        final ViewTreeObserver observer = view.getViewTreeObserver();
-        if (observer.isAlive())
-        {
-            if (add)
-            {
-                observer.removeOnPreDrawListener(mOnPreDrawListener);
-                observer.addOnPreDrawListener(mOnPreDrawListener);
-            } else
-            {
-                observer.removeOnPreDrawListener(mOnPreDrawListener);
-            }
-        }
-    }
-
-    private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
+    private final ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
     {
         @Override
         public boolean onPreDraw()
@@ -79,9 +66,7 @@ public abstract class FViewVisibilityListener
             if (view != null)
             {
                 if (mVisibility != view.getVisibility())
-                {
                     notifyVisiblityChanged();
-                }
             }
 
             return true;
@@ -91,11 +76,11 @@ public abstract class FViewVisibilityListener
     public final void notifyVisiblityChanged()
     {
         final View view = getView();
-        if (view != null)
-        {
-            mVisibility = view.getVisibility();
-            onViewVisibilityChanged(view, mVisibility);
-        }
+        if (view == null)
+            return;
+
+        mVisibility = view.getVisibility();
+        onViewVisibilityChanged(view, mVisibility);
     }
 
     /**

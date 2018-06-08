@@ -37,18 +37,15 @@ public class FCountDownTimer
                 public void onTick(long millisUntilFinished)
                 {
                     if (mCallback != null)
-                    {
                         mCallback.onTick(millisUntilFinished);
-                    }
                 }
 
                 @Override
                 public void onFinish()
                 {
+                    stop();
                     if (mCallback != null)
-                    {
                         mCallback.onFinish();
-                    }
                 }
             };
             mTimer.start();

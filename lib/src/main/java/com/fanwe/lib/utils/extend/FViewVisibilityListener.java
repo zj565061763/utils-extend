@@ -48,7 +48,6 @@ public abstract class FViewVisibilityListener
             if (view != null)
             {
                 mVisibility = view.getVisibility();
-                notifyVisiblityChanged();
 
                 final ViewTreeObserver observer = view.getViewTreeObserver();
                 if (observer.isAlive())

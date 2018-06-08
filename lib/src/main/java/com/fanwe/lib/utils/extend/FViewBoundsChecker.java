@@ -24,9 +24,10 @@ public class FViewBoundsChecker
         mParameter = (bound == Bound.Width) ? new WidthParameter() : new HeightParameter();
     }
 
-    public final void setDebug(boolean debug)
+    public final FViewBoundsChecker setDebug(boolean debug)
     {
         mIsDebug = debug;
+        return this;
     }
 
     /**
@@ -59,8 +60,13 @@ public class FViewBoundsChecker
         if (parentSize <= 0)
             return;
 
-        final int parentStart = getParameter().getPaddingStart(viewParent);
-        final int parentEnd = parentSize - getParameter().getPaddingEnd(viewParent);
+        final int paddingStart = getParameter().getPaddingStart(viewParent);
+        final int paddingEnd = getParameter().getPaddingEnd(viewParent);
+        if (parentSize - (paddingStart + paddingEnd) <= 0)
+            return;
+
+        final int parentStart = paddingStart;
+        final int parentEnd = parentSize - paddingEnd;
 
         int consume = 0;
 

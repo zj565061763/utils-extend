@@ -144,7 +144,7 @@ public class FViewBoundaryChecker
         Height
     }
 
-    public interface Parameter
+    private interface Parameter
     {
         int getSize(View view);
 
@@ -161,7 +161,7 @@ public class FViewBoundaryChecker
         void setLayoutParamsSize(ViewGroup.LayoutParams params, int size);
     }
 
-    public class WidthParameter implements Parameter
+    private static final class WidthParameter implements Parameter
     {
         @Override
         public int getSize(View view)
@@ -206,7 +206,7 @@ public class FViewBoundaryChecker
         }
     }
 
-    public class HeightParameter implements Parameter
+    private static final class HeightParameter implements Parameter
     {
         @Override
         public int getSize(View view)

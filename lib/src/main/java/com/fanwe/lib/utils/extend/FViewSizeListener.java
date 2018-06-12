@@ -45,8 +45,6 @@ public abstract class FViewSizeListener
                 final ViewTreeObserver observer = view.getViewTreeObserver();
                 if (observer.isAlive())
                     observer.addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-
-                process();
             }
         }
     }

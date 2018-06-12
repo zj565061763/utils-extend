@@ -29,9 +29,7 @@ public class FActivityStack
             synchronized (FActivityStack.class)
             {
                 if (sInstance == null)
-                {
                     sInstance = new FActivityStack();
-                }
             }
         }
         return sInstance;
@@ -44,6 +42,9 @@ public class FActivityStack
 
     public synchronized void init(Application application)
     {
+        if (application == null)
+            throw new NullPointerException("application is null");
+
         if (mApplication == null)
         {
             mApplication = application;
@@ -53,7 +54,7 @@ public class FActivityStack
         }
     }
 
-    private Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
+    private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
     {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState)
@@ -71,24 +72,18 @@ public class FActivityStack
         {
             final int index = mActivityHolder.indexOf(activity);
             if (index < 0)
-            {
                 return;
-            }
 
             if (index != (mActivityHolder.size() - 1))
             {
                 if (mIsDebug)
-                {
                     Log.e(FActivityStack.class.getSimpleName(), "start order activity " + activity + " old index " + index);
-                }
 
                 removeActivity(activity);
                 addActivity(activity);
 
                 if (mIsDebug)
-                {
                     Log.e(FActivityStack.class.getSimpleName(), "end order activity " + activity + " new index " + mActivityHolder.indexOf(activity));
-                }
             }
         }
 
@@ -134,14 +129,11 @@ public class FActivityStack
     private void addActivity(Activity activity)
     {
         if (mActivityHolder.contains(activity))
-        {
             return;
-        }
+
         mActivityHolder.add(activity);
         if (mIsDebug)
-        {
             Log.i(FActivityStack.class.getSimpleName(), "+++++ " + activity + "\n" + getCurrentStack());
-        }
     }
 
     /**
@@ -154,9 +146,7 @@ public class FActivityStack
         if (mActivityHolder.remove(activity))
         {
             if (mIsDebug)
-            {
                 Log.e(FActivityStack.class.getSimpleName(), "----- " + activity + "\n" + getCurrentStack());
-            }
         }
     }
 
@@ -213,9 +203,7 @@ public class FActivityStack
         for (Activity item : mActivityHolder)
         {
             if (item.getClass() == clazz)
-            {
                 item.finish();
-            }
         }
     }
 
@@ -230,9 +218,7 @@ public class FActivityStack
         for (Activity item : mActivityHolder)
         {
             if (item.getClass() == clazz)
-            {
                 return true;
-            }
         }
         return false;
     }
@@ -258,9 +244,7 @@ public class FActivityStack
         for (Activity item : mActivityHolder)
         {
             if (item != activity)
-            {
                 item.finish();
-            }
         }
     }
 
@@ -274,9 +258,7 @@ public class FActivityStack
         for (Activity item : mActivityHolder)
         {
             if (item.getClass() != clazz)
-            {
                 item.finish();
-            }
         }
     }
 
@@ -292,9 +274,7 @@ public class FActivityStack
             if (item.getClass() == activity.getClass())
             {
                 if (item != activity)
-                {
                     item.finish();
-                }
             }
         }
     }

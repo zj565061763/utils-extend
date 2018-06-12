@@ -33,9 +33,7 @@ public class FAppBackgroundListener
             synchronized (FAppBackgroundListener.class)
             {
                 if (sInstance == null)
-                {
                     sInstance = new FAppBackgroundListener();
-                }
             }
         }
         return sInstance;
@@ -43,6 +41,9 @@ public class FAppBackgroundListener
 
     public synchronized void init(Application application)
     {
+        if (application == null)
+            throw new NullPointerException("application is null");
+
         if (mApplication == null)
         {
             mApplication = application;
@@ -62,41 +63,42 @@ public class FAppBackgroundListener
         return mBackgroundTime;
     }
 
-    private void checkContext()
-    {
-        if (mApplication == null)
-        {
-            throw new NullPointerException("you must invoke init(Application) method before this");
-        }
-    }
-
+    /**
+     * 添加回调
+     *
+     * @param callback
+     */
     public void addCallback(Callback callback)
     {
         if (callback == null || mListCallback.contains(callback))
-        {
             return;
-        }
-        checkContext();
+
+        if (mApplication == null)
+            throw new NullPointerException("you must invoke init(Application) method before this");
+
         mListCallback.add(callback);
     }
 
+    /**
+     * 移除回调
+     *
+     * @param callback
+     */
     public void removeCallback(Callback callback)
     {
         mListCallback.remove(callback);
     }
 
-    private Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
+    private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
     {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState)
         {
-
         }
 
         @Override
         public void onActivityStarted(Activity activity)
         {
-
         }
 
         @Override
@@ -116,7 +118,6 @@ public class FAppBackgroundListener
         @Override
         public void onActivityPaused(Activity activity)
         {
-
         }
 
         @Override

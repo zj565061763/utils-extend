@@ -35,16 +35,11 @@ public class FViewSizeLocker
     /**
      * 宽度是否已经被锁住
      */
-    private boolean mHasLockWidth;
+    private boolean mIsWidthLocked;
     /**
      * 高度是否已经被锁住
      */
-    private boolean mHasLockHeight;
-
-    public FViewSizeLocker(View view)
-    {
-        this.mView = view;
-    }
+    private boolean mIsHeightLocked;
 
     /**
      * 设置要处理的view
@@ -53,11 +48,16 @@ public class FViewSizeLocker
      */
     public void setView(View view)
     {
-        if (this.mView != view)
+        if (mView != view)
         {
             reset();
-            this.mView = view;
+            mView = view;
         }
+    }
+
+    public View getView()
+    {
+        return mView;
     }
 
     private void reset()
@@ -69,8 +69,8 @@ public class FViewSizeLocker
         mLockWidth = 0;
         mLockHeight = 0;
 
-        mHasLockWidth = false;
-        mHasLockHeight = false;
+        mIsWidthLocked = false;
+        mIsHeightLocked = false;
     }
 
     /**
@@ -126,9 +126,9 @@ public class FViewSizeLocker
     /**
      * 宽度是否已经被锁住
      */
-    public boolean hasLockWidth()
+    public boolean isWidthLocked()
     {
-        return mHasLockWidth;
+        return mIsWidthLocked;
     }
 
     /**
@@ -136,32 +136,27 @@ public class FViewSizeLocker
      *
      * @return
      */
-    public boolean hasLockHeight()
+    public boolean isHeightLocked()
     {
-        return mHasLockHeight;
+        return mIsHeightLocked;
     }
 
     private ViewGroup.LayoutParams getLayoutParams()
     {
-        if (getView() == null)
-        {
+        final View view = getView();
+        if (view == null)
             return null;
-        }
-        return getView().getLayoutParams();
+
+        return view.getLayoutParams();
     }
 
     private void setLayoutParams(ViewGroup.LayoutParams params)
     {
-        if (getView() == null)
-        {
+        final View view = getView();
+        if (view == null)
             return;
-        }
-        getView().setLayoutParams(params);
-    }
 
-    public View getView()
-    {
-        return mView;
+        view.setLayoutParams(params);
     }
 
     /**
@@ -171,13 +166,11 @@ public class FViewSizeLocker
      */
     public void lockWidth(int lockWidth)
     {
-        ViewGroup.LayoutParams params = getLayoutParams();
+        final ViewGroup.LayoutParams params = getLayoutParams();
         if (params == null)
-        {
             return;
-        }
 
-        if (mHasLockWidth)
+        if (mIsWidthLocked)
         {
             //如果已经锁了，直接赋值
             params.width = lockWidth;
@@ -192,7 +185,7 @@ public class FViewSizeLocker
 
             mOriginalWidth = params.width;
             params.width = lockWidth;
-            mHasLockWidth = true;
+            mIsWidthLocked = true;
         }
         setLayoutParams(params);
     }
@@ -202,7 +195,7 @@ public class FViewSizeLocker
      */
     public void unlockWidth()
     {
-        if (mHasLockWidth)
+        if (mIsWidthLocked)
         {
             ViewGroup.LayoutParams params = getLayoutParams();
             if (params != null)
@@ -215,7 +208,7 @@ public class FViewSizeLocker
                 params.width = mOriginalWidth;
                 setLayoutParams(params);
             }
-            mHasLockWidth = false;
+            mIsWidthLocked = false;
         }
     }
 
@@ -232,7 +225,7 @@ public class FViewSizeLocker
             return;
         }
 
-        if (mHasLockHeight)
+        if (mIsHeightLocked)
         {
             //如果已经锁了，直接赋值
             params.height = lockHeight;
@@ -247,7 +240,7 @@ public class FViewSizeLocker
 
             mOriginalHeight = params.height;
             params.height = lockHeight;
-            mHasLockHeight = true;
+            mIsHeightLocked = true;
         }
         setLayoutParams(params);
 
@@ -258,7 +251,7 @@ public class FViewSizeLocker
      */
     public void unlockHeight()
     {
-        if (mHasLockHeight)
+        if (mIsHeightLocked)
         {
             ViewGroup.LayoutParams params = getLayoutParams();
             if (params != null)
@@ -271,7 +264,7 @@ public class FViewSizeLocker
                 params.height = mOriginalHeight;
                 setLayoutParams(params);
             }
-            mHasLockHeight = false;
+            mIsHeightLocked = false;
         }
     }
 

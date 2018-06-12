@@ -26,19 +26,14 @@ public abstract class FRetryWorker
      */
     private int mMaxRetryCount = 60;
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
-
-    protected FRetryWorker()
-    {
-
-    }
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * 设置最大重试次数
      *
      * @param maxRetryCount
      */
-    public void setMaxRetryCount(int maxRetryCount)
+    public synchronized void setMaxRetryCount(int maxRetryCount)
     {
         mMaxRetryCount = maxRetryCount;
     }
@@ -69,9 +64,8 @@ public abstract class FRetryWorker
     public synchronized void start()
     {
         if (mIsStarted)
-        {
             return;
-        }
+
         mIsStarted = true;
         mIsRetrySuccess = false;
         mRetryCount = 0;
@@ -80,7 +74,7 @@ public abstract class FRetryWorker
         mRetryRunnable.run();
     }
 
-    private Runnable mRetryRunnable = new Runnable()
+    private final Runnable mRetryRunnable = new Runnable()
     {
         @Override
         public void run()
@@ -121,11 +115,11 @@ public abstract class FRetryWorker
      */
     public synchronized void retryDelayed(long delayMillis)
     {
-        if (mIsStarted)
-        {
-            mHandler.removeCallbacks(mRetryRunnable);
-            mHandler.postDelayed(mRetryRunnable, delayMillis);
-        }
+        if (!mIsStarted)
+            return;
+
+        mHandler.removeCallbacks(mRetryRunnable);
+        mHandler.postDelayed(mRetryRunnable, delayMillis);
     }
 
     /**

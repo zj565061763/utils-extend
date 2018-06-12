@@ -22,9 +22,9 @@ public abstract class FRetryWorker
     private int mRetryCount = 0;
 
     /**
-     * 最大重试次数
+     * 最大重试次数，默认3次
      */
-    private int mMaxRetryCount = 60;
+    private int mMaxRetryCount = 3;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 

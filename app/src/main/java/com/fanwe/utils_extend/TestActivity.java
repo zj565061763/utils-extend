@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.fanwe.lib.utils.extend.FViewVisibilityHandler;
 import com.fanwe.lib.utils.extend.FViewVisibilityListener;
 
 /**
@@ -15,49 +14,30 @@ public class TestActivity extends AppCompatActivity
 {
     public static final String TAG = TestActivity.class.getSimpleName();
 
-    private FViewVisibilityHandler mViewVisibilityHandler;
-    private FViewVisibilityListener mViewVisibilityListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_test);
 
-        getViewVisibilityListener().setView(findViewById(R.id.btn));
-
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                getViewVisibilityHandler().setVisibility(View.GONE, true);
+                v.setVisibility(View.GONE);
             }
         });
+
+        mViewVisibilityListener.setView(findViewById(R.id.btn));
     }
 
-    public FViewVisibilityHandler getViewVisibilityHandler()
+    private final FViewVisibilityListener mViewVisibilityListener = new FViewVisibilityListener()
     {
-        if (mViewVisibilityHandler == null)
+        @Override
+        protected void onViewVisibilityChanged(View view, int visibility)
         {
-            mViewVisibilityHandler = new FViewVisibilityHandler(findViewById(R.id.btn));
+            Log.i(TAG, view + ":" + visibility);
         }
-        return mViewVisibilityHandler;
-    }
-
-    public FViewVisibilityListener getViewVisibilityListener()
-    {
-        if (mViewVisibilityListener == null)
-        {
-            mViewVisibilityListener = new FViewVisibilityListener()
-            {
-                @Override
-                protected void onViewVisibilityChanged(View view, int visibility)
-                {
-                    Log.i(TAG, view + ":" + visibility);
-                }
-            };
-        }
-        return mViewVisibilityListener;
-    }
+    };
 }

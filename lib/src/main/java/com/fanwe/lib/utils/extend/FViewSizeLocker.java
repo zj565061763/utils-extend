@@ -4,73 +4,67 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.lang.ref.WeakReference;
+
 /**
- * 锁定和解锁view宽高的类
+ * 对view的宽或者高进行锁定和解锁
  */
 public class FViewSizeLocker
 {
-    private View mView;
+    private WeakReference<View> mView;
     /**
      * 锁定前的宽度
      */
-    private int mOriginalWidth;
-    /**
-     * 锁定前的高度
-     */
-    private int mOriginalHeight;
+    private int mOriginalSize;
     /**
      * 锁定前的weight
      */
     private float mOriginalWeight;
-
     /**
      * 已锁定的宽度
      */
-    private int mLockWidth;
-    /**
-     * 已锁定的高度
-     */
-    private int mLockHeight;
-
+    private int mLockSize;
     /**
      * 宽度是否已经被锁住
      */
-    private boolean mIsWidthLocked;
-    /**
-     * 高度是否已经被锁住
-     */
-    private boolean mIsHeightLocked;
+    private boolean mIsLocked;
+
+    private final Parameter mParameter;
+
+    public FViewSizeLocker(Boundary boundary)
+    {
+        if (boundary == null)
+            throw new NullPointerException("boundary is null");
+
+        mParameter = boundary == Boundary.Width ? new WidthParameter() : new HeightParameter();
+    }
 
     /**
      * 设置要处理的view
      *
      * @param view
      */
-    public void setView(View view)
+    public final void setView(View view)
     {
-        if (mView != view)
+        final View old = getView();
+        if (old != view)
         {
             reset();
-            mView = view;
+            mView = view == null ? null : new WeakReference<>(view);
         }
     }
 
-    public View getView()
+    public final View getView()
     {
-        return mView;
+        return mView == null ? null : mView.get();
     }
 
     private void reset()
     {
-        mOriginalWidth = 0;
-        mOriginalHeight = 0;
+        mOriginalSize = 0;
         mOriginalWeight = 0;
-
-        mLockWidth = 0;
-        mLockHeight = 0;
-
-        mIsWidthLocked = false;
-        mIsHeightLocked = false;
+        mLockSize = 0;
+        mIsLocked = false;
     }
 
     /**
@@ -78,19 +72,9 @@ public class FViewSizeLocker
      *
      * @return
      */
-    public int getOriginalWidth()
+    public int getOriginalSize()
     {
-        return mOriginalWidth;
-    }
-
-    /**
-     * 返回锁定前的高度
-     *
-     * @return
-     */
-    public int getOriginalHeight()
-    {
-        return mOriginalHeight;
+        return mOriginalSize;
     }
 
     /**
@@ -104,41 +88,21 @@ public class FViewSizeLocker
     }
 
     /**
-     * 返回已锁定的宽度
+     * 返回已锁定的大小
      *
      * @return
      */
-    public int getLockWidth()
+    public int getLockSize()
     {
-        return mLockWidth;
-    }
-
-    /**
-     * 返回已锁定的高度
-     *
-     * @return
-     */
-    public int getLockHeight()
-    {
-        return mLockHeight;
+        return mLockSize;
     }
 
     /**
      * 宽度是否已经被锁住
      */
-    public boolean isWidthLocked()
+    public boolean isLocked()
     {
-        return mIsWidthLocked;
-    }
-
-    /**
-     * 高度是否已经被锁住
-     *
-     * @return
-     */
-    public boolean isHeightLocked()
-    {
-        return mIsHeightLocked;
+        return mIsLocked;
     }
 
     private ViewGroup.LayoutParams getLayoutParams()
@@ -160,112 +124,109 @@ public class FViewSizeLocker
     }
 
     /**
-     * 锁定宽度
+     * 锁定
      *
-     * @param lockWidth 要锁定的宽度
+     * @param size 要锁定的大小
      */
-    public void lockWidth(int lockWidth)
+    public final void lock(int size)
     {
-        final ViewGroup.LayoutParams params = getLayoutParams();
+        final View view = getView();
+        if (view == null)
+            return;
+
+        final ViewGroup.LayoutParams params = view.getLayoutParams();
         if (params == null)
             return;
 
-        if (mIsWidthLocked)
+        if (mIsLocked)
         {
-            //如果已经锁了，直接赋值
-            params.width = lockWidth;
+            mParameter.setLayoutParamsSize(params, size);
         } else
         {
             if (params instanceof LinearLayout.LayoutParams)
             {
-                LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
+                final LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
                 mOriginalWeight = lParams.weight;
                 lParams.weight = 0;
             }
 
-            mOriginalWidth = params.width;
-            params.width = lockWidth;
-            mIsWidthLocked = true;
+            mOriginalSize = mParameter.getLayoutParamsSize(params);
+            mParameter.setLayoutParamsSize(params, size);
+            mIsLocked = true;
         }
+
+        mLockSize = size;
         setLayoutParams(params);
     }
 
     /**
-     * 解锁宽度
+     * 解锁
      */
-    public void unlockWidth()
+    public final void unlock()
     {
-        if (mIsWidthLocked)
-        {
-            ViewGroup.LayoutParams params = getLayoutParams();
-            if (params != null)
-            {
-                if (params instanceof LinearLayout.LayoutParams)
-                {
-                    LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
-                    lParams.weight = mOriginalWeight;
-                }
-                params.width = mOriginalWidth;
-                setLayoutParams(params);
-            }
-            mIsWidthLocked = false;
-        }
-    }
-
-    /**
-     * 锁定高度
-     *
-     * @param lockHeight 要锁定的高度
-     */
-    public void lockHeight(int lockHeight)
-    {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        if (params == null)
-        {
+        if (!mIsLocked)
             return;
+
+        mIsLocked = false;
+
+        final View view = getView();
+        if (view == null)
+            return;
+
+        final ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params == null)
+            return;
+
+        if (params instanceof LinearLayout.LayoutParams)
+        {
+            final LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
+            lParams.weight = mOriginalWeight;
         }
 
-        if (mIsHeightLocked)
-        {
-            //如果已经锁了，直接赋值
-            params.height = lockHeight;
-        } else
-        {
-            if (params instanceof LinearLayout.LayoutParams)
-            {
-                LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
-                mOriginalWeight = lParams.weight;
-                lParams.weight = 0;
-            }
-
-            mOriginalHeight = params.height;
-            params.height = lockHeight;
-            mIsHeightLocked = true;
-        }
+        mParameter.setLayoutParamsSize(params, mOriginalSize);
         setLayoutParams(params);
-
     }
 
-    /**
-     * 解锁高度
-     */
-    public void unlockHeight()
+    public enum Boundary
     {
-        if (mIsHeightLocked)
+        Width,
+        Height
+    }
+
+    private interface Parameter
+    {
+        int getLayoutParamsSize(ViewGroup.LayoutParams params);
+
+        void setLayoutParamsSize(ViewGroup.LayoutParams params, int size);
+    }
+
+    private static final class WidthParameter implements Parameter
+    {
+        @Override
+        public int getLayoutParamsSize(ViewGroup.LayoutParams params)
         {
-            ViewGroup.LayoutParams params = getLayoutParams();
-            if (params != null)
-            {
-                if (params instanceof LinearLayout.LayoutParams)
-                {
-                    LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
-                    lParams.weight = mOriginalWeight;
-                }
-                params.height = mOriginalHeight;
-                setLayoutParams(params);
-            }
-            mIsHeightLocked = false;
+            return params.width;
+        }
+
+        @Override
+        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size)
+        {
+            params.width = size;
         }
     }
 
+    private static final class HeightParameter implements Parameter
+    {
+        @Override
+        public int getLayoutParamsSize(ViewGroup.LayoutParams params)
+        {
+            return params.height;
+        }
+
+        @Override
+        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size)
+        {
+            params.height = size;
+        }
+    }
 }

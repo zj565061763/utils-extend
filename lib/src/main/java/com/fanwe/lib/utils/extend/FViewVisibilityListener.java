@@ -38,7 +38,7 @@ public abstract class FViewVisibilityListener
         {
             if (old != null)
             {
-                final ViewTreeObserver observer = view.getViewTreeObserver();
+                final ViewTreeObserver observer = old.getViewTreeObserver();
                 if (observer.isAlive())
                     observer.removeOnPreDrawListener(mOnPreDrawListener);
             }

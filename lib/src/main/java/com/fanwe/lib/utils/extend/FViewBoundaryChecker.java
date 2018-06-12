@@ -9,22 +9,22 @@ import android.view.ViewGroup;
  * <p>
  * 当view边界小于父布局边界的时候，用设置的值({@link #setSizeWithinBound(int)})来更新view的大小
  */
-public class FViewBoundsChecker
+public class FViewBoundaryChecker
 {
     private final Parameter mParameter;
     private int mSizeWithinBound = ViewGroup.LayoutParams.WRAP_CONTENT;
 
     private boolean mIsDebug;
 
-    public FViewBoundsChecker(Bound bound)
+    public FViewBoundaryChecker(Boundary boundary)
     {
-        if (bound == null)
-            throw new NullPointerException("bound is null");
+        if (boundary == null)
+            throw new NullPointerException("boundary is null");
 
-        mParameter = (bound == Bound.Width) ? new WidthParameter() : new HeightParameter();
+        mParameter = (boundary == Boundary.Width) ? new WidthParameter() : new HeightParameter();
     }
 
-    public final FViewBoundsChecker setDebug(boolean debug)
+    public final FViewBoundaryChecker setDebug(boolean debug)
     {
         mIsDebug = debug;
         return this;
@@ -36,7 +36,7 @@ public class FViewBoundsChecker
      * @param size
      * @return
      */
-    public final FViewBoundsChecker setSizeWithinBound(int size)
+    public final FViewBoundaryChecker setSizeWithinBound(int size)
     {
         mSizeWithinBound = size;
         return this;
@@ -90,14 +90,14 @@ public class FViewBoundsChecker
             if (layoutParamsSize == fixSize && fixSize == 0)
             {
                 if (mIsDebug)
-                    Log.e(FViewBoundsChecker.class.getSimpleName(), "ignored layoutParamsSize == fixSize && fixSize == 0");
+                    Log.e(FViewBoundaryChecker.class.getSimpleName(), "ignored layoutParamsSize == fixSize && fixSize == 0");
             } else
             {
                 final boolean fixed = fixSizeOverBound(view, params, layoutParamsSize, fixSize);
                 if (fixed)
                 {
                     if (mIsDebug)
-                        Log.i(FViewBoundsChecker.class.getSimpleName(), "fixSize over bound:" + getParameter().getLayoutParamsSize(params));
+                        Log.i(FViewBoundaryChecker.class.getSimpleName(), "fixSize over bound:" + getParameter().getLayoutParamsSize(params));
                 }
             }
         } else
@@ -108,7 +108,7 @@ public class FViewBoundsChecker
                 if (fixed)
                 {
                     if (mIsDebug)
-                        Log.e(FViewBoundsChecker.class.getSimpleName(), "fixSize within bound:" + getParameter().getLayoutParamsSize(params));
+                        Log.e(FViewBoundaryChecker.class.getSimpleName(), "fixSize within bound:" + getParameter().getLayoutParamsSize(params));
                 }
             }
         }
@@ -138,7 +138,7 @@ public class FViewBoundsChecker
         return mParameter;
     }
 
-    public enum Bound
+    public enum Boundary
     {
         Width,
         Height

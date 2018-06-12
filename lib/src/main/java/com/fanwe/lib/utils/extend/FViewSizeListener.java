@@ -8,54 +8,15 @@ import java.lang.ref.WeakReference;
 /**
  * 监听view宽高变化
  */
-public class FViewSizeListener
+public abstract class FViewSizeListener
 {
     private WeakReference<View> mView;
     private int mWidth;
     private int mHeight;
 
-    private int mFirstWidth;
-    private int mFirstHeight;
-
-    private Callback mCallback;
-
-    /**
-     * 获得view第一次监听到的宽度
-     *
-     * @return
-     */
-    public int getFirstWidth()
+    public final View getView()
     {
-        return mFirstWidth;
-    }
-
-    /**
-     * 获得view第一次监听到的高度
-     *
-     * @return
-     */
-    public int getFirstHeight()
-    {
-        return mFirstHeight;
-    }
-
-    public View getView()
-    {
-        if (mView != null)
-        {
-            return mView.get();
-        }
-        return null;
-    }
-
-    /**
-     * 设置回调
-     *
-     * @param callback
-     */
-    public void setCallback(Callback callback)
-    {
-        mCallback = callback;
+        return mView == null ? null : mView.get();
     }
 
     /**
@@ -64,24 +25,28 @@ public class FViewSizeListener
      * @param view
      * @return
      */
-    public void setView(View view)
+    public final void setView(View view)
     {
-        final View oldView = getView();
-        if (oldView != view)
+        final View old = getView();
+        if (old != view)
         {
-            if (oldView != null)
+            if (old != null)
             {
-                oldView.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
-                reset();
+                final ViewTreeObserver observer = old.getViewTreeObserver();
+                if (observer.isAlive())
+                    observer.removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
             }
+
+            reset();
+            mView = view == null ? null : new WeakReference<>(view);
 
             if (view != null)
             {
-                mView = new WeakReference<>(view);
-                view.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-            } else
-            {
-                mView = null;
+                final ViewTreeObserver observer = view.getViewTreeObserver();
+                if (observer.isAlive())
+                    observer.addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+
+                process();
             }
         }
     }
@@ -92,22 +57,20 @@ public class FViewSizeListener
         mHeight = 0;
     }
 
-    private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener()
+    private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener()
     {
         @Override
         public void onGlobalLayout()
         {
-            onProcess();
+            process();
         }
     };
 
-    private void onProcess()
+    private void process()
     {
         final View view = getView();
         if (view == null)
-        {
             return;
-        }
 
         final int oldWidth = mWidth;
         final int oldHeight = mHeight;
@@ -118,24 +81,12 @@ public class FViewSizeListener
         if (newWidth != oldWidth)
         {
             mWidth = newWidth;
-
-            //保存第一次测量到的宽度
-            if (mFirstWidth <= 0 && newWidth > 0)
-            {
-                mFirstWidth = newWidth;
-            }
             onWidthChanged(newWidth, oldWidth, view);
         }
 
         if (newHeight != oldHeight)
         {
             mHeight = newHeight;
-
-            //保存第一次测量到的高度
-            if (mFirstHeight <= 0 && newHeight > 0)
-            {
-                mFirstHeight = newHeight;
-            }
             onHeightChanged(newHeight, oldHeight, view);
         }
     }
@@ -150,26 +101,7 @@ public class FViewSizeListener
         return view.getHeight();
     }
 
-    protected void onWidthChanged(int newWidth, int oldWidth, View view)
-    {
-        if (mCallback != null)
-        {
-            mCallback.onWidthChanged(newWidth, oldWidth, view);
-        }
-    }
+    protected abstract void onWidthChanged(int newWidth, int oldWidth, View view);
 
-    protected void onHeightChanged(int newHeight, int oldHeight, View view)
-    {
-        if (mCallback != null)
-        {
-            mCallback.onHeightChanged(newHeight, oldHeight, view);
-        }
-    }
-
-    public interface Callback
-    {
-        void onWidthChanged(int newWidth, int oldWidth, View target);
-
-        void onHeightChanged(int newHeight, int oldHeight, View target);
-    }
+    protected abstract void onHeightChanged(int newHeight, int oldHeight, View view);
 }

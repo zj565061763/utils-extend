@@ -6,9 +6,9 @@ import android.view.View;
 /**
  * 监听view宽高变化
  */
-public class FViewDisplaySizeListener extends FViewSizeListener
+public abstract class FViewDisplaySizeListener extends FViewSizeListener
 {
-    private Rect mRect = new Rect();
+    private final Rect mRect = new Rect();
 
     @Override
     protected int onGetHeight(View view)

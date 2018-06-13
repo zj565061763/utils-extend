@@ -23,7 +23,6 @@ public abstract class FViewSizeListener
      * 设置要监听的view
      *
      * @param view
-     * @return
      */
     public final void setView(View view)
     {

@@ -18,7 +18,6 @@ public class FDurationTrigger
      * 设置两次触发有效的时间间隔
      *
      * @param duration
-     * @return
      */
     public synchronized void setDuration(long duration)
     {
@@ -29,7 +28,6 @@ public class FDurationTrigger
      * 设置最大触发次数
      *
      * @param maxTriggerCount
-     * @return
      */
     public synchronized void setMaxTriggerCount(int maxTriggerCount)
     {

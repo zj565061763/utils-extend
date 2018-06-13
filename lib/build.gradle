@@ -28,7 +28,7 @@ publish {
 
     artifactId = 'utils-extend'
     publishVersion = '1.0.7'
-    desc = 'fanwe utils extend library'
+    desc = 'android utils extend library'
     website = 'https://github.com/zj565061763/utils-extend'
 }
 

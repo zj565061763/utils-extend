@@ -105,24 +105,6 @@ public class FViewSizeLocker
         return mIsLocked;
     }
 
-    private ViewGroup.LayoutParams getLayoutParams()
-    {
-        final View view = getView();
-        if (view == null)
-            return null;
-
-        return view.getLayoutParams();
-    }
-
-    private void setLayoutParams(ViewGroup.LayoutParams params)
-    {
-        final View view = getView();
-        if (view == null)
-            return;
-
-        view.setLayoutParams(params);
-    }
-
     /**
      * 锁定
      *
@@ -156,7 +138,7 @@ public class FViewSizeLocker
         }
 
         mLockSize = size;
-        setLayoutParams(params);
+        view.setLayoutParams(params);
     }
 
     /**
@@ -184,7 +166,7 @@ public class FViewSizeLocker
         }
 
         mParameter.setLayoutParamsSize(params, mOriginalSize);
-        setLayoutParams(params);
+        view.setLayoutParams(params);
     }
 
     public enum Boundary

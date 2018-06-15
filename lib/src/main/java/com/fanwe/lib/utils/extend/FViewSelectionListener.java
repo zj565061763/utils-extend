@@ -50,14 +50,7 @@ public abstract class FViewSelectionListener<T extends View>
         if (mSelected != selected)
         {
             mSelected = selected;
-            view.post(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    onSelectionChanged(selected, view);
-                }
-            });
+            onSelectionChanged(selected, view);
         }
     }
 

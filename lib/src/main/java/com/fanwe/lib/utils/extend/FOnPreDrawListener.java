@@ -72,7 +72,7 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
         if (mIsRegister != register)
         {
             mIsRegister = register;
-            onRegisterStateChanged(register);
+            onRegisterChanged(register);
         }
     }
 
@@ -115,7 +115,7 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
         setRegister(false);
     }
 
-    protected void onRegisterStateChanged(boolean register)
+    protected void onRegisterChanged(boolean register)
     {
     }
 }

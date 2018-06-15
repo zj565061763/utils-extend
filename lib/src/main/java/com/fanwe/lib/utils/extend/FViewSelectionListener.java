@@ -55,11 +55,11 @@ public abstract class FViewSelectionListener<T extends View>
                 @Override
                 public void run()
                 {
-                    onSelectionStateChanged(selected, view);
+                    onSelectionChanged(selected, view);
                 }
             });
         }
     }
 
-    protected abstract void onSelectionStateChanged(boolean selected, T view);
+    protected abstract void onSelectionChanged(boolean selected, T view);
 }

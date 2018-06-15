@@ -48,7 +48,8 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
         @Override
         public void onViewAttachedToWindow(View v)
         {
-            register();
+            if (isRegister())
+                register();
         }
 
         @Override

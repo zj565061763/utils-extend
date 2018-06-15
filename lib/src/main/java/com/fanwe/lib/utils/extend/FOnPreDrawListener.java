@@ -95,7 +95,7 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
     public final void register()
     {
         final ViewTreeObserver observer = getViewTreeObserver();
-        if (observer.isAlive())
+        if (observer != null)
         {
             observer.removeOnPreDrawListener(this);
             observer.addOnPreDrawListener(this);
@@ -109,7 +109,7 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
     public final void unregister()
     {
         final ViewTreeObserver observer = getViewTreeObserver();
-        if (observer.isAlive())
+        if (observer != null)
             observer.removeOnPreDrawListener(this);
 
         setRegister(false);

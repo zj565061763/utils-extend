@@ -25,9 +25,9 @@ public abstract class FViewSelectionListener<T extends View>
     private final FOnPreDrawListener mOnPreDrawListener = new FOnPreDrawListener()
     {
         @Override
-        protected void onStateChanged(boolean register)
+        protected void onRegisterStateChanged(boolean register)
         {
-            super.onStateChanged(register);
+            super.onRegisterStateChanged(register);
             if (register)
                 notifyStateIfNeed();
         }

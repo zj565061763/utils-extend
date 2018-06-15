@@ -13,7 +13,7 @@ import com.fanwe.lib.utils.extend.FViewVisibilityListener;
  */
 public class TestVisibilityActivity extends AppCompatActivity
 {
-    public static final String TAG = TestVisibilityActivity.class.getSimpleName();
+    private static final String TAG = TestVisibilityActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,7 +38,7 @@ public class TestVisibilityActivity extends AppCompatActivity
         @Override
         public void onVisibilityChanged(int visibility, final View view)
         {
-            Log.i(TAG, "visibility:" + visibility);
+            Log.i(TAG, "onVisibilityChanged:" + visibility);
 
             if (visibility != View.VISIBLE)
             {

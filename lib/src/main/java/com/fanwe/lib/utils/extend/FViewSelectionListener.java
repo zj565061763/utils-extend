@@ -9,7 +9,7 @@ import android.view.View;
  */
 public abstract class FViewSelectionListener<T extends View>
 {
-    private boolean mSelected;
+    private boolean mSelected = false;
 
     public final T getView()
     {
@@ -29,18 +29,18 @@ public abstract class FViewSelectionListener<T extends View>
         {
             super.onRegisterChanged(register);
             if (register)
-                notifyStateIfNeed();
+                notifyIfNeed();
         }
 
         @Override
         public boolean onPreDraw()
         {
-            notifyStateIfNeed();
+            notifyIfNeed();
             return true;
         }
     };
 
-    private void notifyStateIfNeed()
+    private void notifyIfNeed()
     {
         final T view = getView();
         if (view == null)
@@ -61,5 +61,5 @@ public abstract class FViewSelectionListener<T extends View>
         }
     }
 
-    protected abstract void onSelectionChanged(boolean selected, T view);
+    public abstract void onSelectionChanged(boolean selected, T view);
 }

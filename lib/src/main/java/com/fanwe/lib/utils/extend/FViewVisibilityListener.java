@@ -10,7 +10,7 @@ public abstract class FViewVisibilityListener
     /**
      * 当前view的visibility状态
      */
-    private int mVisibility;
+    private int mVisibility = View.VISIBLE;
 
     /**
      * 获得设置的view
@@ -36,27 +36,32 @@ public abstract class FViewVisibilityListener
     private final FOnPreDrawListener mOnPreDrawListener = new FOnPreDrawListener()
     {
         @Override
+        protected void onRegisterChanged(boolean register)
+        {
+            super.onRegisterChanged(register);
+            notifyIfNeed();
+        }
+
+        @Override
         public boolean onPreDraw()
         {
-            final View view = getView();
-            if (view != null)
-            {
-                if (mVisibility != view.getVisibility())
-                    notifyVisiblityChanged();
-            }
-
+            notifyIfNeed();
             return true;
         }
     };
 
-    public final void notifyVisiblityChanged()
+    private void notifyIfNeed()
     {
         final View view = getView();
         if (view == null)
             return;
 
-        mVisibility = view.getVisibility();
-        onVisibilityChanged(mVisibility, view);
+        final int visibility = view.getVisibility();
+        if (mVisibility != visibility)
+        {
+            mVisibility = visibility;
+            onVisibilityChanged(visibility, view);
+        }
     }
 
     /**
@@ -65,5 +70,5 @@ public abstract class FViewVisibilityListener
      * @param visibility
      * @param view
      */
-    protected abstract void onVisibilityChanged(int visibility, View view);
+    public abstract void onVisibilityChanged(int visibility, View view);
 }

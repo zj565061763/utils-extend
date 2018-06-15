@@ -36,12 +36,6 @@ public abstract class FViewVisibilityListener
     private final FOnPreDrawListener mOnPreDrawListener = new FOnPreDrawListener()
     {
         @Override
-        protected void onRegisterStateChanged(boolean register)
-        {
-            super.onRegisterStateChanged(register);
-        }
-
-        @Override
         public boolean onPreDraw()
         {
             final View view = getView();

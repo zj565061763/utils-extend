@@ -36,7 +36,7 @@ public class TestVisibilityActivity extends AppCompatActivity
     private final FViewVisibilityListener mViewVisibilityListener = new FViewVisibilityListener()
     {
         @Override
-        protected void onVisibilityChanged(int visibility, final View view)
+        public void onVisibilityChanged(int visibility, final View view)
         {
             Log.i(TAG, "visibility:" + visibility);
 

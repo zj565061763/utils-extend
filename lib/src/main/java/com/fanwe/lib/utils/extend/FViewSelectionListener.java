@@ -28,8 +28,7 @@ public abstract class FViewSelectionListener<T extends View>
         protected void onRegisterChanged(boolean register)
         {
             super.onRegisterChanged(register);
-            if (register)
-                notifyIfNeed();
+            notifyIfNeed();
         }
 
         @Override

@@ -33,9 +33,30 @@ public abstract class FOnPreDrawListener implements ViewTreeObserver.OnPreDrawLi
         if (old != view)
         {
             unregister();
+            if (old != null)
+                old.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
+
             mView = view == null ? null : new WeakReference<>(view);
+
+            if (view != null)
+                view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
         }
     }
+
+    private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
+    {
+        @Override
+        public void onViewAttachedToWindow(View v)
+        {
+            if (isRegister())
+                register();
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(View v)
+        {
+        }
+    };
 
     /**
      * 是否已经注册监听

@@ -1,4 +1,4 @@
-package com.fanwe.utils_extend;
+package com.sd.utils_extend;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.fanwe.lib.utils.extend.FImageCompressor;
-import com.fanwe.lib.utils.extend.FImageGetter;
+import com.sd.lib.utils.extend.FImageCompressor;
+import com.sd.lib.utils.extend.FImageGetter;
 
 import java.io.File;
 

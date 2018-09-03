@@ -1,4 +1,4 @@
-package com.fanwe.lib.utils.extend;
+package com.sd.lib.utils.extend;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;

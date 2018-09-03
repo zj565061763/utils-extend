@@ -1,4 +1,4 @@
-package com.fanwe.utils_extend;
+package com.sd.utils_extend;
 
 import android.app.Application;
 

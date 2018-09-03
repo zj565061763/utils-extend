@@ -1,4 +1,4 @@
-package com.fanwe.lib.utils.extend;
+package com.sd.lib.utils.extend;
 
 import android.app.Activity;
 import android.content.Context;

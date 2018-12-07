@@ -22,28 +22,26 @@ public abstract class FNetRetryWorker extends FRetryWorker
     }
 
     @Override
-    protected final boolean onRetry()
+    protected final void onRetry()
     {
         if (mNetworkReceiver == null)
             throw new RuntimeException("current instance has been destroyed");
 
         if (!mNetworkReceiver.isNetworkConnected())
-            return false;
+            return;
 
-        return onRetryImpl();
+        onRetryImpl();
     }
 
     /**
-     * 执行重试任务
-     *
-     * @return true-发起了一次重试，false-没有发起重试
+     * 执行重试任务（UI线程）
      */
-    protected abstract boolean onRetryImpl();
+    protected abstract void onRetryImpl();
 
     /**
      * 销毁
      */
-    public synchronized void destroy()
+    public final synchronized void destroy()
     {
         stop();
         if (mNetworkReceiver != null)

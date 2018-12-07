@@ -136,7 +136,7 @@ public abstract class FRetryWorker
         {
             // 达到最大重试次数
             stop();
-            onRetryFailedOnMaxRetryCount();
+            onRetryFailedAfterMaxRetryCount();
             return true;
         }
         return false;
@@ -159,5 +159,5 @@ public abstract class FRetryWorker
     /**
      * 达到最大重试次数，并且重试失败
      */
-    protected abstract void onRetryFailedOnMaxRetryCount();
+    protected abstract void onRetryFailedAfterMaxRetryCount();
 }

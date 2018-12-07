@@ -94,12 +94,7 @@ public abstract class FRetryWorker
                     stop();
                 } else
                 {
-                    if (mRetryCount >= mMaxRetryCount)
-                    {
-                        // 达到最大重试次数
-                        stop();
-                        onRetryFailedOnMaxRetryCount();
-                    } else
+                    if (!isMaxRetry())
                     {
                         mRetryCount++;
                         onRetry();
@@ -128,8 +123,23 @@ public abstract class FRetryWorker
         if (!mIsStarted)
             return;
 
+        if (isMaxRetry())
+            return;
+
         mHandler.removeCallbacks(mRetryRunnable);
         mHandler.postDelayed(mRetryRunnable, delayMillis);
+    }
+
+    private boolean isMaxRetry()
+    {
+        if (mRetryCount >= mMaxRetryCount)
+        {
+            // 达到最大重试次数
+            stop();
+            onRetryFailedOnMaxRetryCount();
+            return true;
+        }
+        return false;
     }
 
     /**

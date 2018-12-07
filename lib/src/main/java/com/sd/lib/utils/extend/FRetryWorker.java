@@ -70,9 +70,6 @@ public abstract class FRetryWorker
      */
     public final synchronized void start()
     {
-        if (mIsStarted)
-            return;
-
         mIsStarted = true;
         mIsRetrySuccess = false;
         mRetryCount = 0;
@@ -117,7 +114,7 @@ public abstract class FRetryWorker
     }
 
     /**
-     * 重试，只有调用{@link #start()}之后，此方法才有效
+     * 重试，只有{@link #isStarted()}为true，此方法才有效
      *
      * @param delayMillis 延迟多少毫秒
      */

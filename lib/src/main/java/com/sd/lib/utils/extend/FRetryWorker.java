@@ -70,6 +70,8 @@ public abstract class FRetryWorker
      */
     public final synchronized void start()
     {
+        stop();
+
         mIsStarted = true;
         mIsRetrySuccess = false;
         mRetryCount = 0;

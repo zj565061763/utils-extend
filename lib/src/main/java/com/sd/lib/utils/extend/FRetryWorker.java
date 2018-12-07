@@ -84,19 +84,21 @@ public abstract class FRetryWorker
                 if (mIsRetrySuccess)
                 {
                     stop();
-                    return;
-                }
-
-                if (mRetryCount >= mMaxRetryCount && !mIsRetrySuccess)
+                } else
                 {
-                    // 达到最大重试次数
-                    stop();
-                    onRetryFailedOnMaxRetryCount();
-                    return;
+                    if (mRetryCount >= mMaxRetryCount)
+                    {
+                        // 达到最大重试次数
+                        stop();
+                        onRetryFailedOnMaxRetryCount();
+                    } else
+                    {
+                        if (onRetry())
+                            mRetryCount++;
+                        else
+                            stop();
+                    }
                 }
-
-                onRetry();
-                mRetryCount++;
             }
         }
     };
@@ -133,8 +135,10 @@ public abstract class FRetryWorker
 
     /**
      * 执行重试任务
+     *
+     * @return true-发起了一次重试，false-没有发起重试
      */
-    protected abstract void onRetry();
+    protected abstract boolean onRetry();
 
     /**
      * 达到最大重试次数，并且重试失败

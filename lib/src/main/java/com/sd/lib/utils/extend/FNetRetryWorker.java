@@ -27,10 +27,32 @@ public abstract class FNetRetryWorker extends FRetryWorker
         if (mNetworkReceiver == null)
             throw new RuntimeException("current instance has been destroyed");
 
-        if (!mNetworkReceiver.isNetworkConnected())
-            return;
+        final NetworkInfo networkInfo = mNetworkReceiver.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+        {
+            onRetryImpl();
+        } else
+        {
+            onRetryWhenNetworkDisconnected();
+        }
+    }
 
-        onRetryImpl();
+    /**
+     * 重试的时候网络不可用回调
+     */
+    protected void onRetryWhenNetworkDisconnected()
+    {
+    }
+
+    /**
+     * 网络可用回调
+     *
+     * @param networkInfo
+     */
+    protected void onNetworkConnected(NetworkInfo networkInfo)
+    {
+        if (!isRetrySuccess())
+            retry(0);
     }
 
     /**
@@ -65,19 +87,18 @@ public abstract class FNetRetryWorker extends FRetryWorker
         {
             if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
             {
-                if (isNetworkConnected())
+                final NetworkInfo networkInfo = getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected())
                 {
-                    if (!isRetrySuccess())
-                        retry(0);
+                    onNetworkConnected(networkInfo);
                 }
             }
         }
 
-        public boolean isNetworkConnected()
+        public NetworkInfo getActiveNetworkInfo()
         {
             final ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-            final NetworkInfo info = manager.getActiveNetworkInfo();
-            return info == null ? false : info.isConnected();
+            return manager.getActiveNetworkInfo();
         }
 
         public void register()

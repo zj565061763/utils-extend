@@ -136,7 +136,10 @@ public abstract class FRetryWorker
         {
             // 达到最大重试次数
             stop();
-            onRetryFailedAfterMaxRetryCount();
+
+            if (!mIsRetrySuccess)
+                onRetryFailedAfterMaxRetryCount();
+
             return true;
         }
         return false;

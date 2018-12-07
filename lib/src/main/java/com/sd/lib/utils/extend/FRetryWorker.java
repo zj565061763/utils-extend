@@ -9,33 +9,50 @@ import android.os.Looper;
 public abstract class FRetryWorker
 {
     /**
+     * 最大重试次数
+     */
+    private final int mMaxRetryCount;
+
+    /**
      * 重试是否已经开始
      */
     private boolean mIsStarted = false;
     /**
      * 是否重试成功
      */
-    private boolean mIsRetrySuccess = false;
+    private boolean mIsRetrySuccess = true;
     /**
      * 已重试次数
      */
     private int mRetryCount = 0;
 
-    /**
-     * 最大重试次数，默认3次
-     */
-    private int mMaxRetryCount = 3;
-
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    /**
-     * 设置最大重试次数
-     *
-     * @param maxRetryCount
-     */
-    public synchronized void setMaxRetryCount(int maxRetryCount)
+    public FRetryWorker(int maxRetryCount)
     {
+        if (maxRetryCount <= 0)
+            throw new IllegalArgumentException("maxRetryCount must > 0");
         mMaxRetryCount = maxRetryCount;
+    }
+
+    /**
+     * 是否已经开始重试
+     *
+     * @return
+     */
+    public final boolean isStarted()
+    {
+        return mIsStarted;
+    }
+
+    /**
+     * 是否重试成功
+     *
+     * @return
+     */
+    public final boolean isRetrySuccess()
+    {
+        return mIsRetrySuccess;
     }
 
     /**
@@ -43,25 +60,15 @@ public abstract class FRetryWorker
      *
      * @return
      */
-    public int getRetryCount()
+    public final int getRetryCount()
     {
         return mRetryCount;
     }
 
     /**
-     * 是否重试成功
-     *
-     * @return
-     */
-    public boolean isRetrySuccess()
-    {
-        return mIsRetrySuccess;
-    }
-
-    /**
      * 开始重试
      */
-    public synchronized void start()
+    public final synchronized void start()
     {
         if (mIsStarted)
             return;
@@ -70,8 +77,7 @@ public abstract class FRetryWorker
         mIsRetrySuccess = false;
         mRetryCount = 0;
 
-        mHandler.removeCallbacks(mRetryRunnable);
-        mRetryRunnable.run();
+        retry(0);
     }
 
     private final Runnable mRetryRunnable = new Runnable()
@@ -95,8 +101,6 @@ public abstract class FRetryWorker
                     {
                         if (onRetry())
                             mRetryCount++;
-                        else
-                            stop();
                     }
                 }
             }
@@ -106,28 +110,34 @@ public abstract class FRetryWorker
     /**
      * 停止重试
      */
-    public synchronized void stop()
+    private void stop()
     {
         mIsStarted = false;
         mHandler.removeCallbacks(mRetryRunnable);
     }
 
     /**
-     * 延迟多少毫秒后重试，调用开始后，此方法才有效
+     * 重试，只有调用{@link #start()}之后，此方法才有效
+     *
+     * @param delayMillis 延迟多少毫秒
      */
-    public synchronized void retryDelayed(long delayMillis)
+    public final synchronized void retry(long delayMillis)
     {
         if (!mIsStarted)
             return;
 
         mHandler.removeCallbacks(mRetryRunnable);
-        mHandler.postDelayed(mRetryRunnable, delayMillis);
+
+        if (delayMillis <= 0)
+            mRetryRunnable.run();
+        else
+            mHandler.postDelayed(mRetryRunnable, delayMillis);
     }
 
     /**
      * 设置重试成功
      */
-    public synchronized void setRetrySuccess()
+    public final synchronized void setRetrySuccess()
     {
         mIsRetrySuccess = true;
         stop();

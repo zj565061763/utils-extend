@@ -126,11 +126,7 @@ public abstract class FRetryWorker
             return;
 
         mHandler.removeCallbacks(mRetryRunnable);
-
-        if (delayMillis <= 0)
-            mRetryRunnable.run();
-        else
-            mHandler.postDelayed(mRetryRunnable, delayMillis);
+        mHandler.postDelayed(mRetryRunnable, delayMillis);
     }
 
     /**
@@ -143,7 +139,7 @@ public abstract class FRetryWorker
     }
 
     /**
-     * 执行重试任务
+     * 执行重试任务（UI线程）
      *
      * @return true-发起了一次重试，false-没有发起重试
      */

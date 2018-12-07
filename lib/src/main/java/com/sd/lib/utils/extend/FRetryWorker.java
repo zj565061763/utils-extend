@@ -72,7 +72,7 @@ public abstract class FRetryWorker
     {
         stop();
 
-        mIsStarted = true;
+        setStarted(true);
         mIsRetrySuccess = false;
         mRetryCount = 0;
 
@@ -109,8 +109,17 @@ public abstract class FRetryWorker
      */
     public final synchronized void stop()
     {
-        mIsStarted = false;
+        setStarted(false);
         mHandler.removeCallbacks(mRetryRunnable);
+    }
+
+    private void setStarted(boolean started)
+    {
+        if (mIsStarted != started)
+        {
+            mIsStarted = started;
+            onStateChanged(started);
+        }
     }
 
     /**
@@ -152,6 +161,10 @@ public abstract class FRetryWorker
     {
         mIsRetrySuccess = true;
         stop();
+    }
+
+    protected void onStateChanged(boolean isStarted)
+    {
     }
 
     /**

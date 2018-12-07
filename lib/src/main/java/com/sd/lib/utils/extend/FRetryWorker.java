@@ -22,7 +22,7 @@ public abstract class FRetryWorker
      */
     private boolean mIsRetrySuccess = true;
     /**
-     * 已重试次数
+     * 当前第几次重试
      */
     private int mRetryCount = 0;
 
@@ -56,7 +56,7 @@ public abstract class FRetryWorker
     }
 
     /**
-     * 返回已重试次数
+     * 返回当前第几次重试
      *
      * @return
      */
@@ -98,8 +98,8 @@ public abstract class FRetryWorker
                         onRetryFailedOnMaxRetryCount();
                     } else
                     {
-                        if (onRetry())
-                            mRetryCount++;
+                        mRetryCount++;
+                        onRetry();
                     }
                 }
             }
@@ -140,10 +140,8 @@ public abstract class FRetryWorker
 
     /**
      * 执行重试任务（UI线程）
-     *
-     * @return true-发起了一次重试，false-没有发起重试
      */
-    protected abstract boolean onRetry();
+    protected abstract void onRetry();
 
     /**
      * 达到最大重试次数，并且重试失败

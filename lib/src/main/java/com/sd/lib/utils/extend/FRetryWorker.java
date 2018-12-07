@@ -109,7 +109,7 @@ public abstract class FRetryWorker
     /**
      * 停止重试
      */
-    private void stop()
+    public final synchronized void stop()
     {
         mIsStarted = false;
         mHandler.removeCallbacks(mRetryRunnable);
@@ -120,7 +120,7 @@ public abstract class FRetryWorker
      *
      * @param delayMillis 延迟多少毫秒
      */
-    public final synchronized void retry(long delayMillis)
+    protected final synchronized void retry(long delayMillis)
     {
         if (!mIsStarted)
             return;

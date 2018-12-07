@@ -86,6 +86,9 @@ public abstract class FRetryWorker
         {
             synchronized (FRetryWorker.this)
             {
+                if (!mIsStarted)
+                    return;
+
                 if (mIsRetrySuccess)
                 {
                     stop();

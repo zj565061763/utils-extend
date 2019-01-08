@@ -16,15 +16,15 @@ public abstract class FRetryWorker
     /**
      * 重试是否已经开始
      */
-    private boolean mIsStarted = false;
+    private boolean mIsStarted;
     /**
      * 是否重试成功
      */
-    private boolean mIsRetrySuccess = true;
+    private boolean mIsRetrySuccess;
     /**
      * 当前第几次重试
      */
-    private int mRetryCount = 0;
+    private int mRetryCount;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -70,7 +70,8 @@ public abstract class FRetryWorker
      */
     public final synchronized void start()
     {
-        stop();
+        if (mIsStarted)
+            return;
 
         setStarted(true);
         mIsRetrySuccess = false;

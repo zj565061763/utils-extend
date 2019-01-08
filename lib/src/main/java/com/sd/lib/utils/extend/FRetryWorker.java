@@ -80,6 +80,23 @@ public abstract class FRetryWorker
         retry(0);
     }
 
+    /**
+     * 重试，只有{@link #isStarted()}为true，此方法才有效
+     *
+     * @param delayMillis 延迟多少毫秒
+     */
+    protected final synchronized void retry(long delayMillis)
+    {
+        if (!mIsStarted)
+            return;
+
+        if (isMaxRetry())
+            return;
+
+        mHandler.removeCallbacks(mRetryRunnable);
+        mHandler.postDelayed(mRetryRunnable, delayMillis);
+    }
+
     private final Runnable mRetryRunnable = new Runnable()
     {
         @Override
@@ -105,41 +122,6 @@ public abstract class FRetryWorker
         }
     };
 
-    /**
-     * 停止重试
-     */
-    public final synchronized void stop()
-    {
-        setStarted(false);
-        mHandler.removeCallbacks(mRetryRunnable);
-    }
-
-    private void setStarted(boolean started)
-    {
-        if (mIsStarted != started)
-        {
-            mIsStarted = started;
-            onStateChanged(started);
-        }
-    }
-
-    /**
-     * 重试，只有{@link #isStarted()}为true，此方法才有效
-     *
-     * @param delayMillis 延迟多少毫秒
-     */
-    protected final synchronized void retry(long delayMillis)
-    {
-        if (!mIsStarted)
-            return;
-
-        if (isMaxRetry())
-            return;
-
-        mHandler.removeCallbacks(mRetryRunnable);
-        mHandler.postDelayed(mRetryRunnable, delayMillis);
-    }
-
     private boolean isMaxRetry()
     {
         if (mRetryCount >= mMaxRetryCount)
@@ -156,12 +138,30 @@ public abstract class FRetryWorker
     }
 
     /**
+     * 停止重试
+     */
+    public final synchronized void stop()
+    {
+        setStarted(false);
+        mHandler.removeCallbacks(mRetryRunnable);
+    }
+
+    /**
      * 设置重试成功
      */
     public final synchronized void setRetrySuccess()
     {
         mIsRetrySuccess = true;
         stop();
+    }
+
+    private void setStarted(boolean started)
+    {
+        if (mIsStarted != started)
+        {
+            mIsStarted = started;
+            onStateChanged(started);
+        }
     }
 
     protected void onStateChanged(boolean isStarted)

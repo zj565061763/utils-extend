@@ -18,10 +18,6 @@ public abstract class FRetryWorker
      */
     private boolean mIsStarted;
     /**
-     * 是否重试成功
-     */
-    private boolean mIsRetrySuccess;
-    /**
      * 当前第几次重试
      */
     private int mRetryCount;
@@ -46,16 +42,6 @@ public abstract class FRetryWorker
     }
 
     /**
-     * 是否重试成功
-     *
-     * @return
-     */
-    public final boolean isRetrySuccess()
-    {
-        return mIsRetrySuccess;
-    }
-
-    /**
      * 返回当前第几次重试
      *
      * @return
@@ -73,9 +59,8 @@ public abstract class FRetryWorker
         if (mIsStarted)
             return;
 
-        setStarted(true);
-        mIsRetrySuccess = false;
         mRetryCount = 0;
+        setStarted(true);
 
         retry(0);
     }
@@ -107,17 +92,11 @@ public abstract class FRetryWorker
                 if (!mIsStarted)
                     return;
 
-                if (mIsRetrySuccess)
-                {
-                    stop();
-                } else
-                {
-                    if (!isMaxRetry())
-                    {
-                        mRetryCount++;
-                        onRetry();
-                    }
-                }
+                if (isMaxRetry())
+                    return;
+
+                mRetryCount++;
+                onRetry();
             }
         }
     };
@@ -128,10 +107,7 @@ public abstract class FRetryWorker
         {
             // 达到最大重试次数
             stop();
-
-            if (!mIsRetrySuccess)
-                onRetryFailedAfterMaxRetryCount();
-
+            onRetryMaxCount();
             return true;
         }
         return false;
@@ -142,17 +118,8 @@ public abstract class FRetryWorker
      */
     public final synchronized void stop()
     {
-        setStarted(false);
         mHandler.removeCallbacks(mRetryRunnable);
-    }
-
-    /**
-     * 设置重试成功
-     */
-    public final synchronized void setRetrySuccess()
-    {
-        mIsRetrySuccess = true;
-        stop();
+        setStarted(false);
     }
 
     private void setStarted(boolean started)
@@ -174,7 +141,7 @@ public abstract class FRetryWorker
     protected abstract void onRetry();
 
     /**
-     * 达到最大重试次数，并且重试失败
+     * 达到最大重试次数
      */
-    protected abstract void onRetryFailedAfterMaxRetryCount();
+    protected abstract void onRetryMaxCount();
 }

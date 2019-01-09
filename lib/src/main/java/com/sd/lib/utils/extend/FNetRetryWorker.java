@@ -51,8 +51,7 @@ public abstract class FNetRetryWorker extends FRetryWorker
      */
     protected void onNetworkConnected(NetworkInfo networkInfo)
     {
-        if (!isRetrySuccess())
-            retry(0);
+        retry(0);
     }
 
     /**

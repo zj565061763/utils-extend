@@ -101,7 +101,12 @@ public abstract class FRetryWorker
         }
     };
 
-    private boolean isMaxRetry()
+    /**
+     * 是否达到最大重试次数，如果达到会停止重试，并回调{@link #onRetryMaxCount()}方法
+     *
+     * @return true-达到最大次数
+     */
+    protected final synchronized boolean isMaxRetry()
     {
         if (mRetryCount >= mMaxRetryCount)
         {
@@ -119,6 +124,7 @@ public abstract class FRetryWorker
     public final synchronized void stop()
     {
         mHandler.removeCallbacks(mRetryRunnable);
+        mRetryCount = 0;
         setStarted(false);
     }
 
@@ -143,5 +149,7 @@ public abstract class FRetryWorker
     /**
      * 达到最大重试次数
      */
-    protected abstract void onRetryMaxCount();
+    protected void onRetryMaxCount()
+    {
+    }
 }

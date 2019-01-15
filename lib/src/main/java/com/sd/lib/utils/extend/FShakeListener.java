@@ -10,7 +10,7 @@ import android.hardware.SensorManager;
 /**
  * 摇一摇监听
  */
-public class FShakeListener implements SensorEventListener
+public class FShakeListener
 {
     private static final int ACC_SHAKE = 19;
     /**
@@ -42,66 +42,68 @@ public class FShakeListener implements SensorEventListener
 
     public void setCallback(Callback callback)
     {
-        this.mCallback = callback;
+        mCallback = callback;
     }
 
     public void start()
     {
-        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        stop();
+        mSensorManager.registerListener(mSensorEventListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void stop()
     {
-        mSensorManager.unregisterListener(this);
+        mSensorManager.unregisterListener(mSensorEventListener);
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event)
+    private final SensorEventListener mSensorEventListener = new SensorEventListener()
     {
-        long currentTime = System.currentTimeMillis();
-        long deltaTime = currentTime - mLastSensorChangedTime;
-        if (deltaTime < DURATION_CALCULATE)
+        @Override
+        public void onSensorChanged(SensorEvent event)
         {
-            return;
+            final long currentTime = System.currentTimeMillis();
+            final long deltaTime = currentTime - mLastSensorChangedTime;
+
+            if (deltaTime < DURATION_CALCULATE)
+                return;
+
+            mLastSensorChangedTime = currentTime;
+
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            float deltaX = x - mLastX;
+            float deltaY = y - mLastY;
+            float deltaZ = z - mLastZ;
+
+            mLastX = x;
+            mLastY = y;
+            mLastZ = z;
+
+            if (Math.abs(deltaX) >= ACC_SHAKE || Math.abs(deltaY) >= ACC_SHAKE || Math.abs(deltaZ) >= ACC_SHAKE)
+            {
+                notifyCallback();
+            }
         }
-        mLastSensorChangedTime = currentTime;
 
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
-
-        float deltaX = x - mLastX;
-        float deltaY = y - mLastY;
-        float deltaZ = z - mLastZ;
-
-        mLastX = x;
-        mLastY = y;
-        mLastZ = z;
-
-        if (Math.abs(deltaX) >= ACC_SHAKE || Math.abs(deltaY) >= ACC_SHAKE || Math.abs(deltaZ) >= ACC_SHAKE)
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy)
         {
-            notifyCallback();
         }
-    }
+    };
 
     private void notifyCallback()
     {
-        long current = System.currentTimeMillis();
+        final long current = System.currentTimeMillis();
+
         if (current - mLastNotifyTime < DURATION_NOTIFY)
-        {
             return;
-        }
+
         mLastNotifyTime = current;
 
         if (mCallback != null)
-        {
             mCallback.onShake();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy)
-    {
     }
 
     public interface Callback

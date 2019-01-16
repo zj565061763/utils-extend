@@ -4,8 +4,9 @@ import android.os.Handler;
 import android.os.Looper;
 
 /**
- * 延迟执行Runnable
+ * 用{@link FDelayTask}替代
  */
+@Deprecated
 public abstract class FDelayRunnable implements Runnable
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());

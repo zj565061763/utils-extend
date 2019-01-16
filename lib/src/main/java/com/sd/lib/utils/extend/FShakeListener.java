@@ -22,8 +22,8 @@ public class FShakeListener
      */
     private static final int DURATION_NOTIFY = 500;
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
+    private final SensorManager mSensorManager;
+    private final Sensor mSensor;
 
     private float mLastX;
     private float mLastY;

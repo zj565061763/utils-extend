@@ -16,10 +16,13 @@ public abstract class FDelayTask
      */
     public final synchronized void runDelay(long delay)
     {
+        if (delay < 0)
+            delay = 0;
+
         removeDelay();
         MAIN_HANDLER.postDelayed(mRunnable, delay);
         mPost = true;
-        onPost();
+        onPost(delay);
     }
 
     /**
@@ -77,7 +80,7 @@ public abstract class FDelayTask
 
     protected abstract void onRun();
 
-    protected void onPost()
+    protected void onPost(long delay)
     {
     }
 

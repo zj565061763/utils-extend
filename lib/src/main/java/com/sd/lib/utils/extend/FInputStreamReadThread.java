@@ -1,5 +1,6 @@
 package com.sd.lib.utils.extend;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -29,22 +30,27 @@ public abstract class FInputStreamReadThread extends Thread
 
         while (!isInterrupted())
         {
+            int readSize = -1;
+            Exception exception = null;
+
             try
             {
-                final int readSize = mInputStream.read(mBuffer);
-                final long sleepTime = onReadData(mBuffer, readSize);
-
-                if (sleepTime > 0)
-                    sleep(sleepTime);
-
-            } catch (Exception e)
+                readSize = mInputStream.read(mBuffer);
+            } catch (IOException e)
             {
-                if (e instanceof InterruptedException)
+                exception = e;
+            }
+
+            final long sleepTime = exception == null ? onReadData(mBuffer, readSize) : onReadError(exception);
+
+            if (sleepTime > 0)
+            {
+                try
                 {
-                    return;
-                } else
+                    sleep(sleepTime);
+                } catch (InterruptedException e)
                 {
-                    onReadError(e);
+                    break;
                 }
             }
         }
@@ -63,6 +69,7 @@ public abstract class FInputStreamReadThread extends Thread
      * 读取异常
      *
      * @param e
+     * @return 返回线程睡眠时间，睡眠多久后进行下一次循环
      */
-    protected abstract void onReadError(Exception e);
+    protected abstract long onReadError(Exception e);
 }

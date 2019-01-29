@@ -16,6 +16,10 @@ public abstract class FInputStreamReadThread extends Thread
             throw new NullPointerException();
 
         mInputStream = inputStream;
+
+        if (config == null)
+            config = new ReadConfig();
+
         mReadConfig = config;
     }
 

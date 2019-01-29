@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
-        protected void onPost()
+        protected void onPost(long delay)
         {
-            super.onPost();
-            Log.i(TAG, "onPost");
+            super.onPost(delay);
+            Log.i(TAG, "onPost:" + delay);
         }
 
         @Override

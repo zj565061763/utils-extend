@@ -8,19 +8,18 @@ import java.io.InputStream;
 public abstract class FInputStreamReadThread extends Thread
 {
     private final InputStream mInputStream;
-    private ReadConfig mReadConfig;
+    private final byte[] mBuffer;
 
-    public FInputStreamReadThread(InputStream inputStream, ReadConfig config)
+    public FInputStreamReadThread(InputStream inputStream, int bufferSize)
     {
         if (inputStream == null)
             throw new NullPointerException();
 
+        if (bufferSize <= 0)
+            throw new IllegalArgumentException();
+
         mInputStream = inputStream;
-
-        if (config == null)
-            config = new ReadConfig();
-
-        mReadConfig = config;
+        mBuffer = new byte[bufferSize];
     }
 
     @Override
@@ -32,16 +31,12 @@ public abstract class FInputStreamReadThread extends Thread
         {
             try
             {
-                final byte[] buffer = mReadConfig.mBuffer;
-                final int readSize = mInputStream.read(buffer);
-                onReadData(buffer, readSize);
+                final int readSize = mInputStream.read(mBuffer);
+                final long sleepTime = onReadData(mBuffer, readSize);
 
-                if (readSize < 0)
-                {
-                    final long sleepTime = mReadConfig.mSleepTime;
-                    if (sleepTime > 0)
-                        sleep(sleepTime);
-                }
+                if (sleepTime > 0)
+                    sleep(sleepTime);
+
             } catch (Exception e)
             {
                 if (e instanceof InterruptedException)
@@ -60,8 +55,9 @@ public abstract class FInputStreamReadThread extends Thread
      *
      * @param data
      * @param readSize
+     * @return 返回线程睡眠时间，睡眠多久后进行下一次循环
      */
-    protected abstract void onReadData(byte[] data, int readSize);
+    protected abstract long onReadData(byte[] data, int readSize);
 
     /**
      * 读取异常
@@ -69,36 +65,4 @@ public abstract class FInputStreamReadThread extends Thread
      * @param e
      */
     protected abstract void onReadError(Exception e);
-
-    /**
-     * 读取配置
-     */
-    public static class ReadConfig
-    {
-        /**
-         * 用于接收读取数据的字节数组
-         */
-        public final byte[] mBuffer;
-        /**
-         * 如果当次没读取到数据，睡眠多长时间
-         */
-        public final long mSleepTime;
-
-        public ReadConfig()
-        {
-            this(64, 0);
-        }
-
-        public ReadConfig(int bufferSize, long sleepTime)
-        {
-            if (bufferSize <= 0)
-                throw new IllegalArgumentException();
-
-            if (sleepTime < 0)
-                throw new IllegalArgumentException();
-
-            mBuffer = new byte[bufferSize];
-            mSleepTime = sleepTime;
-        }
-    }
 }

@@ -5,20 +5,9 @@ import android.os.CountDownTimer;
 /**
  * 倒计时类
  */
-public class FCountDownTimer
+public abstract class FCountDownTimer
 {
     private CountDownTimer mTimer;
-    private Callback mCallback;
-
-    /**
-     * 设置回调对象
-     *
-     * @param callback
-     */
-    public synchronized void setCallback(Callback callback)
-    {
-        mCallback = callback;
-    }
 
     /**
      * 开始倒计时
@@ -36,16 +25,14 @@ public class FCountDownTimer
                 @Override
                 public void onTick(long millisUntilFinished)
                 {
-                    if (mCallback != null)
-                        mCallback.onTick(millisUntilFinished);
+                    FCountDownTimer.this.onTick(millisUntilFinished);
                 }
 
                 @Override
                 public void onFinish()
                 {
                     stop();
-                    if (mCallback != null)
-                        mCallback.onFinish();
+                    FCountDownTimer.this.onFinish();
                 }
             };
             mTimer.start();
@@ -74,10 +61,7 @@ public class FCountDownTimer
         return mTimer != null;
     }
 
-    public interface Callback
-    {
-        void onTick(long leftTime);
+    protected abstract void onTick(long leftTime);
 
-        void onFinish();
-    }
+    protected abstract void onFinish();
 }

@@ -137,7 +137,7 @@ public abstract class FRetryWorker
         }
     }
 
-    protected void onStateChanged(boolean isStarted)
+    protected void onStateChanged(boolean started)
     {
     }
 

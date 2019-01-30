@@ -1,47 +1,31 @@
 package com.sd.lib.utils.extend;
 
-public class FDurationTrigger
+public abstract class FDurationTrigger
 {
     /**
-     * 两次触发有效的时间间隔
+     * 满足触发条件的触发次数
      */
-    private long mDuration = 2000;
-    /**
-     * 最大触发次数
-     */
-    private int mMaxTriggerCount = 2;
-    private int mCurrentTriggerCount;
+    private final int mTargetTriggerCount;
 
+    private int mCurrentTriggerCount;
     private long mLastTriggerTime;
 
-    /**
-     * 设置两次触发有效的时间间隔
-     *
-     * @param duration
-     */
-    public synchronized void setDuration(long duration)
+    public FDurationTrigger(int targetTriggerCount)
     {
-        mDuration = duration;
+        if (targetTriggerCount <= 0)
+            throw new IllegalArgumentException("targetTriggerCount must be > 0");
+
+        mTargetTriggerCount = targetTriggerCount;
     }
 
     /**
-     * 设置最大触发次数
-     *
-     * @param maxTriggerCount
-     */
-    public synchronized void setMaxTriggerCount(int maxTriggerCount)
-    {
-        mMaxTriggerCount = maxTriggerCount;
-    }
-
-    /**
-     * 返回两次触发有效的时间间隔
+     * 返回满足触发条件的触发次数
      *
      * @return
      */
-    public long getDuration()
+    public final int getTargetTriggerCount()
     {
-        return mDuration;
+        return mTargetTriggerCount;
     }
 
     /**
@@ -49,19 +33,9 @@ public class FDurationTrigger
      *
      * @return
      */
-    public int getCurrentTriggerCount()
+    public final int getCurrentTriggerCount()
     {
         return mCurrentTriggerCount;
-    }
-
-    /**
-     * 返回限制的最大触发次数
-     *
-     * @return
-     */
-    public int getMaxTriggerCount()
-    {
-        return mMaxTriggerCount;
     }
 
     /**
@@ -69,40 +43,50 @@ public class FDurationTrigger
      *
      * @return
      */
-    public int getLeftTriggerCount()
+    public final int getLeftTriggerCount()
     {
-        int count = mMaxTriggerCount - mCurrentTriggerCount;
-        if (count < 0)
-        {
-            count = 0;
-        }
-        return count;
+        final int count = mTargetTriggerCount - mCurrentTriggerCount;
+        return count < 0 ? 0 : count;
     }
 
     /**
-     * 重置触发次数
+     * 重置
      */
-    public synchronized void resetTriggerCount()
+    public synchronized final void reset()
     {
         mCurrentTriggerCount = 0;
+        mLastTriggerTime = 0;
     }
 
     /**
      * 触发逻辑
      *
+     * @param triggerMaxDuration 本次触发和上一次触发之间的最大有效间隔
      * @return true-成功触发，false-还未超过最大触发次数
      */
-    public synchronized boolean trigger()
+    public synchronized boolean trigger(long triggerMaxDuration)
     {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - mLastTriggerTime > mDuration)
+        if (triggerMaxDuration <= 0)
+            throw new IllegalArgumentException("triggerMaxDuration must be > 0");
+
+        if (mLastTriggerTime < 0)
+            throw new RuntimeException();
+
+        final long currentTime = System.currentTimeMillis();
+
+        if (mLastTriggerTime == 0 || (currentTime - mLastTriggerTime <= triggerMaxDuration))
         {
-            mCurrentTriggerCount = 1;
-        } else
-        {
+            mLastTriggerTime = currentTime;
+
             mCurrentTriggerCount++;
+            if (mCurrentTriggerCount >= mTargetTriggerCount)
+                onMaxTrigger();
+
+            return true;
         }
-        mLastTriggerTime = currentTime;
-        return mCurrentTriggerCount >= mMaxTriggerCount;
+
+        return false;
     }
+
+    protected abstract void onMaxTrigger();
 }

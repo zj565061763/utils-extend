@@ -3,72 +3,76 @@ package com.sd.lib.utils.extend;
 /**
  * 循环线程
  */
-public abstract class FLoopThread extends Thread
+public abstract class FLoopThread
 {
-    private boolean mIsPaused = false;
+    private InternalThread mThread;
+    private boolean mIsStarted = false;
 
     /**
-     * 是否处于暂停循环状态
+     * 是否已经开始
      *
      * @return
      */
-    public synchronized final boolean isPaused()
+    public final boolean isStarted()
     {
-        return mIsPaused;
+        return mIsStarted;
     }
 
-    /**
-     * 暂停循环
-     */
-    public synchronized final void pauseLoop()
+    public synchronized final void start()
     {
-        mIsPaused = true;
-    }
-
-    /**
-     * 恢复循环
-     */
-    public synchronized final void resumeLoop()
-    {
-        mIsPaused = false;
-        notifyAll();
+        if (mThread == null)
+        {
+            mThread = new InternalThread();
+            mThread.start();
+            setStarted(true);
+        }
     }
 
     /**
      * 停止循环
      */
-    public final void stopLoop()
+    public synchronized final void stop()
     {
-        interrupt();
+        if (mThread != null)
+        {
+            mThread.interrupt();
+            mThread = null;
+            setStarted(false);
+        }
     }
 
-    @Override
-    public final void run()
+    private void setStarted(boolean started)
     {
-        super.run();
-        try
+        if (mIsStarted != started)
         {
-            onStart();
+            mIsStarted = started;
+            onStateChanged(started);
+        }
+    }
+
+    /**
+     * 循环是否开始状态变化回调
+     *
+     * @param started
+     */
+    protected void onStateChanged(boolean started)
+    {
+    }
+
+    /**
+     * 每次循环触发
+     *
+     * @return 返回线程休眠多久后进行下一次循环
+     */
+    protected abstract long onLoop();
+
+    private final class InternalThread extends Thread
+    {
+        @Override
+        public void run()
+        {
             while (!isInterrupted())
             {
-                if (mIsPaused)
-                {
-                    onPaused();
-
-                    try
-                    {
-                        synchronized (this)
-                        {
-                            wait();
-                        }
-                    } catch (InterruptedException e)
-                    {
-                        break;
-                    }
-
-                    onResume();
-                }
-
                 final long sleepTime = onLoop();
 
                 if (sleepTime > 0)
@@ -82,32 +86,6 @@ public abstract class FLoopThread extends Thread
                     }
                 }
             }
-        } finally
-        {
-            onFinally();
         }
-    }
-
-    /**
-     * 每次循环触发
-     *
-     * @return 返回线程休眠多久后进行下一次循环
-     */
-    protected abstract long onLoop();
-
-    protected void onStart()
-    {
-    }
-
-    protected void onPaused()
-    {
-    }
-
-    protected void onResume()
-    {
-    }
-
-    protected void onFinally()
-    {
     }
 }

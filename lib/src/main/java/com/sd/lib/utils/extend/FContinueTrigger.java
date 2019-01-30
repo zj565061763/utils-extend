@@ -1,16 +1,16 @@
 package com.sd.lib.utils.extend;
 
-public class FDurationTrigger
+public class FContinueTrigger
 {
     /**
-     * 满足触发条件的触发次数
+     * 满足触发条件的连续触发次数
      */
     private final int mTargetTriggerCount;
 
     private int mCurrentTriggerCount;
     private long mLastTriggerTime;
 
-    public FDurationTrigger(int targetTriggerCount)
+    public FContinueTrigger(int targetTriggerCount)
     {
         if (targetTriggerCount < 2)
             throw new IllegalArgumentException("targetTriggerCount must be >= 2");
@@ -19,7 +19,7 @@ public class FDurationTrigger
     }
 
     /**
-     * 返回满足触发条件的触发次数
+     * 返回满足触发条件的连续触发次数
      *
      * @return
      */

@@ -77,6 +77,7 @@ public abstract class FLoopThread extends Thread
 
                     onResume();
                 }
+
                 onLoop();
 
                 if (mInterval > 0)

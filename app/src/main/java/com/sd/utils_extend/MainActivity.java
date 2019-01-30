@@ -2,14 +2,16 @@ package com.sd.utils_extend;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
-import com.sd.lib.utils.extend.FDelayTask;
+import com.sd.lib.utils.extend.FDurationTrigger;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    private final FDurationTrigger mDurationTrigger = new FDurationTrigger(2);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,29 +23,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
-        mDelayTask.runDelayOrImmediately(1000);
+
     }
 
-    private final FDelayTask mDelayTask = new FDelayTask()
+    @Override
+    public void onBackPressed()
     {
-        @Override
-        protected void onRun()
+        if (mDurationTrigger.trigger(2000))
         {
-            Log.i(TAG, "onRun");
-        }
-
-        @Override
-        protected void onPost(long delay)
+            finish();
+        } else
         {
-            super.onPost(delay);
-            Log.i(TAG, "onPost:" + delay);
+            Toast.makeText(this, "再按" + mDurationTrigger.getLeftTriggerCount() + "次退出", Toast.LENGTH_SHORT).show();
         }
-
-        @Override
-        protected void onRemove()
-        {
-            super.onRemove();
-            Log.i(TAG, "onRemove");
-        }
-    };
+    }
 }

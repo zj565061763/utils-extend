@@ -1,6 +1,6 @@
 package com.sd.lib.utils.extend;
 
-public abstract class FDurationTrigger
+public class FDurationTrigger
 {
     /**
      * 满足触发条件的触发次数
@@ -12,8 +12,8 @@ public abstract class FDurationTrigger
 
     public FDurationTrigger(int targetTriggerCount)
     {
-        if (targetTriggerCount <= 0)
-            throw new IllegalArgumentException("targetTriggerCount must be > 0");
+        if (targetTriggerCount < 2)
+            throw new IllegalArgumentException("targetTriggerCount must be >= 2");
 
         mTargetTriggerCount = targetTriggerCount;
     }
@@ -61,8 +61,8 @@ public abstract class FDurationTrigger
     /**
      * 触发逻辑
      *
-     * @param triggerMaxDuration 本次触发和上一次触发之间的最大有效间隔
-     * @return true-成功触发
+     * @param triggerMaxDuration 两次触发之间的最大有效间隔
+     * @return true-达到目标触发次数
      */
     public synchronized boolean trigger(long triggerMaxDuration)
     {
@@ -72,22 +72,23 @@ public abstract class FDurationTrigger
         if (mLastTriggerTime < 0)
             throw new RuntimeException();
 
+        boolean result = false;
+
         final long currentTime = System.currentTimeMillis();
+        final long delta = currentTime - mLastTriggerTime;
 
-        if (mLastTriggerTime == 0 || (currentTime - mLastTriggerTime <= triggerMaxDuration))
+        if (delta > triggerMaxDuration)
         {
-            mLastTriggerTime = currentTime;
-
+            // 超过最大有效间隔，重新开始计数
+            mCurrentTriggerCount = 1;
+        } else
+        {
             mCurrentTriggerCount++;
             if (mCurrentTriggerCount >= mTargetTriggerCount)
-                onMaxTrigger();
-
-            return true;
+                result = true;
         }
 
-        reset();
-        return false;
+        mLastTriggerTime = currentTime;
+        return result;
     }
-
-    protected abstract void onMaxTrigger();
 }

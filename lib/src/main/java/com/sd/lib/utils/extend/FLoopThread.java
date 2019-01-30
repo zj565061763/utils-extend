@@ -5,7 +5,16 @@ package com.sd.lib.utils.extend;
  */
 public abstract class FLoopThread extends Thread
 {
+    private final long mInterval;
     private boolean mIsPaused = false;
+
+    public FLoopThread(long interval)
+    {
+        if (interval < 0)
+            throw new IllegalArgumentException("interval must be >= 0");
+
+        mInterval = interval;
+    }
 
     /**
      * 是否处于暂停循环状态
@@ -20,24 +29,26 @@ public abstract class FLoopThread extends Thread
     /**
      * 暂停循环
      */
-    public final void pauseLoop()
+    public synchronized final void pauseLoop()
     {
-        synchronized (this)
-        {
-            mIsPaused = true;
-        }
+        mIsPaused = true;
     }
 
     /**
      * 恢复循环
      */
-    public final void resumeLoop()
+    public synchronized final void resumeLoop()
     {
-        synchronized (this)
-        {
-            mIsPaused = false;
-            notifyAll();
-        }
+        mIsPaused = false;
+        notifyAll();
+    }
+
+    /**
+     * 停止循环
+     */
+    public final void stopLoop()
+    {
+        interrupt();
     }
 
     @Override
@@ -52,24 +63,40 @@ public abstract class FLoopThread extends Thread
                 if (mIsPaused)
                 {
                     onPaused();
-                    synchronized (this)
+
+                    try
                     {
-                        wait();
+                        synchronized (this)
+                        {
+                            wait();
+                        }
+                    } catch (InterruptedException e)
+                    {
+                        break;
                     }
+
                     onResume();
                 }
                 onLoop();
+
+                if (mInterval > 0)
+                {
+                    try
+                    {
+                        sleep(mInterval);
+                    } catch (InterruptedException e)
+                    {
+                        break;
+                    }
+                }
             }
-        } catch (Exception e)
-        {
-            onError(e);
         } finally
         {
             onFinally();
         }
     }
 
-    protected abstract void onLoop() throws Exception;
+    protected abstract void onLoop();
 
     protected void onStart()
     {
@@ -84,10 +111,6 @@ public abstract class FLoopThread extends Thread
     }
 
     protected void onFinally()
-    {
-    }
-
-    protected void onError(Exception e)
     {
     }
 }

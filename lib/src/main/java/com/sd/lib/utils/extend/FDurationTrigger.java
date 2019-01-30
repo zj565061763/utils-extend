@@ -62,7 +62,7 @@ public abstract class FDurationTrigger
      * 触发逻辑
      *
      * @param triggerMaxDuration 本次触发和上一次触发之间的最大有效间隔
-     * @return true-成功触发，false-还未超过最大触发次数
+     * @return true-成功触发
      */
     public synchronized boolean trigger(long triggerMaxDuration)
     {
@@ -85,6 +85,7 @@ public abstract class FDurationTrigger
             return true;
         }
 
+        reset();
         return false;
     }
 

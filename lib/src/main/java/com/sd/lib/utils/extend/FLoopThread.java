@@ -5,16 +5,7 @@ package com.sd.lib.utils.extend;
  */
 public abstract class FLoopThread extends Thread
 {
-    private final long mInterval;
     private boolean mIsPaused = false;
-
-    public FLoopThread(long interval)
-    {
-        if (interval < 0)
-            throw new IllegalArgumentException("interval must be >= 0");
-
-        mInterval = interval;
-    }
 
     /**
      * 是否处于暂停循环状态
@@ -78,13 +69,13 @@ public abstract class FLoopThread extends Thread
                     onResume();
                 }
 
-                onLoop();
+                final long sleepTime = onLoop();
 
-                if (mInterval > 0)
+                if (sleepTime > 0)
                 {
                     try
                     {
-                        sleep(mInterval);
+                        sleep(sleepTime);
                     } catch (InterruptedException e)
                     {
                         break;
@@ -97,7 +88,12 @@ public abstract class FLoopThread extends Thread
         }
     }
 
-    protected abstract void onLoop();
+    /**
+     * 每次循环触发
+     *
+     * @return 返回线程休眠多久后进行下一次循环
+     */
+    protected abstract long onLoop();
 
     protected void onStart()
     {

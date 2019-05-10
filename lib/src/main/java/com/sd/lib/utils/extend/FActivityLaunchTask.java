@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,6 +14,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class FActivityLaunchTask
 {
+    private WeakReference<Activity> mActivity;
+
     /**
      * 初始化，需要在Application创建的时候初始化
      *
@@ -32,6 +35,32 @@ public abstract class FActivityLaunchTask
     }
 
     /**
+     * 优先返回目标Activity，如果目标Activity为null，则返回栈中最顶层的Activity
+     *
+     * @return
+     */
+    protected Activity getActivity()
+    {
+        if (mActivity == null)
+            throw new RuntimeException("Not available until execute() method is called");
+
+        final Activity cache = mActivity.get();
+        if (cache != null)
+            return cache;
+
+        return Manager.INSTANCE.getLastActivity();
+    }
+
+    private void executeInternal(Activity activity)
+    {
+        if (activity == null)
+            throw new IllegalArgumentException("activity is null");
+
+        mActivity = new WeakReference<>(activity);
+        execute();
+    }
+
+    /**
      * 返回目标Activity的Class
      *
      * @return
@@ -40,10 +69,8 @@ public abstract class FActivityLaunchTask
 
     /**
      * 执行任务
-     *
-     * @param activity 目标Activity
      */
-    protected abstract void execute(Activity activity);
+    protected abstract void execute();
 
     private static class Manager
     {
@@ -71,7 +98,7 @@ public abstract class FActivityLaunchTask
                         if (activity.getClass() == item.getTargetClass())
                         {
                             mListTask.remove(item);
-                            item.execute(activity);
+                            item.executeInternal(activity);
                         }
                     }
                 }
@@ -111,20 +138,24 @@ public abstract class FActivityLaunchTask
 
         public final void submit(FActivityLaunchTask task)
         {
-            final int size = mListActivity.size();
-            if (size > 0)
+            for (Activity activity : mListActivity)
             {
-                for (Activity activity : mListActivity)
+                if (activity.getClass() == task.getTargetClass())
                 {
-                    if (activity.getClass() == task.getTargetClass())
-                    {
-                        task.execute(activity);
-                        return;
-                    }
+                    task.executeInternal(activity);
+                    return;
                 }
             }
 
             mListTask.add(task);
+        }
+
+        public final Activity getLastActivity()
+        {
+            if (mListActivity.isEmpty())
+                return null;
+
+            return mListActivity.get(mListActivity.size() - 1);
         }
     }
 }

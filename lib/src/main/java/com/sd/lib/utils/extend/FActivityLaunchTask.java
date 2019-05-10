@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -42,10 +41,9 @@ public abstract class FActivityLaunchTask
     /**
      * 执行任务
      *
-     * @param activity 栈中最顶层的Activity
+     * @param activity 目标Activity
      */
     protected abstract void execute(Activity activity);
-
 
     private static class Manager
     {
@@ -120,19 +118,7 @@ public abstract class FActivityLaunchTask
                 {
                     if (activity.getClass() == task.getTargetClass())
                     {
-                        Activity lastActivity = null;
-                        final ListIterator<Activity> it = mListActivity.listIterator(size);
-                        while (it.hasPrevious())
-                        {
-                            final Activity item = it.previous();
-                            if (!item.isFinishing())
-                            {
-                                lastActivity = item;
-                                break;
-                            }
-                        }
-
-                        task.execute(lastActivity);
+                        task.execute(activity);
                         return;
                     }
                 }

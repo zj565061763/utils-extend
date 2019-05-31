@@ -75,7 +75,7 @@ public abstract class FRetryWorker
         if (!mIsStarted)
             return;
 
-        if (isMaxRetry())
+        if (checkMaxRetry())
             return;
 
         mHandler.removeCallbacks(mRetryRunnable);
@@ -92,11 +92,10 @@ public abstract class FRetryWorker
                 if (!mIsStarted)
                     return;
 
-                if (isMaxRetry())
-                    return;
-
                 mRetryCount++;
                 onRetry();
+
+                checkMaxRetry();
             }
         }
     };
@@ -106,7 +105,7 @@ public abstract class FRetryWorker
      *
      * @return true-达到最大次数
      */
-    protected final synchronized boolean isMaxRetry()
+    protected final synchronized boolean checkMaxRetry()
     {
         if (mRetryCount >= mMaxRetryCount)
         {

@@ -14,7 +14,7 @@ public abstract class FNetRetryWorker extends FRetryWorker
 {
     private NetworkReceiver mNetworkReceiver;
 
-    public FNetRetryWorker(int maxRetryCount, Context context)
+    public FNetRetryWorker(Context context, int maxRetryCount)
     {
         super(maxRetryCount);
         mNetworkReceiver = new NetworkReceiver(context);

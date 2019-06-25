@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * 锁定某个View的宽高比
+ * 锁定某个View的宽高比例
  */
 public class FViewScaleLock
 {
@@ -22,7 +22,7 @@ public class FViewScaleLock
     }
 
     /**
-     * 设置宽高比
+     * 设置宽高比例
      *
      * @param width
      * @param height
@@ -56,7 +56,7 @@ public class FViewScaleLock
     }
 
     /**
-     * 设置要处理的View
+     * 设置要缩放的View
      *
      * @param view
      */
@@ -100,6 +100,12 @@ public class FViewScaleLock
     {
         public void scaleIfNeed()
         {
+            if (mWHScale <= 0)
+                return;
+
+            if (mView == null)
+                return;
+
             final ViewGroup.LayoutParams params = mView.getLayoutParams();
             if (params == null)
                 return;

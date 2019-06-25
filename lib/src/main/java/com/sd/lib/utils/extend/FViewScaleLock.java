@@ -13,6 +13,11 @@ public class FViewScaleLock
 
     private View mView;
 
+    public FViewScaleLock(ScaleSide scaleSide, int width, int height)
+    {
+        this(scaleSide, (float) width / height);
+    }
+
     public FViewScaleLock(ScaleSide scaleSide, float whScale)
     {
         if (scaleSide == null)

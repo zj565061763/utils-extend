@@ -84,13 +84,26 @@ public class FViewScaleLock
                     if (currentParamsSize != 0)
                     {
                         setCurrentSideParamsSize(params, 0);
-                        mView.setLayoutParams(params);
+                        setLayoutParams(params);
                     }
                 }
                 return;
             }
 
             doScale(otherSize, params);
+        }
+
+        protected final void setLayoutParams(final ViewGroup.LayoutParams params)
+        {
+            final View view = mView;
+            view.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    view.setLayoutParams(params);
+                }
+            });
         }
 
         protected abstract void doScale(int otherSize, ViewGroup.LayoutParams params);
@@ -114,7 +127,7 @@ public class FViewScaleLock
             if (currentParamsSize != width)
             {
                 setCurrentSideParamsSize(params, width);
-                mView.setLayoutParams(params);
+                setLayoutParams(params);
             }
         }
 
@@ -153,7 +166,7 @@ public class FViewScaleLock
             if (currentParamsSize != height)
             {
                 setCurrentSideParamsSize(params, height);
-                mView.setLayoutParams(params);
+                setLayoutParams(params);
             }
         }
 

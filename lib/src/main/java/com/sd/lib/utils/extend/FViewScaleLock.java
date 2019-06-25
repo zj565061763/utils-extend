@@ -8,26 +8,51 @@ import android.view.ViewGroup;
  */
 public class FViewScaleLock
 {
-    private final float mWHScale;
     private final ScaleSideHandler mSideHandler;
 
+    private float mWHScale;
     private View mView;
 
-    public FViewScaleLock(ScaleSide scaleSide, int width, int height)
-    {
-        this(scaleSide, (float) width / height);
-    }
-
-    public FViewScaleLock(ScaleSide scaleSide, float whScale)
+    public FViewScaleLock(ScaleSide scaleSide)
     {
         if (scaleSide == null)
             throw new IllegalArgumentException("scaleSide is null");
 
+        mSideHandler = scaleSide == ScaleSide.Width ? new WidthSideHandler() : new HeightSideHandler();
+    }
+
+    /**
+     * 设置宽高比
+     *
+     * @param width
+     * @param height
+     */
+    public void setWHScale(float width, float height)
+    {
+        if (width <= 0)
+            throw new IllegalArgumentException("width is out of range (width > 0)");
+
+        if (height <= 0)
+            throw new IllegalArgumentException("height is out of range (height > 0)");
+
+        setWHScale(width / height);
+    }
+
+    /**
+     * 设置宽高比例
+     *
+     * @param whScale
+     */
+    public void setWHScale(float whScale)
+    {
         if (whScale <= 0)
             throw new IllegalArgumentException("whScale is out of range (whScale > 0)");
 
-        mWHScale = whScale;
-        mSideHandler = scaleSide == ScaleSide.Width ? new WidthSideHandler() : new HeightSideHandler();
+        if (mWHScale != whScale)
+        {
+            mWHScale = whScale;
+            mSideHandler.scaleIfNeed();
+        }
     }
 
     /**

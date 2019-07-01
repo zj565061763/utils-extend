@@ -2,7 +2,9 @@ package com.sd.lib.utils.extend;
 
 public abstract class FLoopList<T>
 {
-    private int mIndex = 0;
+    public static final int EMPTY_INDEX = Integer.MIN_VALUE;
+
+    private int mIndex = EMPTY_INDEX;
 
     /**
      * 返回索引位置
@@ -18,14 +20,13 @@ public abstract class FLoopList<T>
      * 设置索引位置
      *
      * @param index
-     * @return
      */
-    public int setIndex(int index)
+    public void setIndex(int index)
     {
         final int size = size();
         if (size <= 0)
         {
-            index = -1;
+            index = EMPTY_INDEX;
         } else
         {
             if (index >= size)
@@ -35,32 +36,34 @@ public abstract class FLoopList<T>
                 index = 0;
         }
 
-        mIndex = index;
-        return mIndex;
+        final int old = mIndex;
+        if (old != index)
+        {
+            mIndex = index;
+            onIndexChanged(old, mIndex);
+        }
     }
 
     /**
      * 移动索引到后面的位置
      *
      * @param count 移动几个位置
-     * @return
      */
-    public int moveNext(int count)
+    public void moveIndexNext(int count)
     {
-        final int index = movedIndex(true, count);
-        return setIndex(index);
+        final int index = calculateIndex(true, count);
+        setIndex(index);
     }
 
     /**
      * 移动索引到前面的位置
      *
      * @param count 移动几个位置
-     * @return
      */
-    public int movePrevious(int count)
+    public void moveIndexPrevious(int count)
     {
-        final int index = movedIndex(false, count);
-        return setIndex(index);
+        final int index = calculateIndex(false, count);
+        setIndex(index);
     }
 
     /**
@@ -68,10 +71,10 @@ public abstract class FLoopList<T>
      *
      * @return
      */
-    public T current()
+    public T getCurrent()
     {
-        final int index = setIndex(mIndex);
-        return index < 0 ? null : get(index);
+        setIndex(mIndex);
+        return mIndex < 0 ? null : get(mIndex);
     }
 
     /**
@@ -80,9 +83,9 @@ public abstract class FLoopList<T>
      * @param count 索引后面第几个位置
      * @return
      */
-    public T next(int count)
+    public T getNext(int count)
     {
-        final int index = movedIndex(true, count);
+        final int index = calculateIndex(true, count);
         return index < 0 ? null : get(index);
     }
 
@@ -91,13 +94,13 @@ public abstract class FLoopList<T>
      *
      * @return 索引前面第几个位置
      */
-    public T previous(int count)
+    public T getPrevious(int count)
     {
-        final int index = movedIndex(false, count);
+        final int index = calculateIndex(false, count);
         return index < 0 ? null : get(index);
     }
 
-    private int movedIndex(boolean next, int count)
+    private int calculateIndex(boolean next, int count)
     {
         if (count <= 0)
             throw new IllegalArgumentException("count is out of range (count > 0)");
@@ -123,6 +126,10 @@ public abstract class FLoopList<T>
             }
         }
         return index;
+    }
+
+    protected void onIndexChanged(int oldIndex, int newIndex)
+    {
     }
 
     protected abstract int size();

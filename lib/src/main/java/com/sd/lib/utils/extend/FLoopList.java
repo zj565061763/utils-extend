@@ -2,7 +2,12 @@ package com.sd.lib.utils.extend;
 
 public abstract class FLoopList<T>
 {
-    private int mIndex = 0;
+    /**
+     * 无效的索引位置
+     */
+    public static final int INVALID_INDEX = -1;
+
+    private int mIndex = INVALID_INDEX;
 
     /**
      * 返回索引位置
@@ -22,11 +27,17 @@ public abstract class FLoopList<T>
     public void setIndex(int index)
     {
         final int size = size();
-        if (index >= size)
-            index = size - 1;
+        if (size <= 0)
+        {
+            index = INVALID_INDEX;
+        } else
+        {
+            if (index >= size)
+                index = size - 1;
 
-        if (index < 0)
-            index = 0;
+            if (index < 0)
+                index = 0;
+        }
 
         final int old = mIndex;
         if (old != index)
@@ -94,8 +105,12 @@ public abstract class FLoopList<T>
 
     private T getInternal(int index)
     {
+        if (index == INVALID_INDEX)
+            return null;
+
         if (index < 0 || index >= size())
             return null;
+
         return get(index);
     }
 
@@ -106,7 +121,7 @@ public abstract class FLoopList<T>
 
         final int size = size();
         if (size <= 0)
-            return -1;
+            return INVALID_INDEX;
 
         final int tempIndex = next ? mIndex + count : mIndex - count;
 

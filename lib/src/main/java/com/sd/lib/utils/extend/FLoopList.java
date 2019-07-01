@@ -40,7 +40,31 @@ public abstract class FLoopList<T>
     }
 
     /**
-     * 当前对象
+     * 移动索引到后面的位置
+     *
+     * @param count 移动几个位置
+     * @return
+     */
+    public int moveNext(int count)
+    {
+        final int index = movedIndex(true, count);
+        return setIndex(index);
+    }
+
+    /**
+     * 移动索引到前面的位置
+     *
+     * @param count 移动几个位置
+     * @return
+     */
+    public int movePrevious(int count)
+    {
+        final int index = movedIndex(false, count);
+        return setIndex(index);
+    }
+
+    /**
+     * 返回当前索引所指向的对象
      *
      * @return
      */
@@ -51,34 +75,38 @@ public abstract class FLoopList<T>
     }
 
     /**
-     * 下一个对象
+     * 返回索引后面第几个位置的对象
      *
+     * @param count 索引后面第几个位置
      * @return
      */
-    public T next()
+    public T next(int count)
     {
-        final int index = setIndex(newIndex(true));
+        final int index = movedIndex(true, count);
         return index < 0 ? null : get(index);
     }
 
     /**
-     * 前一个对象
+     * 返回索引前面第几个位置的对象
      *
-     * @return
+     * @return 索引前面第几个位置
      */
-    public T previous()
+    public T previous(int count)
     {
-        final int index = setIndex(newIndex(false));
+        final int index = movedIndex(false, count);
         return index < 0 ? null : get(index);
     }
 
-    private int newIndex(boolean next)
+    private int movedIndex(boolean next, int count)
     {
+        if (count <= 0)
+            throw new IllegalArgumentException("count is out of range (count > 0)");
+
         final int size = size();
         if (size <= 0)
             return -1;
 
-        int tempIndex = next ? mIndex + 1 : mIndex - 1;
+        int tempIndex = next ? mIndex + count : mIndex - count;
         int index = 0;
         if (next)
         {

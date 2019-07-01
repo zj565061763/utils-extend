@@ -73,7 +73,8 @@ public abstract class FLoopList<T>
      */
     public T getCurrent()
     {
-        return getInternal(mIndex);
+        final int index = mIndex;
+        return getInternal(index);
     }
 
     /**

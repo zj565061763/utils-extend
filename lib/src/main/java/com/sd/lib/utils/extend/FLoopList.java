@@ -109,21 +109,15 @@ public abstract class FLoopList<T>
         if (size <= 0)
             return EMPTY_INDEX;
 
-        int tempIndex = next ? mIndex + count : mIndex - count;
+        final int tempIndex = next ? mIndex + count : mIndex - count;
+
         int index = 0;
         if (next)
         {
             index = tempIndex < size ? tempIndex : tempIndex % size;
         } else
         {
-            if (tempIndex >= 0)
-            {
-                index = tempIndex;
-            } else
-            {
-                tempIndex = tempIndex % size;
-                index = size + tempIndex;
-            }
+            index = tempIndex >= 0 ? tempIndex : size + tempIndex % size;
         }
         return index;
     }

@@ -2,9 +2,7 @@ package com.sd.lib.utils.extend;
 
 public abstract class FLoopList<T>
 {
-    public static final int EMPTY_INDEX = Integer.MIN_VALUE;
-
-    private int mIndex = EMPTY_INDEX;
+    private int mIndex = 0;
 
     /**
      * 返回索引位置
@@ -24,17 +22,11 @@ public abstract class FLoopList<T>
     public void setIndex(int index)
     {
         final int size = size();
-        if (size <= 0)
-        {
-            index = EMPTY_INDEX;
-        } else
-        {
-            if (index >= size)
-                index = size - 1;
+        if (index >= size)
+            index = size - 1;
 
-            if (index < 0)
-                index = 0;
-        }
+        if (index < 0)
+            index = 0;
 
         final int old = mIndex;
         if (old != index)
@@ -102,7 +94,7 @@ public abstract class FLoopList<T>
 
     private T getInternal(int index)
     {
-        if (index == EMPTY_INDEX || index < 0)
+        if (index < 0 || index >= size())
             return null;
         return get(index);
     }
@@ -112,12 +104,9 @@ public abstract class FLoopList<T>
         if (count <= 0)
             throw new IllegalArgumentException("count is out of range (count > 0)");
 
-        if (mIndex == EMPTY_INDEX)
-            return EMPTY_INDEX;
-
         final int size = size();
         if (size <= 0)
-            return EMPTY_INDEX;
+            return -1;
 
         final int tempIndex = next ? mIndex + count : mIndex - count;
 

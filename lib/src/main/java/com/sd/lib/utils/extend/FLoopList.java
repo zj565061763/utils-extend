@@ -119,6 +119,9 @@ public abstract class FLoopList<T>
         if (count <= 0)
             throw new IllegalArgumentException("count is out of range (count > 0)");
 
+        if (mIndex == INVALID_INDEX)
+            return INVALID_INDEX;
+
         final int size = size();
         if (size <= 0)
             return INVALID_INDEX;

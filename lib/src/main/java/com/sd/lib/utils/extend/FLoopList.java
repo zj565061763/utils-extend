@@ -73,7 +73,6 @@ public abstract class FLoopList<T>
      */
     public T getCurrent()
     {
-        setIndex(mIndex);
         return getInternal(mIndex);
     }
 

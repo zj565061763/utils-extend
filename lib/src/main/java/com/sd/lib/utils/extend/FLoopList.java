@@ -74,7 +74,7 @@ public abstract class FLoopList<T>
     public T getCurrent()
     {
         setIndex(mIndex);
-        return mIndex < 0 ? null : get(mIndex);
+        return getInternal(mIndex);
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class FLoopList<T>
     public T getNext(int count)
     {
         final int index = calculateIndex(true, count);
-        return index < 0 ? null : get(index);
+        return getInternal(index);
     }
 
     /**
@@ -97,7 +97,14 @@ public abstract class FLoopList<T>
     public T getPrevious(int count)
     {
         final int index = calculateIndex(false, count);
-        return index < 0 ? null : get(index);
+        return getInternal(index);
+    }
+
+    private T getInternal(int index)
+    {
+        if (index == EMPTY_INDEX || index < 0)
+            return null;
+        return get(index);
     }
 
     private int calculateIndex(boolean next, int count)

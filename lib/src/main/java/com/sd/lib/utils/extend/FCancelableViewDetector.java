@@ -8,13 +8,20 @@ import android.view.View;
 public abstract class FCancelableViewDetector
 {
     private final View mView;
-    private final int[] mLocation = new int[2];
+    private int[] mLocation;
 
     public FCancelableViewDetector(View view)
     {
         if (view == null)
             throw new IllegalArgumentException("view is null when create " + FCancelableViewDetector.class.getName());
         mView = view;
+    }
+
+    private int[] getLocation()
+    {
+        if (mLocation == null)
+            mLocation = new int[2];
+        return mLocation;
     }
 
     /**
@@ -25,21 +32,20 @@ public abstract class FCancelableViewDetector
      */
     public boolean dispatchKeyEvent(KeyEvent event)
     {
-        if (mView.getVisibility() == View.VISIBLE && isAttached(mView))
-        {
-            switch (event.getAction())
-            {
-                case KeyEvent.ACTION_DOWN:
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK)
-                    {
-                        return onBackPressed();
-                    }
-                    break;
+        if (mView.getVisibility() != View.VISIBLE)
+            return false;
 
-                default:
-                    break;
+        if (!isAttached(mView))
+            return false;
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN)
+        {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK)
+            {
+                return onBackPressed();
             }
         }
+
         return false;
     }
 
@@ -58,13 +64,14 @@ public abstract class FCancelableViewDetector
      */
     public boolean dispatchTouchEvent(MotionEvent event)
     {
-        if (mView.getVisibility() == View.VISIBLE)
-        {
-            final boolean isViewUnder = isViewUnder(mView, (int) event.getRawX(), (int) event.getRawY(), mLocation);
-            return onTouch(isViewUnder);
-        }
+        if (mView.getVisibility() != View.VISIBLE)
+            return false;
 
-        return false;
+        if (!isAttached(mView))
+            return false;
+
+        final boolean isViewUnder = isViewUnder(mView, (int) event.getRawX(), (int) event.getRawY(), getLocation());
+        return onTouch(isViewUnder);
     }
 
     /**
@@ -73,17 +80,15 @@ public abstract class FCancelableViewDetector
      * @param inside true-触摸在View的范围之内，false-触摸在View的范围之外
      * @return true-消费掉此次返回事件
      */
-    protected abstract boolean onTouch(boolean inside);
-
-    private static boolean isViewUnder(View view, int x, int y, int[] outLocation)
+    protected boolean onTouch(boolean inside)
     {
-        if (view == null)
-            return false;
+        return false;
+    }
 
-        if (!isAttached(view))
-            return false;
+    private static boolean isViewUnder(View view, int x, int y, int[] location)
+    {
+        view.getLocationOnScreen(location);
 
-        final int[] location = getLocationOnScreen(view, outLocation);
         final int left = location[0];
         final int top = location[1];
         final int right = left + view.getWidth();
@@ -93,22 +98,8 @@ public abstract class FCancelableViewDetector
                 && x >= left && x < right && y >= top && y < bottom;
     }
 
-    private static int[] getLocationOnScreen(View view, int[] outLocation)
-    {
-        if (outLocation == null || outLocation.length != 2)
-            outLocation = new int[]{0, 0};
-
-        if (view != null)
-            view.getLocationOnScreen(outLocation);
-
-        return outLocation;
-    }
-
     private static boolean isAttached(View view)
     {
-        if (view == null)
-            return false;
-
         if (Build.VERSION.SDK_INT >= 19)
             return view.isAttachedToWindow();
         else

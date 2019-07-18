@@ -265,11 +265,13 @@ public class FViewScaleLock
 
     private static int getScaleWidth(float whScale, int height)
     {
-        return (int) (whScale * height);
+        final float size = (whScale * height) + 0.5f;
+        return (int) size;
     }
 
     private static int getScaleHeight(float whScale, int width)
     {
-        return (int) (width / whScale);
+        final float size = (width / whScale) + 0.5f;
+        return (int) size;
     }
 }

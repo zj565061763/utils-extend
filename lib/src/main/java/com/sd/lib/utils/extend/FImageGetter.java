@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import java.io.File;
 
+@Deprecated
 public class FImageGetter
 {
     public static final int REQUEST_CODE_GET_IMAGE_FROM_CAMERA = 16542;

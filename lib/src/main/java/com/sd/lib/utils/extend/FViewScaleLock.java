@@ -146,9 +146,6 @@ public class FViewScaleLock
         if (mView == null || mView.getLayoutParams() == null)
             return false;
 
-        if (mView.getWidth() <= 0 || mView.getHeight() <= 0)
-            return false;
-
         return true;
     }
 
@@ -175,6 +172,9 @@ public class FViewScaleLock
         final int width = mView.getWidth();
         final int height = mView.getHeight();
 
+        if (height <= 0)
+            return;
+
         final int scaleWidth = getScaleWidth(mWHScale, height);
         if (mContainerWidth > 0 && scaleWidth > mContainerWidth)
         {
@@ -195,6 +195,9 @@ public class FViewScaleLock
     {
         final int width = mView.getWidth();
         final int height = mView.getHeight();
+
+        if (width <= 0)
+            return;
 
         final int scaleHeight = getScaleHeight(mWHScale, width);
         if (mContainerHeight > 0 && scaleHeight > mContainerHeight)

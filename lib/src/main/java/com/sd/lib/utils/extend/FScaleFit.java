@@ -83,18 +83,18 @@ public class FScaleFit
     private void scaleFitWidth(int width, int height, int[] output)
     {
         final float scale = (float) mContainerWidth / width;
-        final int finalHeight = (int) (scale * height);
+        final float finalHeight = scale * height;
 
         output[0] = mContainerWidth;
-        output[1] = finalHeight;
+        output[1] = (int) (finalHeight + 0.5f);
     }
 
     private void scaleFitHeight(int width, int height, int[] output)
     {
         final float scale = (float) mContainerHeight / height;
-        final int finalWidth = (int) (scale * width);
+        final float finalWidth = scale * width;
 
-        output[0] = finalWidth;
+        output[0] = (int) (finalWidth + 0.5f);
         output[1] = mContainerHeight;
     }
 

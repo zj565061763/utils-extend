@@ -94,8 +94,9 @@ public class FScaleFit
                 scaleFitMax(width, height);
                 break;
             default:
-                break;
+                throw new RuntimeException("Unknown type:" + mType);
         }
+
         return true;
     }
 

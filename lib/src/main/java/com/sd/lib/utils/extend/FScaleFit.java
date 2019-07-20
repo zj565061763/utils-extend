@@ -123,7 +123,29 @@ public class FScaleFit
         final int deltaWidth = Math.abs(width - mContainerWidth);
         final int deltaHeight = Math.abs(height - mContainerHeight);
 
-        if (deltaWidth < deltaHeight)
+        if (width == mContainerWidth && height == mContainerHeight)
+        {
+            mScaledWidth = width;
+            mScaledHeight = height;
+        } else if (width < mContainerWidth && height < mContainerHeight)
+        {
+            if (deltaWidth < deltaHeight)
+            {
+                scaleFitWidth(width, height);
+            } else
+            {
+                scaleFitHeight(width, height);
+            }
+        } else if (width > mContainerWidth && height > mContainerHeight)
+        {
+            if (deltaWidth > deltaHeight)
+            {
+                scaleFitWidth(width, height);
+            } else
+            {
+                scaleFitHeight(width, height);
+            }
+        } else if (width > mContainerWidth)
         {
             scaleFitWidth(width, height);
         } else

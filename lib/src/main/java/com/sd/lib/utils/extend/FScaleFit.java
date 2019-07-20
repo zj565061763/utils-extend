@@ -3,23 +3,23 @@ package com.sd.lib.utils.extend;
 /**
  * 缩放计算处理
  */
-public class FScaleHandler
+public class FScaleFit
 {
-    private final ScaleType mScaleType;
+    private final Type mType;
 
     private int mContainerWidth;
     private int mContainerHeight;
 
-    public FScaleHandler()
+    public FScaleFit()
     {
-        this(ScaleType.FitMax);
+        this(Type.FitMax);
     }
 
-    public FScaleHandler(ScaleType scaleType)
+    public FScaleFit(Type type)
     {
-        if (scaleType == null)
-            throw new IllegalArgumentException("scaleType is null");
-        mScaleType = scaleType;
+        if (type == null)
+            throw new IllegalArgumentException("type is null");
+        mType = type;
     }
 
     /**
@@ -27,9 +27,9 @@ public class FScaleHandler
      *
      * @return
      */
-    public ScaleType getScaleType()
+    public Type getType()
     {
-        return mScaleType;
+        return mType;
     }
 
     /**
@@ -63,7 +63,7 @@ public class FScaleHandler
         if (width <= 0 || height <= 0)
             return false;
 
-        switch (mScaleType)
+        switch (mType)
         {
             case FitWidth:
                 scaleFitWidth(width, height, output);
@@ -112,7 +112,7 @@ public class FScaleHandler
         }
     }
 
-    public enum ScaleType
+    public enum Type
     {
         /**
          * 缩放宽度到容器的宽度

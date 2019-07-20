@@ -10,6 +10,9 @@ public class FScaleFit
     private int mContainerWidth;
     private int mContainerHeight;
 
+    private int mScaledWidth;
+    private int mScaledHeight;
+
     public FScaleFit()
     {
         this(Type.FitMax);
@@ -33,6 +36,26 @@ public class FScaleFit
     }
 
     /**
+     * 缩放后的宽
+     *
+     * @return
+     */
+    public int getScaledWidth()
+    {
+        return mScaledWidth;
+    }
+
+    /**
+     * 缩放后的高
+     *
+     * @return
+     */
+    public int getScaledHeight()
+    {
+        return mScaledHeight;
+    }
+
+    /**
      * 设置容器大小
      *
      * @param width
@@ -45,18 +68,14 @@ public class FScaleFit
     }
 
     /**
-     * 缩放内容
+     * 缩放
      *
      * @param width
      * @param height
-     * @param output 保存缩放结果的数组
      * @return
      */
-    public boolean scaleContent(int width, int height, int[] output)
+    public boolean scale(int width, int height)
     {
-        if (output == null)
-            throw new IllegalArgumentException("output is null");
-
         if (mContainerWidth <= 0 || mContainerHeight <= 0)
             return false;
 
@@ -66,13 +85,13 @@ public class FScaleFit
         switch (mType)
         {
             case FitWidth:
-                scaleFitWidth(width, height, output);
+                scaleFitWidth(width, height);
                 break;
             case FitHeight:
-                scaleFitHeight(width, height, output);
+                scaleFitHeight(width, height);
                 break;
             case FitMax:
-                scaleFitMax(width, height, output);
+                scaleFitMax(width, height);
                 break;
             default:
                 break;
@@ -80,35 +99,35 @@ public class FScaleFit
         return true;
     }
 
-    private void scaleFitWidth(int width, int height, int[] output)
+    private void scaleFitWidth(int width, int height)
     {
         final float scale = (float) mContainerWidth / width;
         final float finalHeight = scale * height;
 
-        output[0] = mContainerWidth;
-        output[1] = (int) (finalHeight + 0.5f);
+        mScaledWidth = mContainerWidth;
+        mScaledHeight = (int) (finalHeight + 0.5f);
     }
 
-    private void scaleFitHeight(int width, int height, int[] output)
+    private void scaleFitHeight(int width, int height)
     {
         final float scale = (float) mContainerHeight / height;
         final float finalWidth = scale * width;
 
-        output[0] = (int) (finalWidth + 0.5f);
-        output[1] = mContainerHeight;
+        mScaledWidth = (int) (finalWidth + 0.5f);
+        mScaledHeight = mContainerHeight;
     }
 
-    private void scaleFitMax(int width, int height, int[] output)
+    private void scaleFitMax(int width, int height)
     {
         final int deltaWidth = Math.abs(width - mContainerWidth);
         final int deltaHeight = Math.abs(height - mContainerHeight);
 
         if (deltaWidth < deltaHeight)
         {
-            scaleFitWidth(width, height, output);
+            scaleFitWidth(width, height);
         } else
         {
-            scaleFitHeight(width, height, output);
+            scaleFitHeight(width, height);
         }
     }
 

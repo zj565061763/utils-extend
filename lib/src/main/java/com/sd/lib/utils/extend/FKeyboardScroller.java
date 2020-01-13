@@ -101,6 +101,7 @@ public class FKeyboardScroller
             if (mCallback != null)
                 mCallback.onScrolled(mScrollView, false);
 
+            mRootView.removeCallbacks(mCheckRunnable);
             mRootView.postDelayed(mCheckRunnable, 100);
         }
     }

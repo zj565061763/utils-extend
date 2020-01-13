@@ -8,7 +8,7 @@ import android.view.ViewTreeObserver;
 
 public class FKeyboardScroller
 {
-    private final View mView;
+    private final View mRootView;
     private final View mScrollView;
     private final int mStatusBarHeight;
 
@@ -26,11 +26,11 @@ public class FKeyboardScroller
         if (view == null)
             throw new RuntimeException("view with id android.R.id.content was not found in:" + activity);
 
-        mView = view;
+        mRootView = view;
         mScrollView = scrollView;
         mStatusBarHeight = getStatusBarHeight(activity);
 
-        mView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener()
+        mRootView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener()
         {
             @Override
             public void onViewAttachedToWindow(View v)
@@ -40,7 +40,7 @@ public class FKeyboardScroller
             @Override
             public void onViewDetachedFromWindow(View v)
             {
-                mView.removeCallbacks(mCheckRunnable);
+                mRootView.removeCallbacks(mCheckRunnable);
             }
         });
     }
@@ -52,7 +52,7 @@ public class FKeyboardScroller
 
     public final boolean start()
     {
-        final ViewTreeObserver observer = mView.getViewTreeObserver();
+        final ViewTreeObserver observer = mRootView.getViewTreeObserver();
         if (observer.isAlive())
         {
             observer.removeOnPreDrawListener(mOnPreDrawListener);
@@ -64,7 +64,7 @@ public class FKeyboardScroller
 
     public final void stop()
     {
-        final ViewTreeObserver observer = mView.getViewTreeObserver();
+        final ViewTreeObserver observer = mRootView.getViewTreeObserver();
         if (observer.isAlive())
             observer.removeOnPreDrawListener(mOnPreDrawListener);
     }
@@ -81,7 +81,7 @@ public class FKeyboardScroller
 
     private void processScroll()
     {
-        mView.getWindowVisibleDisplayFrame(mRect);
+        mRootView.getWindowVisibleDisplayFrame(mRect);
 
         final int old = mHeight;
         final int height = mRect.height();
@@ -101,7 +101,7 @@ public class FKeyboardScroller
             if (mCallback != null)
                 mCallback.onScrolled(mScrollView, false);
 
-            mView.postDelayed(mCheckRunnable, 100);
+            mRootView.postDelayed(mCheckRunnable, 100);
         }
     }
 

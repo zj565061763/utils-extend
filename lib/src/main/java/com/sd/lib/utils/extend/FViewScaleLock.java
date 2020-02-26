@@ -32,11 +32,11 @@ public class FViewScaleLock
      */
     public void setWHScale(float width, float height)
     {
-        if (width <= 0)
-            throw new IllegalArgumentException("width is out of range (width > 0)");
-
-        if (height <= 0)
-            throw new IllegalArgumentException("height is out of range (height > 0)");
+        if (width <= 0 || height <= 0)
+        {
+            setWHScale(0);
+            return;
+        }
 
         setWHScale(width / height);
     }
@@ -48,9 +48,6 @@ public class FViewScaleLock
      */
     public void setWHScale(float whScale)
     {
-        if (whScale <= 0)
-            throw new IllegalArgumentException("whScale is out of range (whScale > 0)");
-
         if (mWHScale != whScale)
         {
             mWHScale = whScale;

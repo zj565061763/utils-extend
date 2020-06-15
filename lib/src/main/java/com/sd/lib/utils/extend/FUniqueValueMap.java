@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 值唯一的Map
+ * <p>
+ * 未考虑多线程问题，如果需要在多线程下使用，请手动同步
  *
  * @param <K>
  * @param <V>
@@ -63,6 +65,30 @@ public class FUniqueValueMap<K, V>
             return null;
 
         return mMap.get(key);
+    }
+
+    public K removeValue(Object value)
+    {
+        if (value == null)
+            return null;
+
+        final K key = mMapReverse.remove(value);
+        if (key == null)
+            return null;
+
+        final V cacheValue = mMap.remove(key);
+        if (cacheValue == null)
+            throw new RuntimeException("Cached value was not found");
+
+        return key;
+    }
+
+    public K getKey(Object value)
+    {
+        if (value == null)
+            return null;
+
+        return mMapReverse.get(value);
     }
 
     public int size()

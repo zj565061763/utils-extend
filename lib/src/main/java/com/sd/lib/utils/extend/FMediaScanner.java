@@ -36,10 +36,13 @@ public abstract class FMediaScanner
         @Override
         public void onScanCompleted(String path, Uri uri)
         {
-            mIsScanFile = false;
-            scanFileInternal();
-
             FMediaScanner.this.onScanCompleted(path, uri);
+
+            synchronized (FMediaScanner.this)
+            {
+                mIsScanFile = false;
+            }
+            scanFileInternal();
         }
     };
 

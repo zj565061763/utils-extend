@@ -53,6 +53,9 @@ public abstract class FMediaScanner
      */
     public synchronized void scanFile(File file)
     {
+        if (file == null)
+            return;
+
         if (mListFile.contains(file))
             return;
 
@@ -76,7 +79,7 @@ public abstract class FMediaScanner
 
         final File file = mListFile.remove(0);
         if (!file.exists())
-            return;
+            scanFileInternal();
 
         final String path = file.getAbsolutePath();
         final String extension = MimeTypeMap.getFileExtensionFromUrl(path);

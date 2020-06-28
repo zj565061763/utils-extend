@@ -93,6 +93,9 @@ public class FScaleFit
             case FitMax:
                 scaleFitMax(width, height);
                 break;
+            case FitCrop:
+                scaleFitCrop(width, height);
+                break;
             default:
                 throw new RuntimeException("Unknown type:" + mType);
         }
@@ -128,9 +131,30 @@ public class FScaleFit
         }
 
         scaleFitWidth(width, height);
+        if (mScaledWidth == mContainerWidth)
+        {
+            if (mScaledHeight <= mContainerHeight)
+                return;
+        }
 
-        if (mScaledWidth <= mContainerWidth && mScaledHeight <= mContainerHeight)
+        scaleFitHeight(width, height);
+    }
+
+    private void scaleFitCrop(int width, int height)
+    {
+        if (width == mContainerWidth && height == mContainerHeight)
+        {
+            mScaledWidth = width;
+            mScaledHeight = height;
             return;
+        }
+
+        scaleFitWidth(width, height);
+        if (mScaledWidth == mContainerWidth)
+        {
+            if (mScaledHeight >= mContainerHeight)
+                return;
+        }
 
         scaleFitHeight(width, height);
     }
@@ -149,5 +173,9 @@ public class FScaleFit
          * 在容器范围内缩放内容到最大值
          */
         FitMax,
+        /**
+         * 缩放到充满容器，内容可能超出容器范围
+         */
+        FitCrop,
     }
 }

@@ -3,11 +3,15 @@ package com.sd.lib.utils.extend;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 扫描文件添加到相册
@@ -18,6 +22,9 @@ public abstract class FMediaScanner
     private final List<File> mListFile = new ArrayList<>();
 
     private boolean mIsScanFile = false;
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Map<Runnable, String> mMapRunnable = new HashMap<>();
 
     public FMediaScanner(Context context)
     {
@@ -34,14 +41,29 @@ public abstract class FMediaScanner
         }
 
         @Override
-        public void onScanCompleted(String path, Uri uri)
+        public void onScanCompleted(final String path, final Uri uri)
         {
-            FMediaScanner.this.onScanCompleted(path, uri);
+            final Runnable runnable = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    synchronized (FMediaScanner.this)
+                    {
+                        mMapRunnable.remove(this);
+                    }
+                    FMediaScanner.this.onScanCompleted(path, uri);
+                }
+            };
 
             synchronized (FMediaScanner.this)
             {
+                mMapRunnable.put(runnable, "");
+                mHandler.post(runnable);
+
                 mIsScanFile = false;
             }
+
             scanFileInternal();
         }
     };
@@ -89,11 +111,21 @@ public abstract class FMediaScanner
         mConnection.scanFile(path, mimeType);
     }
 
+    private void cancelRunnable()
+    {
+        for (Runnable item : mMapRunnable.keySet())
+        {
+            mHandler.removeCallbacks(item);
+        }
+        mMapRunnable.clear();
+    }
+
     /**
      * 取消
      */
     public synchronized void cancel()
     {
+        cancelRunnable();
         mConnection.disconnect();
     }
 

@@ -9,9 +9,9 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 扫描文件添加到相册
@@ -24,7 +24,7 @@ public abstract class FMediaScanner
     private boolean mIsScanFile = false;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private final Map<Runnable, String> mMapRunnable = new HashMap<>();
+    private final Map<Runnable, String> mMapRunnable = new ConcurrentHashMap<>();
 
     public FMediaScanner(Context context)
     {
@@ -75,7 +75,7 @@ public abstract class FMediaScanner
      */
     public synchronized void scanFile(File file)
     {
-        if (file == null)
+        if (file == null || !file.exists())
             return;
 
         if (mListFile.contains(file))
@@ -100,15 +100,18 @@ public abstract class FMediaScanner
             return;
 
         final File file = mListFile.remove(0);
-        if (!file.exists())
+        if (file.exists())
+        {
+            final String path = file.getAbsolutePath();
+            final String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+            final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+
+            mIsScanFile = true;
+            mConnection.scanFile(path, mimeType);
+        } else
+        {
             scanFileInternal();
-
-        final String path = file.getAbsolutePath();
-        final String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-
-        mIsScanFile = true;
-        mConnection.scanFile(path, mimeType);
+        }
     }
 
     private void cancelRunnable()

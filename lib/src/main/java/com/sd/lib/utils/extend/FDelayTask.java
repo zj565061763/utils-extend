@@ -7,7 +7,30 @@ public abstract class FDelayTask
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
+    /** 是否已经被post到Handler */
     private boolean mHasPost;
+    /** 是否被暂停 */
+    private boolean mIsPaused;
+
+    /**
+     * 是否已经被post到Handler
+     *
+     * @return
+     */
+    public boolean hasPost()
+    {
+        return mHasPost;
+    }
+
+    /**
+     * 是否被暂停
+     *
+     * @return
+     */
+    public boolean isPaused()
+    {
+        return mIsPaused;
+    }
 
     /**
      * 延迟执行
@@ -22,7 +45,7 @@ public abstract class FDelayTask
         removeDelay();
         MAIN_HANDLER.postDelayed(mRunnable, delay);
         mHasPost = true;
-        onPost(delay);
+        FDelayTask.this.onPost(delay);
     }
 
     /**
@@ -42,13 +65,42 @@ public abstract class FDelayTask
     public final synchronized boolean removeDelay()
     {
         MAIN_HANDLER.removeCallbacks(mRunnable);
+        mIsPaused = false;
+
         if (mHasPost)
         {
             mHasPost = false;
-            onPostRemoved();
+            FDelayTask.this.onPostRemoved();
             return true;
         }
         return false;
+    }
+
+    /**
+     * 暂停
+     */
+    public final synchronized void pause()
+    {
+        if (!mIsPaused)
+        {
+            if (mHasPost)
+            {
+                mIsPaused = true;
+                onPause();
+            }
+        }
+    }
+
+    /**
+     * 恢复
+     */
+    public final synchronized void resume()
+    {
+        if (mIsPaused)
+        {
+            mIsPaused = false;
+            notifyRun();
+        }
     }
 
     private final Runnable mRunnable = new Runnable()
@@ -59,11 +111,19 @@ public abstract class FDelayTask
             synchronized (FDelayTask.this)
             {
                 mHasPost = false;
+
+                if (mIsPaused)
+                    return;
             }
 
-            FDelayTask.this.onRun();
+            notifyRun();
         }
     };
+
+    private void notifyRun()
+    {
+        FDelayTask.this.onRun();
+    }
 
     protected abstract void onRun();
 
@@ -72,6 +132,10 @@ public abstract class FDelayTask
     }
 
     protected void onPostRemoved()
+    {
+    }
+
+    protected void onPause()
     {
     }
 }

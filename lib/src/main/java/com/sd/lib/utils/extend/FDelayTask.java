@@ -70,7 +70,7 @@ public abstract class FDelayTask
         if (mHasPost)
         {
             mHasPost = false;
-            FDelayTask.this.onPostRemoved();
+            FDelayTask.this.onPostRemove();
             return true;
         }
         return false;
@@ -125,16 +125,30 @@ public abstract class FDelayTask
         FDelayTask.this.onRun();
     }
 
+    /**
+     * 任务执行回调
+     */
     protected abstract void onRun();
 
+    /**
+     * 任务被post到Handler回调
+     *
+     * @param delay
+     */
     protected void onPost(long delay)
     {
     }
 
-    protected void onPostRemoved()
+    /**
+     * 任务从Handler被取消回调
+     */
+    protected void onPostRemove()
     {
     }
 
+    /**
+     * 任务被暂停回调
+     */
     protected void onPause()
     {
     }

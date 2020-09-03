@@ -7,7 +7,7 @@ public abstract class FDelayTask
 {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
-    private boolean mPost;
+    private boolean mHasPost;
 
     /**
      * 延迟执行
@@ -21,7 +21,7 @@ public abstract class FDelayTask
 
         removeDelay();
         MAIN_HANDLER.postDelayed(mRunnable, delay);
-        mPost = true;
+        mHasPost = true;
         onPost(delay);
     }
 
@@ -35,19 +35,6 @@ public abstract class FDelayTask
     }
 
     /**
-     * 延迟或者立即执行
-     *
-     * @param delay (单位毫秒) 小于等于0-立即在当前线程执行，大于0-延迟执行
-     */
-    public final void runDelayOrImmediately(long delay)
-    {
-        if (delay > 0)
-            runDelay(delay);
-        else
-            runImmediately();
-    }
-
-    /**
      * 移除延迟任务
      *
      * @return
@@ -55,10 +42,10 @@ public abstract class FDelayTask
     public final synchronized boolean removeDelay()
     {
         MAIN_HANDLER.removeCallbacks(mRunnable);
-        if (mPost)
+        if (mHasPost)
         {
-            mPost = false;
-            onRemove();
+            mHasPost = false;
+            onPostRemoved();
             return true;
         }
         return false;
@@ -71,7 +58,7 @@ public abstract class FDelayTask
         {
             synchronized (FDelayTask.this)
             {
-                mPost = false;
+                mHasPost = false;
             }
 
             FDelayTask.this.onRun();
@@ -84,7 +71,7 @@ public abstract class FDelayTask
     {
     }
 
-    protected void onRemove()
+    protected void onPostRemoved()
     {
     }
 }

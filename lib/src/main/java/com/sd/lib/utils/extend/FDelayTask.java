@@ -98,8 +98,14 @@ public abstract class FDelayTask
     {
         if (mIsPaused)
         {
-            if (!mHasPost)
+            if (mHasPost)
+            {
+                mIsPaused = false;
+                onResume();
+            } else
+            {
                 runImmediately();
+            }
         }
     }
 
@@ -145,6 +151,13 @@ public abstract class FDelayTask
      * 任务被暂停回调
      */
     protected void onPause()
+    {
+    }
+
+    /**
+     * 任务从暂停被恢复回调
+     */
+    protected void onResume()
     {
     }
 }

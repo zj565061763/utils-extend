@@ -98,8 +98,8 @@ public abstract class FDelayTask
     {
         if (mIsPaused)
         {
-            mIsPaused = false;
-            notifyRun();
+            if (!mHasPost)
+                runImmediately();
         }
     }
 
@@ -116,14 +116,9 @@ public abstract class FDelayTask
                     return;
             }
 
-            notifyRun();
+            FDelayTask.this.onRun();
         }
     };
-
-    private void notifyRun()
-    {
-        FDelayTask.this.onRun();
-    }
 
     /**
      * 任务执行回调

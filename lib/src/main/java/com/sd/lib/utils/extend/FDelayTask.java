@@ -8,9 +8,9 @@ public abstract class FDelayTask
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     /** 是否已经被post到Handler */
-    private boolean mHasPost;
+    private volatile boolean mHasPost;
     /** 是否被暂停 */
-    private boolean mIsPaused;
+    private volatile boolean mIsPaused;
 
     /**
      * 是否已经被post到Handler

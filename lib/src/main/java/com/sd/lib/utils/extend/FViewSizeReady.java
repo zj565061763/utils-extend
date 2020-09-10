@@ -1,5 +1,6 @@
 package com.sd.lib.utils.extend;
 
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -12,6 +13,20 @@ public abstract class FViewSizeReady
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Map<View, String> mViewHolder = new ConcurrentHashMap<>();
     private boolean mIsReady;
+
+    private long mCheckDelay = 500;
+
+    /**
+     * 设置延迟多少毫秒开始检查
+     *
+     * @param delay
+     */
+    public void setCheckDelay(long delay)
+    {
+        if (delay < 0)
+            delay = 0;
+        mCheckDelay = delay;
+    }
 
     /**
      * 是否已经准备好
@@ -37,6 +52,9 @@ public abstract class FViewSizeReady
 
         for (View view : views)
         {
+            if (view == null)
+                continue;
+
             if (mViewHolder.containsKey(view))
                 continue;
 
@@ -57,7 +75,7 @@ public abstract class FViewSizeReady
      */
     protected boolean checkReady(View view)
     {
-        return view.getWidth() > 0 && view.getHeight() > 0;
+        return view.getWidth() > 0 && view.getHeight() > 0 && isAttached(view);
     }
 
     private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
@@ -86,7 +104,7 @@ public abstract class FViewSizeReady
     private void startCheckSize()
     {
         stopCheckSize();
-        mHandler.postDelayed(mCheckSizeRunnable, 500);
+        mHandler.postDelayed(mCheckSizeRunnable, mCheckDelay);
     }
 
     private void stopCheckSize()
@@ -133,5 +151,13 @@ public abstract class FViewSizeReady
         mIsReady = false;
 
         stopCheckSize();
+    }
+
+    private static boolean isAttached(View view)
+    {
+        if (Build.VERSION.SDK_INT >= 19)
+            return view.isAttachedToWindow();
+        else
+            return view.getWindowToken() != null;
     }
 }

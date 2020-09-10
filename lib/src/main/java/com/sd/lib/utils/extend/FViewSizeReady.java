@@ -9,6 +9,17 @@ public abstract class FViewSizeReady
 {
     private final Map<View, Boolean> mViewHolder = new WeakHashMap<>();
     private int mReadySize;
+    private boolean mIsReady;
+
+    /**
+     * 是否已经准备好
+     *
+     * @return
+     */
+    public boolean isReady()
+    {
+        return mIsReady;
+    }
 
     /**
      * 设置view
@@ -27,7 +38,7 @@ public abstract class FViewSizeReady
             if (mViewHolder.containsKey(view))
                 continue;
 
-            final boolean ready = view.getWidth() > 0 && view.getHeight() > 0;
+            final boolean ready = checkReady(view);
             mViewHolder.put(view, ready);
 
             if (ready)
@@ -62,7 +73,7 @@ public abstract class FViewSizeReady
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
         {
             final boolean oldReady = mViewHolder.get(v);
-            final boolean ready = v.getWidth() > 0 && v.getHeight() > 0;
+            final boolean ready = checkReady(v);
             if (ready != oldReady)
             {
                 mViewHolder.put(v, ready);
@@ -79,16 +90,28 @@ public abstract class FViewSizeReady
         }
     };
 
-    private void notifyReadyIfNeed()
+    /**
+     * 检查view是否准备好
+     *
+     * @param view
+     * @return
+     */
+    protected boolean checkReady(View view)
     {
-        if (mReadySize <= 0)
-            return;
-
-        if (mReadySize == mViewHolder.size())
-            onSizeReady();
+        return view.getWidth() > 0 && view.getHeight() > 0;
     }
 
-    protected abstract void onSizeReady();
+    private void notifyReadyIfNeed()
+    {
+        final boolean isReady = mReadySize > 0 && mReadySize == mViewHolder.size();
+        if (mIsReady != isReady)
+        {
+            mIsReady = isReady;
+            onReadyChanged(isReady);
+        }
+    }
+
+    protected abstract void onReadyChanged(boolean isReady);
 
     /**
      * 销毁
@@ -105,5 +128,6 @@ public abstract class FViewSizeReady
         }
         mViewHolder.clear();
         mReadySize = 0;
+        mIsReady = false;
     }
 }

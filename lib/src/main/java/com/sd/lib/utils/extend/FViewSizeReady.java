@@ -1,14 +1,16 @@
 package com.sd.lib.utils.extend;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FViewSizeReady
 {
-    private final Map<View, Boolean> mViewHolder = new WeakHashMap<>();
-    private int mReadySize;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Map<View, String> mViewHolder = new ConcurrentHashMap<>();
     private boolean mIsReady;
 
     /**
@@ -38,57 +40,14 @@ public abstract class FViewSizeReady
             if (mViewHolder.containsKey(view))
                 continue;
 
-            final boolean ready = checkReady(view);
-            mViewHolder.put(view, ready);
-
-            if (ready)
-                mReadySize++;
+            mViewHolder.put(view, "");
 
             view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
             view.addOnLayoutChangeListener(mOnLayoutChangeListener);
         }
 
-        notifyReadyIfNeed();
+        startCheckSize();
     }
-
-    private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
-    {
-        @Override
-        public void onViewAttachedToWindow(View v)
-        {
-        }
-
-        @Override
-        public void onViewDetachedFromWindow(View v)
-        {
-            mViewHolder.put(v, false);
-            mReadySize--;
-            notifyReadyIfNeed();
-        }
-    };
-
-    private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener()
-    {
-        @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
-        {
-            final boolean oldReady = mViewHolder.get(v);
-            final boolean ready = checkReady(v);
-            if (ready != oldReady)
-            {
-                mViewHolder.put(v, ready);
-                if (ready)
-                {
-                    mReadySize++;
-                    notifyReadyIfNeed();
-                } else
-                {
-                    mReadySize--;
-                    notifyReadyIfNeed();
-                }
-            }
-        }
-    };
 
     /**
      * 检查view是否准备好
@@ -101,15 +60,62 @@ public abstract class FViewSizeReady
         return view.getWidth() > 0 && view.getHeight() > 0;
     }
 
-    private void notifyReadyIfNeed()
+    private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
     {
-        final boolean isReady = mReadySize > 0 && mReadySize == mViewHolder.size();
-        if (mIsReady != isReady)
+        @Override
+        public void onViewAttachedToWindow(View v)
         {
-            mIsReady = isReady;
-            onReadyChanged(isReady);
         }
+
+        @Override
+        public void onViewDetachedFromWindow(View v)
+        {
+            startCheckSize();
+        }
+    };
+
+    private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener()
+    {
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
+        {
+            startCheckSize();
+        }
+    };
+
+    private void startCheckSize()
+    {
+        stopCheckSize();
+        mHandler.postDelayed(mCheckSizeRunnable, 500);
     }
+
+    private void stopCheckSize()
+    {
+        mHandler.removeCallbacks(mCheckSizeRunnable);
+    }
+
+    private final Runnable mCheckSizeRunnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            boolean isReady = true;
+            for (View view : mViewHolder.keySet())
+            {
+                if (!checkReady(view))
+                {
+                    isReady = false;
+                    break;
+                }
+            }
+
+            if (mIsReady != isReady)
+            {
+                mIsReady = isReady;
+                onReadyChanged(isReady);
+            }
+        }
+    };
 
     protected abstract void onReadyChanged(boolean isReady);
 
@@ -118,16 +124,14 @@ public abstract class FViewSizeReady
      */
     public void destroy()
     {
-        if (mViewHolder.isEmpty())
-            return;
-
         for (View view : mViewHolder.keySet())
         {
             view.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
             view.removeOnLayoutChangeListener(mOnLayoutChangeListener);
         }
         mViewHolder.clear();
-        mReadySize = 0;
         mIsReady = false;
+
+        stopCheckSize();
     }
 }

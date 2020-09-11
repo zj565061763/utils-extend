@@ -8,13 +8,14 @@ import android.view.View;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class FViewSizeReady
+public class FViewSizeChecker
 {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Map<View, String> mViewHolder = new ConcurrentHashMap<>();
     private boolean mIsReady;
 
     private long mCheckDelay = 500;
+    private Callback mCallback;
 
     /**
      * 设置延迟多少毫秒开始检查
@@ -39,17 +40,30 @@ public abstract class FViewSizeReady
     }
 
     /**
-     * 设置view
+     * 检查View
+     *
+     * @param view
+     * @param callback
+     */
+    public void check(View view, Callback callback)
+    {
+        check(new View[]{view}, callback);
+    }
+
+    /**
+     * 检查View
      *
      * @param views
+     * @param callback
      */
-    public void setView(View... views)
+    public void check(View[] views, Callback callback)
     {
         destroy();
 
         if (views == null || views.length <= 0)
             return;
 
+        mCallback = callback;
         for (View view : views)
         {
             if (view == null)
@@ -65,17 +79,6 @@ public abstract class FViewSizeReady
         }
 
         startCheckSize();
-    }
-
-    /**
-     * 检查view是否准备好
-     *
-     * @param view
-     * @return
-     */
-    protected boolean checkReady(View view)
-    {
-        return view.getWidth() > 0 && view.getHeight() > 0 && isAttached(view);
     }
 
     private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
@@ -131,11 +134,27 @@ public abstract class FViewSizeReady
             {
                 mIsReady = isReady;
                 onReadyChanged(isReady);
+
+                if (mCallback != null)
+                    mCallback.onReadyChanged(isReady);
             }
         }
     };
 
-    protected abstract void onReadyChanged(boolean isReady);
+    /**
+     * 检查view是否准备好
+     *
+     * @param view
+     * @return
+     */
+    protected boolean checkReady(View view)
+    {
+        return view.getWidth() > 0 && view.getHeight() > 0 && isAttached(view);
+    }
+
+    protected void onReadyChanged(boolean isReady)
+    {
+    }
 
     /**
      * 销毁
@@ -149,6 +168,7 @@ public abstract class FViewSizeReady
         }
         mViewHolder.clear();
         mIsReady = false;
+        mCallback = null;
 
         stopCheckSize();
     }
@@ -159,5 +179,10 @@ public abstract class FViewSizeReady
             return view.isAttachedToWindow();
         else
             return view.getWindowToken() != null;
+    }
+
+    public interface Callback
+    {
+        void onReadyChanged(boolean isReady);
     }
 }

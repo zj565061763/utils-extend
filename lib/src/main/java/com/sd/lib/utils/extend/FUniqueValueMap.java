@@ -5,13 +5,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 值唯一的Map
- * <p>
- * 未考虑多线程问题，如果需要在多线程下使用，请手动同步
+ * 用https://github.com/zj565061763/collection-map替代
  *
  * @param <K>
  * @param <V>
  */
+@Deprecated
 public class FUniqueValueMap<K, V>
 {
     private final Map<K, V> mMap = new ConcurrentHashMap<>();

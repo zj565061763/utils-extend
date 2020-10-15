@@ -2,14 +2,19 @@ package com.sd.lib.utils.extend;
 
 import android.animation.Animator;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class FVisibilityAnimatorHandler
 {
     private Animator mShowAnimator;
     private Animator mHideAnimator;
 
-    private final AnimatorListenerWrapper mShowAnimatorListener = new AnimatorListenerWrapper();
-    private final AnimatorListenerWrapper mHideAnimatorListener = new AnimatorListenerWrapper();
+    private Animator.AnimatorListener mShowListener;
+    private Animator.AnimatorListener mHideListener;
 
+    private Map<Animator.AnimatorListener, String> mShowListenerHolder;
+    private Map<Animator.AnimatorListener, String> mHideListenerHolder;
 
     //---------- Show start ----------
 
@@ -40,7 +45,40 @@ public class FVisibilityAnimatorHandler
      */
     public void setShowAnimatorListener(Animator.AnimatorListener listener)
     {
-        mShowAnimatorListener.setOriginal(listener);
+        mShowListener = listener;
+    }
+
+    /**
+     * 添加显示动画监听
+     *
+     * @param listener
+     */
+    public void addShowAnimatorListener(Animator.AnimatorListener listener)
+    {
+        if (listener == null)
+            return;
+
+        if (mShowListenerHolder == null)
+            mShowListenerHolder = new ConcurrentHashMap<>();
+        mShowListenerHolder.put(listener, "");
+    }
+
+    /**
+     * 移除显示动画监听
+     *
+     * @param listener
+     */
+    public void removeShowAnimatorListener(Animator.AnimatorListener listener)
+    {
+        if (listener == null)
+            return;
+
+        if (mShowListenerHolder != null)
+        {
+            mShowListenerHolder.remove(listener);
+            if (mShowListenerHolder.isEmpty())
+                mShowListenerHolder = null;
+        }
     }
 
     /**
@@ -113,7 +151,40 @@ public class FVisibilityAnimatorHandler
      */
     public void setHideAnimatorListener(Animator.AnimatorListener listener)
     {
-        mHideAnimatorListener.setOriginal(listener);
+        mHideListener = listener;
+    }
+
+    /**
+     * 添加隐藏动画监听
+     *
+     * @param listener
+     */
+    public void addHideAnimatorListener(Animator.AnimatorListener listener)
+    {
+        if (listener == null)
+            return;
+
+        if (mHideListenerHolder == null)
+            mHideListenerHolder = new ConcurrentHashMap<>();
+        mHideListenerHolder.put(listener, "");
+    }
+
+    /**
+     * 移除隐藏动画监听
+     *
+     * @param listener
+     */
+    public void removeHideAnimatorListener(Animator.AnimatorListener listener)
+    {
+        if (listener == null)
+            return;
+
+        if (mHideListenerHolder != null)
+        {
+            mHideListenerHolder.remove(listener);
+            if (mHideListenerHolder.isEmpty())
+                mHideListenerHolder = null;
+        }
     }
 
     /**
@@ -156,41 +227,129 @@ public class FVisibilityAnimatorHandler
 
     //---------- Hide end ----------
 
-    private static final class AnimatorListenerWrapper implements Animator.AnimatorListener
+    private final Animator.AnimatorListener mShowAnimatorListener = new Animator.AnimatorListener()
     {
-        private Animator.AnimatorListener mOriginal;
-
-        public void setOriginal(Animator.AnimatorListener original)
-        {
-            mOriginal = original;
-        }
-
         @Override
         public void onAnimationStart(Animator animation)
         {
-            if (mOriginal != null)
-                mOriginal.onAnimationStart(animation);
+            if (mShowListener != null)
+                mShowListener.onAnimationStart(animation);
+
+            if (mShowListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mShowListenerHolder.keySet())
+                {
+                    item.onAnimationStart(animation);
+                }
+            }
         }
 
         @Override
         public void onAnimationEnd(Animator animation)
         {
-            if (mOriginal != null)
-                mOriginal.onAnimationEnd(animation);
+            if (mShowListener != null)
+                mShowListener.onAnimationEnd(animation);
+
+            if (mShowListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mShowListenerHolder.keySet())
+                {
+                    item.onAnimationEnd(animation);
+                }
+            }
         }
 
         @Override
         public void onAnimationCancel(Animator animation)
         {
-            if (mOriginal != null)
-                mOriginal.onAnimationCancel(animation);
+            if (mShowListener != null)
+                mShowListener.onAnimationCancel(animation);
+
+            if (mShowListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mShowListenerHolder.keySet())
+                {
+                    item.onAnimationCancel(animation);
+                }
+            }
         }
 
         @Override
         public void onAnimationRepeat(Animator animation)
         {
-            if (mOriginal != null)
-                mOriginal.onAnimationRepeat(animation);
+            if (mShowListener != null)
+                mShowListener.onAnimationRepeat(animation);
+
+            if (mShowListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mShowListenerHolder.keySet())
+                {
+                    item.onAnimationRepeat(animation);
+                }
+            }
         }
-    }
+    };
+
+    private final Animator.AnimatorListener mHideAnimatorListener = new Animator.AnimatorListener()
+    {
+        @Override
+        public void onAnimationStart(Animator animation)
+        {
+            if (mHideListener != null)
+                mHideListener.onAnimationStart(animation);
+
+            if (mHideListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mHideListenerHolder.keySet())
+                {
+                    item.onAnimationStart(animation);
+                }
+            }
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation)
+        {
+            if (mHideListener != null)
+                mHideListener.onAnimationEnd(animation);
+
+            if (mHideListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mHideListenerHolder.keySet())
+                {
+                    item.onAnimationEnd(animation);
+                }
+            }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation)
+        {
+            if (mHideListener != null)
+                mHideListener.onAnimationCancel(animation);
+
+            if (mHideListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mHideListenerHolder.keySet())
+                {
+                    item.onAnimationCancel(animation);
+                }
+            }
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation)
+        {
+            if (mHideListener != null)
+                mHideListener.onAnimationRepeat(animation);
+
+            if (mHideListenerHolder != null)
+            {
+                for (Animator.AnimatorListener item : mHideListenerHolder.keySet())
+                {
+                    item.onAnimationRepeat(animation);
+                }
+            }
+        }
+    };
 }

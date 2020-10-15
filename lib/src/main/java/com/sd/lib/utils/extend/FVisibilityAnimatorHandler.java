@@ -5,6 +5,10 @@ import android.animation.Animator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * https://github.com/zj565061763/view-animator
+ */
+@Deprecated
 public class FVisibilityAnimatorHandler
 {
     private Animator mShowAnimator;

@@ -171,6 +171,8 @@ public class FViewSizeChecker
      */
     public void destroy()
     {
+        stopCheckSize();
+
         for (View view : mViewHolder.keySet())
         {
             view.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
@@ -179,8 +181,6 @@ public class FViewSizeChecker
         mViewHolder.clear();
         mIsReady = false;
         mCallback = null;
-
-        stopCheckSize();
     }
 
     private static boolean isAttached(View view)

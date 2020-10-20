@@ -14,7 +14,7 @@ public class FViewSizeChecker
     private final Map<View, String> mViewHolder = new ConcurrentHashMap<>();
     private boolean mIsReady;
 
-    private long mCheckDelay = 500;
+    private long mCheckDelay;
     private Callback mCallback;
 
     /**
@@ -107,7 +107,17 @@ public class FViewSizeChecker
     private void startCheckSize()
     {
         stopCheckSize();
-        mHandler.postDelayed(mCheckSizeRunnable, mCheckDelay);
+
+        if (mCheckDelay > 0)
+        {
+            mHandler.postDelayed(mCheckSizeRunnable, mCheckDelay);
+        } else
+        {
+            if (Looper.myLooper() == Looper.getMainLooper())
+                mCheckSizeRunnable.run();
+            else
+                mHandler.post(mCheckSizeRunnable);
+        }
     }
 
     private void stopCheckSize()

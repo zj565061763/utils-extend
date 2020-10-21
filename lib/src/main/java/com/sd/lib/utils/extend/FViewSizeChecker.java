@@ -89,17 +89,7 @@ public class FViewSizeChecker
     private void startCheckSize()
     {
         stopCheckSize();
-
-        if (mCheckDelay > 0)
-        {
-            mHandler.postDelayed(mCheckSizeRunnable, mCheckDelay);
-        } else
-        {
-            if (Looper.myLooper() == Looper.getMainLooper())
-                mCheckSizeRunnable.run();
-            else
-                mHandler.post(mCheckSizeRunnable);
-        }
+        mHandler.postDelayed(mCheckSizeRunnable, mCheckDelay);
     }
 
     private void stopCheckSize()

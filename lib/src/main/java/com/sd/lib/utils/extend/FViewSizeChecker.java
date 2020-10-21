@@ -140,7 +140,7 @@ public class FViewSizeChecker
      * @param view
      * @return
      */
-    protected boolean checkReady(View view)
+    public boolean checkReady(View view)
     {
         return view.getWidth() > 0 && view.getHeight() > 0 && isAttached(view);
     }

@@ -12,7 +12,6 @@ public class FViewSizeChecker
 {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Map<View, String> mViewHolder = new ConcurrentHashMap<>();
-    private boolean mIsReady;
 
     private long mCheckDelay;
     private Callback mCallback;
@@ -30,24 +29,15 @@ public class FViewSizeChecker
     }
 
     /**
-     * 是否已经准备好
-     *
-     * @return
-     */
-    public boolean isReady()
-    {
-        return mIsReady;
-    }
-
-    /**
      * 检查View
      *
      * @param view
      * @param callback
+     * @return true-成功发起检测，false-未发起检测
      */
-    public void check(View view, Callback callback)
+    public boolean check(View view, Callback callback)
     {
-        check(new View[]{view}, callback);
+        return check(new View[]{view}, callback);
     }
 
     /**
@@ -55,15 +45,15 @@ public class FViewSizeChecker
      *
      * @param views
      * @param callback
+     * @return true-成功发起检测，false-未发起检测
      */
-    public void check(View[] views, Callback callback)
+    public boolean check(View[] views, Callback callback)
     {
         destroy();
 
         if (views == null || views.length <= 0)
-            return;
+            return false;
 
-        mCallback = callback;
         for (View view : views)
         {
             if (view == null)
@@ -73,27 +63,19 @@ public class FViewSizeChecker
                 continue;
 
             mViewHolder.put(view, "");
-
-            view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
             view.addOnLayoutChangeListener(mOnLayoutChangeListener);
         }
 
-        startCheckSize();
-    }
-
-    private final View.OnAttachStateChangeListener mOnAttachStateChangeListener = new View.OnAttachStateChangeListener()
-    {
-        @Override
-        public void onViewAttachedToWindow(View v)
+        if (mViewHolder.size() > 0)
         {
-        }
-
-        @Override
-        public void onViewDetachedFromWindow(View v)
-        {
+            mCallback = callback;
             startCheckSize();
+            return true;
+        } else
+        {
+            return false;
         }
-    };
+    }
 
     private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener()
     {
@@ -140,13 +122,14 @@ public class FViewSizeChecker
                 }
             }
 
-            if (mIsReady != isReady)
+            if (isReady)
             {
-                mIsReady = isReady;
-                onReadyChanged(isReady);
+                final Callback callback = mCallback;
+                destroy();
 
-                if (mCallback != null)
-                    mCallback.onReadyChanged(isReady);
+                onSizeReady();
+                if (callback != null)
+                    callback.onSizeReady();
             }
         }
     };
@@ -162,7 +145,7 @@ public class FViewSizeChecker
         return view.getWidth() > 0 && view.getHeight() > 0 && isAttached(view);
     }
 
-    protected void onReadyChanged(boolean isReady)
+    protected void onSizeReady()
     {
     }
 
@@ -175,11 +158,9 @@ public class FViewSizeChecker
 
         for (View view : mViewHolder.keySet())
         {
-            view.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
             view.removeOnLayoutChangeListener(mOnLayoutChangeListener);
         }
         mViewHolder.clear();
-        mIsReady = false;
         mCallback = null;
     }
 
@@ -193,6 +174,6 @@ public class FViewSizeChecker
 
     public interface Callback
     {
-        void onReadyChanged(boolean isReady);
+        void onSizeReady();
     }
 }

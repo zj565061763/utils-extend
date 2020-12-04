@@ -118,7 +118,12 @@ public class FViewSizeTracker
             return;
 
         if (mBoundaryHandler.updateSourceLayoutParams(target, source, layoutParams))
-            source.setLayoutParams(layoutParams);
+            updateSourceSize(source, layoutParams);
+    }
+
+    protected void updateSourceSize(View source, ViewGroup.LayoutParams layoutParams)
+    {
+        source.setLayoutParams(layoutParams);
     }
 
     private static abstract class BoundaryHandler

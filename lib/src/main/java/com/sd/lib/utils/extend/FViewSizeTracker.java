@@ -11,6 +11,7 @@ import java.lang.ref.WeakReference;
 public class FViewSizeTracker
 {
     private final BoundaryHandler mBoundaryHandler;
+    private final ViewGroup.LayoutParams mLayoutParams = new ViewGroup.LayoutParams(0, 0);
 
     private WeakReference<View> mSource;
     private WeakReference<View> mTarget;
@@ -117,12 +118,21 @@ public class FViewSizeTracker
         if (layoutParams == null)
             return;
 
-        if (mBoundaryHandler.updateSourceLayoutParams(target, source, layoutParams))
-            updateSourceSize(source, layoutParams);
+        final ViewGroup.LayoutParams copyParams = mLayoutParams;
+        copyParams.width = layoutParams.width;
+        copyParams.height = layoutParams.height;
+
+        if (mBoundaryHandler.updateSourceLayoutParams(target, source, copyParams))
+        {
+            updateSourceSize(source, copyParams.width, copyParams.height);
+        }
     }
 
-    protected void updateSourceSize(View source, ViewGroup.LayoutParams layoutParams)
+    protected void updateSourceSize(View source, int width, int height)
     {
+        final ViewGroup.LayoutParams layoutParams = source.getLayoutParams();
+        layoutParams.width = width;
+        layoutParams.height = height;
         source.setLayoutParams(layoutParams);
     }
 

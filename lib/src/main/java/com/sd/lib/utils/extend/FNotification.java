@@ -7,8 +7,9 @@ import android.os.Build;
 import android.text.TextUtils;
 
 /**
- * 通知管理
+ * 用{@link FNotificationManager}替代
  */
+@Deprecated
 public class FNotification
 {
     private final Context mContext;

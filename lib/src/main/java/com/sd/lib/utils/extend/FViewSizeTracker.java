@@ -201,39 +201,29 @@ public class FViewSizeTracker
 
     private static final class BothHandler extends BoundaryHandler
     {
+        private final WidthHandler mWidthHandler = new WidthHandler();
+        private final HeightHandler mHeightHandler = new HeightHandler();
+
         @Override
         public boolean isTargetReady(View target)
         {
-            return target.getWidth() > 0 && target.getHeight() > 0;
+            return mWidthHandler.isTargetReady(target) &&
+                    mHeightHandler.isTargetReady(target);
         }
 
         @Override
         public boolean isSizeEquals(View target, View source)
         {
-            return target.getWidth() == source.getWidth() &&
-                    target.getHeight() == source.getHeight();
+            return mWidthHandler.isSizeEquals(target, source) &&
+                    mHeightHandler.isSizeEquals(target, source);
         }
 
         @Override
         public boolean updateSourceLayoutParams(View target, View source, ViewGroup.LayoutParams layoutParams)
         {
-            boolean changed = false;
-
-            final int width = target.getWidth();
-            if (layoutParams.width != width)
-            {
-                layoutParams.width = width;
-                changed = true;
-            }
-
-            final int height = target.getHeight();
-            if (layoutParams.height != height)
-            {
-                layoutParams.height = height;
-                changed = true;
-            }
-
-            return changed;
+            final boolean width = mWidthHandler.updateSourceLayoutParams(target, source, layoutParams);
+            final boolean height = mHeightHandler.updateSourceLayoutParams(target, source, layoutParams);
+            return width || height;
         }
     }
 

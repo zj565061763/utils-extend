@@ -118,13 +118,13 @@ public class FViewSizeTracker
         if (layoutParams == null)
             return;
 
-        final ViewGroup.LayoutParams copyParams = mLayoutParams;
-        copyParams.width = layoutParams.width;
-        copyParams.height = layoutParams.height;
+        final ViewGroup.LayoutParams tempParams = mLayoutParams;
+        tempParams.width = layoutParams.width;
+        tempParams.height = layoutParams.height;
 
-        if (mBoundaryHandler.updateSourceLayoutParams(target, source, copyParams))
+        if (mBoundaryHandler.updateSourceLayoutParams(target, source, tempParams))
         {
-            updateSourceSize(source, copyParams.width, copyParams.height);
+            updateSourceSize(source, tempParams.width, tempParams.height);
         }
     }
 

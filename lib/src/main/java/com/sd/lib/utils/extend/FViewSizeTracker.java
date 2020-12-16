@@ -18,7 +18,7 @@ public class FViewSizeTracker
 
     public FViewSizeTracker()
     {
-        this(Boundary.Both);
+        this(Boundary.both);
     }
 
     public FViewSizeTracker(Boundary boundary)
@@ -28,13 +28,13 @@ public class FViewSizeTracker
 
         switch (boundary)
         {
-            case Width:
+            case width:
                 mBoundaryHandler = new WidthHandler();
                 break;
-            case Height:
+            case height:
                 mBoundaryHandler = new HeightHandler();
                 break;
-            case Both:
+            case both:
                 mBoundaryHandler = new BothHandler();
                 break;
             default:
@@ -229,8 +229,8 @@ public class FViewSizeTracker
 
     public enum Boundary
     {
-        Width,
-        Height,
-        Both
+        width,
+        height,
+        both
     }
 }

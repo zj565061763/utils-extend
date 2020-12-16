@@ -52,7 +52,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="com.sd.utils_extend.MainActivity">
+        <activity android:name="com.sd.utils_extend.SizeTrackerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

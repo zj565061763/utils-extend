@@ -37,18 +37,28 @@ public final class FActivityObjectHolder
      * 获得某个Item
      *
      * @param clazz
+     * @param <T>
      * @return
      */
     public synchronized <T extends Item> T getItem(Class<T> clazz)
     {
-        if (clazz == null)
-            throw new NullPointerException("clazz is null");
+        checkItemClass(clazz);
 
-        if (clazz.isInterface())
-            throw new IllegalArgumentException("clazz is interface " + clazz);
+        final Item item = mItemHolder.get(clazz);
+        if (item == null)
+            return null;
+        return (T) item;
+    }
 
-        if (Modifier.isAbstract(clazz.getModifiers()))
-            throw new IllegalArgumentException("clazz is abstract " + clazz);
+    /**
+     * 获得某个Item，如果不存在则创建后返回
+     *
+     * @param clazz
+     * @return
+     */
+    public synchronized <T extends Item> T getOrCreateItem(Class<T> clazz)
+    {
+        checkItemClass(clazz);
 
         Item item = mItemHolder.get(clazz);
         if (item == null)
@@ -158,6 +168,18 @@ public final class FActivityObjectHolder
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static <T extends Item> void checkItemClass(Class<T> clazz)
+    {
+        if (clazz == null)
+            throw new NullPointerException("clazz is null");
+
+        if (clazz.isInterface())
+            throw new IllegalArgumentException("clazz is interface " + clazz);
+
+        if (Modifier.isAbstract(clazz.getModifiers()))
+            throw new IllegalArgumentException("clazz is abstract " + clazz);
     }
 
     public interface Item

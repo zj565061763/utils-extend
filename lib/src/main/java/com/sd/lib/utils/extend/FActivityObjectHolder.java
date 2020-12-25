@@ -174,4 +174,32 @@ public final class FActivityObjectHolder
          */
         void destroy();
     }
+
+    public abstract static class BaseItem implements Item
+    {
+        private boolean mIsDestroyed;
+
+        public final boolean isDestroyed()
+        {
+            return mIsDestroyed;
+        }
+
+        @Override
+        public final void init(Activity activity)
+        {
+            mIsDestroyed = false;
+            initImpl();
+        }
+
+        @Override
+        public final void destroy()
+        {
+            destroyImpl();
+            mIsDestroyed = true;
+        }
+
+        protected abstract void initImpl();
+
+        protected abstract void destroyImpl();
+    }
 }

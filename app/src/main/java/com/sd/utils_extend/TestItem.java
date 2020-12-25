@@ -17,7 +17,7 @@ public class TestItem extends FActivityObjectHolder.BaseItem
     @Override
     protected void initImpl(Activity activity)
     {
-        Log.i(TAG, "initImpl activity" + activity + " " + this);
+        Log.i(TAG, "initImpl activity:" + activity + " " + this);
     }
 
     @Override

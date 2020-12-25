@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.sd.lib.utils.extend.FActivityObjectHolder;
 import com.sd.lib.utils.extend.FContinueTrigger;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
@@ -18,12 +19,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FActivityObjectHolder.of(this).getOrCreateItem(TestItem.class);
     }
 
     @Override
     public void onClick(View v)
     {
-
+        FActivityObjectHolder.of(this).getItem(TestItem.class).test();
     }
 
     @Override

@@ -210,7 +210,7 @@ public final class FActivityObjectHolder
         public final void init(Activity activity)
         {
             mIsDestroyed = false;
-            initImpl();
+            initImpl(activity);
         }
 
         @Override
@@ -220,7 +220,7 @@ public final class FActivityObjectHolder
             mIsDestroyed = true;
         }
 
-        protected abstract void initImpl();
+        protected abstract void initImpl(Activity activity);
 
         protected abstract void destroyImpl();
     }

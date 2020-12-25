@@ -77,6 +77,15 @@ public final class FActivityObjectHolder
     }
 
     /**
+     * 清空并销毁
+     */
+    public synchronized void clear()
+    {
+        destroy();
+        mItemHolder.clear();
+    }
+
+    /**
      * 销毁
      */
     private synchronized void destroy()

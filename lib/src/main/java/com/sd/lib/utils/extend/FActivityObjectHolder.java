@@ -54,27 +54,27 @@ public final class FActivityObjectHolder
         if (item == null)
         {
             item = createItem(clazz);
+            if (item == null)
+                throw new NullPointerException("createItem return null");
+
+            mItemHolder.put(clazz, item);
 
             final Activity activity = getActivity();
             if (activity != null && !activity.isFinishing())
-            {
-                mItemHolder.put(clazz, item);
                 item.init(activity);
-            }
         }
         return (T) item;
     }
 
     /**
-     * 清空并销毁Item
+     * 销毁
      */
-    private synchronized void clearItem()
+    private synchronized void destroy()
     {
         for (Item item : mItemHolder.values())
         {
             item.destroy();
         }
-        mItemHolder.clear();
     }
 
     private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
@@ -117,7 +117,7 @@ public final class FActivityObjectHolder
                 activity.getApplication().unregisterActivityLifecycleCallbacks(this);
                 final FActivityObjectHolder holder = remove(activity);
                 if (holder != null)
-                    holder.clearItem();
+                    holder.destroy();
             }
         }
     };

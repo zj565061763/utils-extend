@@ -1,15 +1,17 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
-group = 'com.github.zj565061763'
+def libArtifactId = "utils-extend"
+def libVersionCode = 20210412
+def libVersionName = "1.1.48"
 
 android {
     compileSdkVersion 28
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 20201225
-        versionName "1.1.47"
+        versionCode libVersionCode
+        versionName libVersionName
     }
 
     buildTypes {
@@ -28,29 +30,24 @@ android {
 dependencies {
 }
 
-tasks.withType(Javadoc) {
-    options {
-        encoding 'UTF-8'
-        charSet 'UTF-8'
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = "com.sd.lib.android"
+                artifactId = libArtifactId
+                version = libVersionName
+
+                // 上传源码
+                artifact generateSourcesJar
+            }
+        }
     }
-}
-
-task sourcesJar(type: Jar) {
-    getArchiveClassifier().set('sources')
-    from android.sourceSets.main.java.sourceFiles
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    getArchiveClassifier().set('javadoc')
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }

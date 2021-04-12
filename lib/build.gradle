@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 
 def libArtifactId = "utils-extend"
 def libVersionCode = 20210412
-def libVersionName = "1.1.48"
+def libVersionName = "1.1.49"
 
 android {
     compileSdkVersion 28

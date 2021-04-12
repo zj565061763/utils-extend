@@ -17,10 +17,13 @@ public class App extends Application {
         super.onCreate();
         FNotificationManager.getInstance().init(this);
 
-        new FVersionCodeHandler().check(this, new FVersionCodeHandler.Callback() {
+        new FVersionCodeHandler(this).check(new FVersionCodeHandler.Callback() {
             @Override
-            public void onVersionCode(long oldVersion, long currentVersion) {
-                Log.i(TAG, "onVersionCode oldVersion:" + oldVersion + " currentVersion:" + currentVersion);
+            public void onVersionCode(String versionType, long oldVersion, long currentVersion) {
+                Log.i(TAG, "onVersionCode"
+                        + " versionType:" + versionType
+                        + " oldVersion:" + oldVersion
+                        + " currentVersion:" + currentVersion);
             }
         });
     }

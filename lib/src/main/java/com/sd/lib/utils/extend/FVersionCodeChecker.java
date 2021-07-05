@@ -7,19 +7,17 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-public class FVersionCodeHandler {
+public class FVersionCodeChecker {
     private static final String KEY_PREFIX = "app_version_code#";
 
     private final Context mContext;
 
-    public FVersionCodeHandler(Context context) {
+    public FVersionCodeChecker(Context context) {
         mContext = context.getApplicationContext();
     }
 
     /**
      * 检查版本
-     *
-     * @param callback
      */
     public void check(Callback callback) {
         check(null, callback);

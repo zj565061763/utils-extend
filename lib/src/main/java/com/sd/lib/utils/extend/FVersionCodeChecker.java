@@ -7,32 +7,31 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class FVersionCodeChecker {
     private static final String KEY_PREFIX = "app_version_code#";
 
     private final Context mContext;
 
-    public FVersionCodeChecker(Context context) {
+    public FVersionCodeChecker(@NonNull Context context) {
         mContext = context.getApplicationContext();
     }
 
     /**
      * 检查版本
      */
-    public void check(Callback callback) {
+    public void check(@NonNull Callback callback) {
         check(null, callback);
     }
 
     /**
      * 检查版本
      *
-     * @param versionType 版本类型
+     * @param versionType 版本类型，如果为null，则默认值为包名
      */
-    public void check(String versionType, Callback callback) {
-        if (callback == null) {
-            return;
-        }
-
+    public void check(@Nullable String versionType, @NonNull Callback callback) {
         final Context context = mContext;
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         if (sharedPreferences == null) {

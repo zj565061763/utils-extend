@@ -32,7 +32,7 @@ public class FVersionCodeChecker {
      * @param versionType 版本类型，如果为null，则默认值为包名
      */
     @Nullable
-    public CheckResult check(@Nullable String versionType) {
+    public synchronized CheckResult check(@Nullable String versionType) {
         final Context context = mContext;
         final PackageInfo packageInfo = getPackageInfo(context);
         if (packageInfo == null) {
@@ -48,6 +48,14 @@ public class FVersionCodeChecker {
         final long currentVersion = packageInfo.versionCode;
 
         return new CheckResult(cacheKey, versionType, cacheVersion, currentVersion);
+    }
+
+    private synchronized void commit(CheckResult result) {
+        if (result.isUpgraded()) {
+            getSharedPreferences(mContext).edit()
+                    .putLong(result.cacheKey, result.currentVersion)
+                    .commit();
+        }
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {
@@ -87,11 +95,7 @@ public class FVersionCodeChecker {
         }
 
         public void commit() {
-            if (isUpgraded()) {
-                getSharedPreferences(mContext).edit()
-                        .putLong(cacheKey, currentVersion)
-                        .commit();
-            }
+            FVersionCodeChecker.this.commit(this);
         }
     }
 }

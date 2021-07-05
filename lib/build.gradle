@@ -1,15 +1,16 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
+def libGroupId = "com.sd.lib.android"
 def libArtifactId = "utils-extend"
 def libVersionCode = 20210412
 def libVersionName = "1.1.49"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode libVersionCode
         versionName libVersionName
     }
@@ -24,10 +25,10 @@ android {
     lintOptions {
         abortOnError false
     }
-
 }
 
 dependencies {
+    implementation 'androidx.annotation:annotation:1.1.0'
 }
 
 task generateSourcesJar(type: Jar) {
@@ -41,7 +42,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = "com.sd.lib.android"
+                groupId = libGroupId
                 artifactId = libArtifactId
                 version = libVersionName
 

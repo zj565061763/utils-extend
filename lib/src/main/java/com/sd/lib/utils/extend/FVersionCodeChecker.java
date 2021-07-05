@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -22,8 +21,9 @@ public class FVersionCodeChecker {
     /**
      * 检查版本
      */
-    public void check(@NonNull Callback callback) {
-        check(null, callback);
+    @Nullable
+    public CheckResult check() {
+        return check(null);
     }
 
     /**
@@ -31,16 +31,12 @@ public class FVersionCodeChecker {
      *
      * @param versionType 版本类型，如果为null，则默认值为包名
      */
-    public void check(@Nullable String versionType, @NonNull Callback callback) {
+    @Nullable
+    public CheckResult check(@Nullable String versionType) {
         final Context context = mContext;
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (sharedPreferences == null) {
-            return;
-        }
-
         final PackageInfo packageInfo = getPackageInfo(context);
         if (packageInfo == null) {
-            return;
+            return null;
         }
 
         if (TextUtils.isEmpty(versionType)) {
@@ -48,15 +44,15 @@ public class FVersionCodeChecker {
         }
 
         final String cacheKey = KEY_PREFIX + versionType;
-        final long cacheVersion = sharedPreferences.getLong(cacheKey, 0);
-
+        final long cacheVersion = getSharedPreferences(context).getLong(cacheKey, 0);
         final long currentVersion = packageInfo.versionCode;
-        if (currentVersion > cacheVersion) {
-            // 如果版本比较高，更新缓存版本号
-            sharedPreferences.edit().putLong(cacheKey, currentVersion).commit();
-        }
 
-        callback.onVersionCode(versionType, cacheVersion, currentVersion);
+        return new CheckResult(cacheKey, versionType, cacheVersion, currentVersion);
+    }
+
+    private static SharedPreferences getSharedPreferences(Context context) {
+        final String filename = context.getPackageName() + "_preferences_version_code";
+        return context.getSharedPreferences(filename, Context.MODE_PRIVATE);
     }
 
     private static PackageInfo getPackageInfo(Context context) {
@@ -70,14 +66,28 @@ public class FVersionCodeChecker {
         }
     }
 
-    public interface Callback {
-        /**
-         * 版本号回调
-         *
-         * @param versionType    版本类型
-         * @param oldVersion     旧版本
-         * @param currentVersion 当前版本
-         */
-        void onVersionCode(String versionType, long oldVersion, long currentVersion);
+    public class CheckResult {
+        private final String cacheKey;
+        /** 版本类型 */
+        public final String versionType;
+        /** 旧版本 */
+        public final long oldVersion;
+        /** 当前版本 */
+        public final long currentVersion;
+
+        private CheckResult(String cacheKey, String versionType, long oldVersion, long currentVersion) {
+            this.cacheKey = cacheKey;
+            this.versionType = versionType;
+            this.oldVersion = oldVersion;
+            this.currentVersion = currentVersion;
+        }
+
+        public void commit() {
+            if (currentVersion > oldVersion) {
+                getSharedPreferences(mContext).edit()
+                        .putLong(cacheKey, currentVersion)
+                        .commit();
+            }
+        }
     }
 }

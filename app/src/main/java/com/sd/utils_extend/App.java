@@ -17,14 +17,13 @@ public class App extends Application {
         super.onCreate();
         FNotificationManager.getInstance().init(this);
 
-        new FVersionCodeChecker(this).check(new FVersionCodeChecker.Callback() {
-            @Override
-            public void onVersionCode(String versionType, long oldVersion, long currentVersion) {
-                Log.i(TAG, "onVersionCode"
-                        + " versionType:" + versionType
-                        + " oldVersion:" + oldVersion
-                        + " currentVersion:" + currentVersion);
-            }
-        });
+        final FVersionCodeChecker.CheckResult checkResult = new FVersionCodeChecker(this).check();
+        if (checkResult != null) {
+            Log.i(TAG, "onVersionCode"
+                    + " versionType:" + checkResult.versionType
+                    + " oldVersion:" + checkResult.oldVersion
+                    + " currentVersion:" + checkResult.currentVersion);
+            checkResult.commit();
+        }
     }
 }

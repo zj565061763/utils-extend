@@ -82,8 +82,12 @@ public class FVersionCodeChecker {
             this.currentVersion = currentVersion;
         }
 
+        public boolean isUpgraded() {
+            return currentVersion > oldVersion;
+        }
+
         public void commit() {
-            if (currentVersion > oldVersion) {
+            if (isUpgraded()) {
                 getSharedPreferences(mContext).edit()
                         .putLong(cacheKey, currentVersion)
                         .commit();

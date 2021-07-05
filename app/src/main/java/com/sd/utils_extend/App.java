@@ -20,6 +20,7 @@ public class App extends Application {
         final FVersionCodeChecker.CheckResult checkResult = new FVersionCodeChecker(this).check();
         if (checkResult != null) {
             Log.i(TAG, "onVersionCode"
+                    + " isUpgraded:" + checkResult.isUpgraded()
                     + " versionType:" + checkResult.versionType
                     + " oldVersion:" + checkResult.oldVersion
                     + " currentVersion:" + checkResult.currentVersion);

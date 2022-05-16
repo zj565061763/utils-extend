@@ -9,8 +9,7 @@ import java.lang.ref.WeakReference;
 /**
  * 对view的宽或者高进行锁定和解锁
  */
-public class FViewSizeLocker
-{
+public class FViewSizeLocker {
     private WeakReference<View> mView;
     /**
      * 锁定前的宽度
@@ -31,8 +30,7 @@ public class FViewSizeLocker
 
     private final Parameter mParameter;
 
-    public FViewSizeLocker(Boundary boundary)
-    {
+    public FViewSizeLocker(Boundary boundary) {
         if (boundary == null)
             throw new NullPointerException("boundary is null");
 
@@ -44,23 +42,19 @@ public class FViewSizeLocker
      *
      * @param view
      */
-    public final void setView(View view)
-    {
+    public final void setView(View view) {
         final View old = getView();
-        if (old != view)
-        {
+        if (old != view) {
             reset();
             mView = view == null ? null : new WeakReference<>(view);
         }
     }
 
-    public final View getView()
-    {
+    public final View getView() {
         return mView == null ? null : mView.get();
     }
 
-    private void reset()
-    {
+    private void reset() {
         mOriginalSize = 0;
         mOriginalWeight = 0;
         mLockSize = 0;
@@ -72,8 +66,7 @@ public class FViewSizeLocker
      *
      * @return
      */
-    public int getOriginalSize()
-    {
+    public int getOriginalSize() {
         return mOriginalSize;
     }
 
@@ -82,8 +75,7 @@ public class FViewSizeLocker
      *
      * @return
      */
-    public float getOriginalWeight()
-    {
+    public float getOriginalWeight() {
         return mOriginalWeight;
     }
 
@@ -92,16 +84,14 @@ public class FViewSizeLocker
      *
      * @return
      */
-    public int getLockSize()
-    {
+    public int getLockSize() {
         return mLockSize;
     }
 
     /**
      * 宽度是否已经被锁住
      */
-    public boolean isLocked()
-    {
+    public boolean isLocked() {
         return mIsLocked;
     }
 
@@ -110,8 +100,7 @@ public class FViewSizeLocker
      *
      * @param size 要锁定的大小
      */
-    public final void lock(int size)
-    {
+    public final void lock(int size) {
         final View view = getView();
         if (view == null)
             return;
@@ -120,13 +109,10 @@ public class FViewSizeLocker
         if (params == null)
             return;
 
-        if (mIsLocked)
-        {
+        if (mIsLocked) {
             mParameter.setLayoutParamsSize(params, size);
-        } else
-        {
-            if (params instanceof LinearLayout.LayoutParams)
-            {
+        } else {
+            if (params instanceof LinearLayout.LayoutParams) {
                 final LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
                 mOriginalWeight = lParams.weight;
                 lParams.weight = 0;
@@ -144,8 +130,7 @@ public class FViewSizeLocker
     /**
      * 解锁
      */
-    public final void unlock()
-    {
+    public final void unlock() {
         if (!mIsLocked)
             return;
 
@@ -159,8 +144,7 @@ public class FViewSizeLocker
         if (params == null)
             return;
 
-        if (params instanceof LinearLayout.LayoutParams)
-        {
+        if (params instanceof LinearLayout.LayoutParams) {
             final LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams) params;
             lParams.weight = mOriginalWeight;
         }
@@ -169,45 +153,37 @@ public class FViewSizeLocker
         view.setLayoutParams(params);
     }
 
-    public enum Boundary
-    {
+    public enum Boundary {
         Width,
         Height
     }
 
-    private interface Parameter
-    {
+    private interface Parameter {
         int getLayoutParamsSize(ViewGroup.LayoutParams params);
 
         void setLayoutParamsSize(ViewGroup.LayoutParams params, int size);
     }
 
-    private static final class WidthParameter implements Parameter
-    {
+    private static final class WidthParameter implements Parameter {
         @Override
-        public int getLayoutParamsSize(ViewGroup.LayoutParams params)
-        {
+        public int getLayoutParamsSize(ViewGroup.LayoutParams params) {
             return params.width;
         }
 
         @Override
-        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size)
-        {
+        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size) {
             params.width = size;
         }
     }
 
-    private static final class HeightParameter implements Parameter
-    {
+    private static final class HeightParameter implements Parameter {
         @Override
-        public int getLayoutParamsSize(ViewGroup.LayoutParams params)
-        {
+        public int getLayoutParamsSize(ViewGroup.LayoutParams params) {
             return params.height;
         }
 
         @Override
-        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size)
-        {
+        public void setLayoutParamsSize(ViewGroup.LayoutParams params, int size) {
             params.height = size;
         }
     }

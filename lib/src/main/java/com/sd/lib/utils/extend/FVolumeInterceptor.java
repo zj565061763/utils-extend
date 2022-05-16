@@ -7,21 +7,18 @@ import android.view.KeyEvent;
 /**
  * 音量键拦截
  */
-public class FVolumeInterceptor
-{
+public class FVolumeInterceptor {
     private final Context mContext;
     private final AudioManager mAudioManager;
     private final int mStreamType;
 
     private Callback mCallback;
 
-    public FVolumeInterceptor(Context context)
-    {
+    public FVolumeInterceptor(Context context) {
         this(context, AudioManager.STREAM_MUSIC);
     }
 
-    public FVolumeInterceptor(Context context, int streamType)
-    {
+    public FVolumeInterceptor(Context context, int streamType) {
         mContext = context.getApplicationContext();
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mStreamType = streamType;
@@ -32,8 +29,7 @@ public class FVolumeInterceptor
      *
      * @param callback
      */
-    public void setCallback(Callback callback)
-    {
+    public void setCallback(Callback callback) {
         mCallback = callback;
     }
 
@@ -43,17 +39,14 @@ public class FVolumeInterceptor
      * @param event
      * @return
      */
-    public boolean dispatchKeyEvent(KeyEvent event)
-    {
+    public boolean dispatchKeyEvent(KeyEvent event) {
         final int code = event.getKeyCode();
         final int action = event.getAction();
-        if (code == KeyEvent.KEYCODE_VOLUME_UP && action == KeyEvent.ACTION_DOWN)
-        {
+        if (code == KeyEvent.KEYCODE_VOLUME_UP && action == KeyEvent.ACTION_DOWN) {
             mAudioManager.adjustStreamVolume(mStreamType, AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
             notifyVolumeChanged();
             return true;
-        } else if (code == KeyEvent.KEYCODE_VOLUME_DOWN && action == KeyEvent.ACTION_DOWN)
-        {
+        } else if (code == KeyEvent.KEYCODE_VOLUME_DOWN && action == KeyEvent.ACTION_DOWN) {
             mAudioManager.adjustStreamVolume(mStreamType, AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
             notifyVolumeChanged();
             return true;
@@ -64,8 +57,7 @@ public class FVolumeInterceptor
     /**
      * 通知音量变化
      */
-    public void notifyVolumeChanged()
-    {
+    public void notifyVolumeChanged() {
         final int maxVolume = mAudioManager.getStreamMaxVolume(mStreamType);
         final int currentVolume = mAudioManager.getStreamVolume(mStreamType);
 
@@ -73,8 +65,7 @@ public class FVolumeInterceptor
             mCallback.onVolumeChanged(maxVolume, currentVolume);
     }
 
-    public interface Callback
-    {
+    public interface Callback {
         /**
          * 音量变化回调
          *

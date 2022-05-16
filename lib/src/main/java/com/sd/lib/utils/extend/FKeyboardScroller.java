@@ -6,8 +6,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-public class FKeyboardScroller
-{
+public class FKeyboardScroller {
     private final View mRootView;
     private final View mScrollView;
     private final int mStatusBarHeight;
@@ -17,8 +16,7 @@ public class FKeyboardScroller
 
     private Callback mCallback;
 
-    public FKeyboardScroller(Activity activity, View scrollView)
-    {
+    public FKeyboardScroller(Activity activity, View scrollView) {
         if (activity == null || scrollView == null)
             throw new NullPointerException();
 
@@ -30,31 +28,25 @@ public class FKeyboardScroller
         mScrollView = scrollView;
         mStatusBarHeight = getStatusBarHeight(activity);
 
-        mRootView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener()
-        {
+        mRootView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
-            public void onViewAttachedToWindow(View v)
-            {
+            public void onViewAttachedToWindow(View v) {
             }
 
             @Override
-            public void onViewDetachedFromWindow(View v)
-            {
+            public void onViewDetachedFromWindow(View v) {
                 mRootView.removeCallbacks(mCheckRunnable);
             }
         });
     }
 
-    public final void setCallback(Callback callback)
-    {
+    public final void setCallback(Callback callback) {
         mCallback = callback;
     }
 
-    public final boolean start()
-    {
+    public final boolean start() {
         final ViewTreeObserver observer = mRootView.getViewTreeObserver();
-        if (observer.isAlive())
-        {
+        if (observer.isAlive()) {
             observer.removeOnPreDrawListener(mOnPreDrawListener);
             observer.addOnPreDrawListener(mOnPreDrawListener);
             return true;
@@ -62,25 +54,21 @@ public class FKeyboardScroller
         return false;
     }
 
-    public final void stop()
-    {
+    public final void stop() {
         final ViewTreeObserver observer = mRootView.getViewTreeObserver();
         if (observer.isAlive())
             observer.removeOnPreDrawListener(mOnPreDrawListener);
     }
 
-    private final ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener()
-    {
+    private final ViewTreeObserver.OnPreDrawListener mOnPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
-        public boolean onPreDraw()
-        {
+        public boolean onPreDraw() {
             processScroll();
             return true;
         }
     };
 
-    private void processScroll()
-    {
+    private void processScroll() {
         mRootView.getWindowVisibleDisplayFrame(mRect);
 
         final int old = mHeight;
@@ -90,8 +78,7 @@ public class FKeyboardScroller
 
         mHeight = height;
 
-        if (old > 0 && height > 0)
-        {
+        if (old > 0 && height > 0) {
             final int delta = old - height;
             if (Math.abs(delta) == mStatusBarHeight)
                 return;
@@ -106,14 +93,11 @@ public class FKeyboardScroller
         }
     }
 
-    private final Runnable mCheckRunnable = new Runnable()
-    {
+    private final Runnable mCheckRunnable = new Runnable() {
         @Override
-        public void run()
-        {
+        public void run() {
             final int scrollY = mScrollView.getScrollY();
-            if (scrollY < 0)
-            {
+            if (scrollY < 0) {
                 mScrollView.scrollTo(0, 0);
                 if (mCallback != null)
                     mCallback.onScrolled(mScrollView, true);
@@ -121,19 +105,16 @@ public class FKeyboardScroller
         }
     };
 
-    private static int getStatusBarHeight(Context context)
-    {
+    private static int getStatusBarHeight(Context context) {
         int result = 0;
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0)
-        {
+        if (resourceId > 0) {
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
     }
 
-    public interface Callback
-    {
+    public interface Callback {
         void onScrolled(View scrollView, boolean isReset);
     }
 }

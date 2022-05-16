@@ -16,8 +16,7 @@ import java.util.List;
 /**
  * 图片压缩处理类
  */
-public class FImageCompressor
-{
+public class FImageCompressor {
     private static final String COMPRESSED_FILE_DIR_NAME = "compressed_image";
 
     private int mMaxFileSize = 1024 * 1024;
@@ -30,10 +29,8 @@ public class FImageCompressor
 
     private Exception mException;
 
-    public FImageCompressor(Context context)
-    {
-        if (context == null)
-        {
+    public FImageCompressor(Context context) {
+        if (context == null) {
             throw new NullPointerException("context must not be null");
         }
         mContext = context.getApplicationContext();
@@ -43,19 +40,15 @@ public class FImageCompressor
         mMaxHeight = displayMetrics.heightPixels;
     }
 
-    private File getCompressedFileDir()
-    {
-        if (mCompressedFileDir == null)
-        {
+    private File getCompressedFileDir() {
+        if (mCompressedFileDir == null) {
             File cacheDir = mContext.getExternalCacheDir();
-            if (cacheDir == null)
-            {
+            if (cacheDir == null) {
                 cacheDir = mContext.getCacheDir();
             }
             mCompressedFileDir = new File(cacheDir, COMPRESSED_FILE_DIR_NAME);
         }
-        if (!mCompressedFileDir.exists())
-        {
+        if (!mCompressedFileDir.exists()) {
             mCompressedFileDir.mkdirs();
         }
         return mCompressedFileDir;
@@ -66,8 +59,7 @@ public class FImageCompressor
      *
      * @param maxWidth
      */
-    public void setMaxWidth(int maxWidth)
-    {
+    public void setMaxWidth(int maxWidth) {
         mMaxWidth = maxWidth;
     }
 
@@ -76,8 +68,7 @@ public class FImageCompressor
      *
      * @param maxHeight
      */
-    public void setMaxHeight(int maxHeight)
-    {
+    public void setMaxHeight(int maxHeight) {
         mMaxHeight = maxHeight;
     }
 
@@ -86,10 +77,8 @@ public class FImageCompressor
      *
      * @param maxFileSize
      */
-    public void setMaxFileSize(int maxFileSize)
-    {
-        if (maxFileSize > 0)
-        {
+    public void setMaxFileSize(int maxFileSize) {
+        if (maxFileSize > 0) {
             mMaxFileSize = maxFileSize;
         }
     }
@@ -100,25 +89,20 @@ public class FImageCompressor
      * @param bitmap 要压缩的bitmap对象
      * @return 压缩好的bitmap对象
      */
-    public Bitmap compressBitmapToBitmap(Bitmap bitmap)
-    {
-        try
-        {
+    public Bitmap compressBitmapToBitmap(Bitmap bitmap) {
+        try {
             boolean hasScaled = false;
             Bitmap bitmapScaled = scaleBitmapIfNeed(bitmap, mMaxWidth, mMaxHeight);
-            if (bitmapScaled != bitmap)
-            {
+            if (bitmapScaled != bitmap) {
                 hasScaled = true;
             }
 
             Bitmap bitmapCompressed = compressBitmapToFileSize(bitmapScaled, mMaxFileSize, 5);
-            if (bitmapCompressed != bitmapScaled && hasScaled)
-            {
+            if (bitmapCompressed != bitmapScaled && hasScaled) {
                 bitmapScaled.recycle();
             }
             return bitmapCompressed;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             mException = e;
             return null;
         }
@@ -130,8 +114,7 @@ public class FImageCompressor
      * @param bitmap 要压缩的bitmap对象
      * @return 压缩好的图片文件
      */
-    public File compressBitmapToFile(Bitmap bitmap)
-    {
+    public File compressBitmapToFile(Bitmap bitmap) {
         Bitmap bitmapCompressed = compressBitmapToBitmap(bitmap);
         File file = bitmapToFile(bitmapCompressed);
         return file;
@@ -143,8 +126,7 @@ public class FImageCompressor
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的bitmap对象
      */
-    public Bitmap compressFileToBitmap(String filePath)
-    {
+    public Bitmap compressFileToBitmap(String filePath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
@@ -152,18 +134,15 @@ public class FImageCompressor
         options.inSampleSize = calculateInSampleSize(options, mMaxWidth, mMaxHeight);
         options.inJustDecodeBounds = false;
 
-        try
-        {
+        try {
             Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
 
             Bitmap bitmapCompressed = compressBitmapToBitmap(bitmap);
-            if (bitmapCompressed != bitmap)
-            {
+            if (bitmapCompressed != bitmap) {
                 bitmap.recycle();
             }
             return bitmapCompressed;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             mException = e;
             return null;
         }
@@ -175,42 +154,34 @@ public class FImageCompressor
      * @param filePath 要压缩的图片文件路径
      * @return 压缩好的图片文件
      */
-    public File compressFileToFile(String filePath)
-    {
+    public File compressFileToFile(String filePath) {
         Bitmap bitmapCompressed = compressFileToBitmap(filePath);
         File file = bitmapToFile(bitmapCompressed);
-        if (bitmapCompressed != null)
-        {
+        if (bitmapCompressed != null) {
             bitmapCompressed.recycle();
         }
         return file;
     }
 
-    private void addCompressedFile(File file)
-    {
-        if (mListCompressedFile == null)
-        {
+    private void addCompressedFile(File file) {
+        if (mListCompressedFile == null) {
             mListCompressedFile = new ArrayList<>();
         }
         mListCompressedFile.add(file);
     }
 
-    public Exception getException()
-    {
+    public Exception getException() {
         return mException;
     }
 
     /**
      * 删除当前对象保存的压缩文件
      */
-    public void deleteCompressedFiles()
-    {
-        if (mListCompressedFile == null || mListCompressedFile.isEmpty())
-        {
+    public void deleteCompressedFiles() {
+        if (mListCompressedFile == null || mListCompressedFile.isEmpty()) {
             return;
         }
-        for (File item : mListCompressedFile)
-        {
+        for (File item : mListCompressedFile) {
             item.delete();
         }
     }
@@ -218,8 +189,7 @@ public class FImageCompressor
     /**
      * 删除目录下所有保存的压缩文件
      */
-    public void deleteAllCompressedFile()
-    {
+    public void deleteAllCompressedFile() {
         deleteFileOrDir(mCompressedFileDir);
     }
 
@@ -231,48 +201,38 @@ public class FImageCompressor
      * @param deltaQuality 当前quality不满足的时候，quality递减的大小
      * @return
      */
-    private Bitmap compressBitmapToFileSize(Bitmap bitmap, long maxSize, int deltaQuality)
-    {
-        if (maxSize <= 0)
-        {
+    private Bitmap compressBitmapToFileSize(Bitmap bitmap, long maxSize, int deltaQuality) {
+        if (maxSize <= 0) {
             return bitmap;
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
+        try {
             int quality = 100;
-            while (true)
-            {
-                if (quality <= 1)
-                {
+            while (true) {
+                if (quality <= 1) {
                     break;
                 }
                 baos.reset();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
 
-                if (baos.size() > maxSize)
-                {
+                if (baos.size() > maxSize) {
                     quality -= deltaQuality;
                     continue;
-                } else
-                {
+                } else {
                     // 压缩到指定大小成功
                     byte[] arrByte = baos.toByteArray();
                     return BitmapFactory.decodeByteArray(arrByte, 0, arrByte.length);
                 }
             }
-        } finally
-        {
+        } finally {
             closeQuietly(baos);
         }
         return null;
     }
 
-    protected int calculateInSampleSize(BitmapFactory.Options options, int maxWidth, int maxHeight)
-    {
-        if (maxWidth <= 0 || maxHeight <= 0)
-        {
+    protected int calculateInSampleSize(BitmapFactory.Options options, int maxWidth, int maxHeight) {
+        if (maxWidth <= 0 || maxHeight <= 0) {
             return 1;
         }
 
@@ -281,21 +241,17 @@ public class FImageCompressor
         final int height = options.outHeight;
         final int width = options.outWidth;
 
-        if (width > maxWidth || height > maxHeight)
-        {
-            if (width > height)
-            {
+        if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
                 inSampleSize = Math.round((float) height / (float) maxHeight);
-            } else
-            {
+            } else {
                 inSampleSize = Math.round((float) width / (float) maxWidth);
             }
 
             final float totalPixels = width * height;
             final float maxTotalPixels = maxWidth * maxHeight * 2;
 
-            while (totalPixels / (inSampleSize * inSampleSize) > maxTotalPixels)
-            {
+            while (totalPixels / (inSampleSize * inSampleSize) > maxTotalPixels) {
                 inSampleSize++;
             }
         }
@@ -310,22 +266,18 @@ public class FImageCompressor
      * @param maxHeight 最大高度
      * @return
      */
-    protected Bitmap scaleBitmapIfNeed(Bitmap bitmap, final int maxWidth, final int maxHeight)
-    {
-        if (maxWidth <= 0 || maxHeight <= 0)
-        {
+    protected Bitmap scaleBitmapIfNeed(Bitmap bitmap, final int maxWidth, final int maxHeight) {
+        if (maxWidth <= 0 || maxHeight <= 0) {
             return bitmap;
         }
 
         final int width = bitmap.getWidth();
         final int height = bitmap.getHeight();
 
-        if (width > maxHeight || height > maxHeight)
-        {
+        if (width > maxHeight || height > maxHeight) {
             int[] arrTarget = calculateFitSize(new int[]{width, height}, new int[]{maxWidth, maxHeight});
             return Bitmap.createScaledBitmap(bitmap, arrTarget[0], arrTarget[1], true);
-        } else
-        {
+        } else {
             return bitmap;
         }
     }
@@ -336,28 +288,23 @@ public class FImageCompressor
      * @param bitmap
      * @return
      */
-    protected File bitmapToFile(Bitmap bitmap)
-    {
-        if (bitmap == null)
-        {
+    protected File bitmapToFile(Bitmap bitmap) {
+        if (bitmap == null) {
             return null;
         }
 
         File file = newFileUnderDir(getCompressedFileDir(), ".jpg");
         FileOutputStream fos = null;
-        try
-        {
+        try {
             fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 
             addCompressedFile(file);
             return file;
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             mException = e;
             return null;
-        } finally
-        {
+        } finally {
             closeQuietly(fos);
         }
     }
@@ -369,74 +316,58 @@ public class FImageCompressor
      * @param limit  限制宽高
      * @return
      */
-    private static int[] calculateFitSize(int[] source, int[] limit)
-    {
+    private static int[] calculateFitSize(int[] source, int[] limit) {
         float sourceRatio = (float) source[0] / (float) source[1];
         float limitRatio = (float) limit[0] / (float) limit[1];
         float differRatio = sourceRatio - limitRatio;
 
         int[] result = new int[2];
-        if (differRatio >= 0)
-        {
+        if (differRatio >= 0) {
             result[0] = limit[0];
             result[1] = (int) (result[0] / sourceRatio);
-        } else
-        {
+        } else {
             result[1] = limit[1];
             result[0] = (int) (result[1] * sourceRatio);
         }
         return result;
     }
 
-    private static File newFileUnderDir(File dir, String ext)
-    {
-        if (dir == null)
-        {
+    private static File newFileUnderDir(File dir, String ext) {
+        if (dir == null) {
             return null;
         }
-        if (ext == null)
-        {
+        if (ext == null) {
             ext = "";
         }
 
         long current = System.currentTimeMillis();
         File file = new File(dir, String.valueOf(current + ext));
-        while (file.exists())
-        {
+        while (file.exists()) {
             current++;
             file = new File(dir, String.valueOf(current + ext));
         }
         return file;
     }
 
-    private static void closeQuietly(Closeable closeable)
-    {
-        if (closeable != null)
-        {
-            try
-            {
+    private static void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
+            try {
                 closeable.close();
-            } catch (Throwable ignored)
-            {
+            } catch (Throwable ignored) {
             }
         }
     }
 
-    private static boolean deleteFileOrDir(File file)
-    {
-        if (file == null || !file.exists())
-        {
+    private static boolean deleteFileOrDir(File file) {
+        if (file == null || !file.exists()) {
             return true;
         }
-        if (file.isFile())
-        {
+        if (file.isFile()) {
             return file.delete();
         }
         File[] files = file.listFiles();
-        if (files != null)
-        {
-            for (File item : files)
-            {
+        if (files != null) {
+            for (File item : files) {
                 deleteFileOrDir(item);
             }
         }

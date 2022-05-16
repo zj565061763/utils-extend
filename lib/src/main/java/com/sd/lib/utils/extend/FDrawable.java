@@ -7,8 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 
-public class FDrawable extends LayerDrawable
-{
+public class FDrawable extends LayerDrawable {
     private GradientDrawable mDrawableFirst;
     private GradientDrawable mDrawableSecond;
 
@@ -25,19 +24,16 @@ public class FDrawable extends LayerDrawable
     private int mWidth = -1;
     private int mHeight = -1;
 
-    public FDrawable()
-    {
+    public FDrawable() {
         this(new GradientDrawable[]{new GradientDrawable(), new GradientDrawable()});
     }
 
-    public FDrawable(Drawable[] layers)
-    {
+    public FDrawable(Drawable[] layers) {
         super(layers);
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         mDrawableFirst = (GradientDrawable) this.getDrawable(0);
         mDrawableSecond = (GradientDrawable) this.getDrawable(1);
 
@@ -53,8 +49,7 @@ public class FDrawable extends LayerDrawable
      * @param width
      * @return
      */
-    public FDrawable width(int width)
-    {
+    public FDrawable width(int width) {
         mWidth = width;
         updateSize();
         return this;
@@ -66,8 +61,7 @@ public class FDrawable extends LayerDrawable
      * @param height
      * @return
      */
-    public FDrawable height(int height)
-    {
+    public FDrawable height(int height) {
         mHeight = height;
         updateSize();
         return this;
@@ -79,16 +73,14 @@ public class FDrawable extends LayerDrawable
      * @param size
      * @return
      */
-    public FDrawable size(int size)
-    {
+    public FDrawable size(int size) {
         mWidth = size;
         mHeight = size;
         updateSize();
         return this;
     }
 
-    private void updateSize()
-    {
+    private void updateSize() {
         mDrawableFirst.setSize(mWidth, mHeight);
         mDrawableSecond.setSize(mWidth, mHeight);
     }
@@ -99,8 +91,7 @@ public class FDrawable extends LayerDrawable
      * @param alpha
      * @return
      */
-    public FDrawable alpha(int alpha)
-    {
+    public FDrawable alpha(int alpha) {
         setAlpha(alpha);
         return this;
     }
@@ -111,8 +102,7 @@ public class FDrawable extends LayerDrawable
      * @param color
      * @return
      */
-    public FDrawable color(int color)
-    {
+    public FDrawable color(int color) {
         mDrawableSecond.setColor(color);
         return this;
     }
@@ -123,8 +113,7 @@ public class FDrawable extends LayerDrawable
      * @param color
      * @return
      */
-    public FDrawable strokeColor(int color)
-    {
+    public FDrawable strokeColor(int color) {
         mDrawableFirst.setColor(color);
         return this;
     }
@@ -138,8 +127,7 @@ public class FDrawable extends LayerDrawable
      * @param bottomRight
      * @return
      */
-    public FDrawable corner(float topLeft, float topRight, float bottomLeft, float bottomRight)
-    {
+    public FDrawable corner(float topLeft, float topRight, float bottomLeft, float bottomRight) {
         mCornerTopLeft = topLeft;
         mCornerTopRight = topRight;
         mCornerBottomLeft = bottomLeft;
@@ -153,32 +141,27 @@ public class FDrawable extends LayerDrawable
         return this;
     }
 
-    public FDrawable cornerAll(float radius)
-    {
+    public FDrawable cornerAll(float radius) {
         corner(radius, radius, radius, radius);
         return this;
     }
 
-    public FDrawable cornerTopLeft(float radius)
-    {
+    public FDrawable cornerTopLeft(float radius) {
         corner(radius, mCornerTopRight, mCornerBottomLeft, mCornerBottomRight);
         return this;
     }
 
-    public FDrawable cornerTopRight(float radius)
-    {
+    public FDrawable cornerTopRight(float radius) {
         corner(mCornerTopLeft, radius, mCornerBottomLeft, mCornerBottomRight);
         return this;
     }
 
-    public FDrawable cornerBottomLeft(float radius)
-    {
+    public FDrawable cornerBottomLeft(float radius) {
         corner(mCornerTopLeft, mCornerTopRight, radius, mCornerBottomRight);
         return this;
     }
 
-    public FDrawable cornerBottomRight(float radius)
-    {
+    public FDrawable cornerBottomRight(float radius) {
         corner(mCornerTopLeft, mCornerTopRight, mCornerBottomLeft, radius);
         return this;
     }
@@ -192,8 +175,7 @@ public class FDrawable extends LayerDrawable
      * @param bottom
      * @return
      */
-    public FDrawable strokeWidth(int left, int top, int right, int bottom)
-    {
+    public FDrawable strokeWidth(int left, int top, int right, int bottom) {
         mStrokeWidthLeft = left;
         mStrokeWidthTop = top;
         mStrokeWidthRight = right;
@@ -202,32 +184,27 @@ public class FDrawable extends LayerDrawable
         return this;
     }
 
-    public FDrawable strokeWidthAll(int width)
-    {
+    public FDrawable strokeWidthAll(int width) {
         strokeWidth(width, width, width, width);
         return this;
     }
 
-    public FDrawable strokeWidthLeft(int width)
-    {
+    public FDrawable strokeWidthLeft(int width) {
         strokeWidth(width, mStrokeWidthTop, mStrokeWidthRight, mStrokeWidthBottom);
         return this;
     }
 
-    public FDrawable strokeWidthTop(int width)
-    {
+    public FDrawable strokeWidthTop(int width) {
         strokeWidth(mStrokeWidthLeft, width, mStrokeWidthRight, mStrokeWidthBottom);
         return this;
     }
 
-    public FDrawable strokeWidthRight(int width)
-    {
+    public FDrawable strokeWidthRight(int width) {
         strokeWidth(mStrokeWidthLeft, mStrokeWidthTop, width, mStrokeWidthBottom);
         return this;
     }
 
-    public FDrawable strokeWidthBottom(int width)
-    {
+    public FDrawable strokeWidthBottom(int width) {
         strokeWidth(mStrokeWidthLeft, mStrokeWidthTop, mStrokeWidthRight, width);
         return this;
     }
@@ -243,30 +220,24 @@ public class FDrawable extends LayerDrawable
      * @param pressed  按下drawable
      * @return
      */
-    public static StateListDrawable getDrawableStateList(Drawable normal, Drawable focus, Drawable selected, Drawable pressed)
-    {
+    public static StateListDrawable getDrawableStateList(Drawable normal, Drawable focus, Drawable selected, Drawable pressed) {
         StateListDrawable stateListDrawable = new StateListDrawable();
-        if (normal != null)
-        {
+        if (normal != null) {
             stateListDrawable.addState(getStateNormal(), normal);
         }
-        if (focus != null)
-        {
+        if (focus != null) {
             stateListDrawable.addState(getStateFocus(), focus);
         }
-        if (selected != null)
-        {
+        if (selected != null) {
             stateListDrawable.addState(getStateSelected(), selected);
         }
-        if (pressed != null)
-        {
+        if (pressed != null) {
             stateListDrawable.addState(getStatePressed(), pressed);
         }
         return stateListDrawable;
     }
 
-    public static ColorStateList getColorStateList(int normal, int pressed)
-    {
+    public static ColorStateList getColorStateList(int normal, int pressed) {
         return getColorStateList(normal, 0, 0, pressed);
     }
 
@@ -279,8 +250,7 @@ public class FDrawable extends LayerDrawable
      * @param pressed  按下颜色
      * @return
      */
-    public static ColorStateList getColorStateList(int normal, int focus, int selected, int pressed)
-    {
+    public static ColorStateList getColorStateList(int normal, int focus, int selected, int pressed) {
         int[][] states = new int[4][];
         states[0] = getStateNormal();
         states[1] = getStateFocus();
@@ -290,26 +260,21 @@ public class FDrawable extends LayerDrawable
         int[] colors = new int[4];
 
         int defaultColor = Color.BLACK;
-        if (normal == 0)
-        {
+        if (normal == 0) {
             normal = defaultColor;
-        } else
-        {
+        } else {
             defaultColor = normal;
         }
 
-        if (focus == 0)
-        {
+        if (focus == 0) {
             focus = defaultColor;
         }
 
-        if (selected == 0)
-        {
+        if (selected == 0) {
             selected = defaultColor;
         }
 
-        if (pressed == 0)
-        {
+        if (pressed == 0) {
             pressed = defaultColor;
         }
 
@@ -324,23 +289,19 @@ public class FDrawable extends LayerDrawable
     }
 
     // -------------------------------States
-    public static int[] getStateNormal()
-    {
+    public static int[] getStateNormal() {
         return new int[]{-android.R.attr.state_focused, -android.R.attr.state_selected, -android.R.attr.state_pressed};
     }
 
-    public static int[] getStateFocus()
-    {
+    public static int[] getStateFocus() {
         return new int[]{android.R.attr.state_focused, -android.R.attr.state_selected, -android.R.attr.state_pressed};
     }
 
-    public static int[] getStateSelected()
-    {
+    public static int[] getStateSelected() {
         return new int[]{-android.R.attr.state_focused, android.R.attr.state_selected, -android.R.attr.state_pressed};
     }
 
-    public static int[] getStatePressed()
-    {
+    public static int[] getStatePressed() {
         return new int[]{-android.R.attr.state_focused, -android.R.attr.state_selected, android.R.attr.state_pressed};
     }
 

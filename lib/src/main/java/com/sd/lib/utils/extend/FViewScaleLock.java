@@ -6,8 +6,7 @@ import android.view.ViewGroup;
 /**
  * 锁定某个View的宽高比例
  */
-public class FViewScaleLock
-{
+public class FViewScaleLock {
     private final ScaleSide mScaleSide;
 
     private float mWHScale;
@@ -17,8 +16,7 @@ public class FViewScaleLock
     private int mContainerWidth;
     private int mContainerHeight;
 
-    public FViewScaleLock(ScaleSide scaleSide)
-    {
+    public FViewScaleLock(ScaleSide scaleSide) {
         if (scaleSide == null)
             throw new IllegalArgumentException("scaleSide is null");
         mScaleSide = scaleSide;
@@ -30,10 +28,8 @@ public class FViewScaleLock
      * @param width
      * @param height
      */
-    public void setWHScale(float width, float height)
-    {
-        if (width <= 0 || height <= 0)
-        {
+    public void setWHScale(float width, float height) {
+        if (width <= 0 || height <= 0) {
             setWHScale(0);
             return;
         }
@@ -46,10 +42,8 @@ public class FViewScaleLock
      *
      * @param whScale
      */
-    public void setWHScale(float whScale)
-    {
-        if (mWHScale != whScale)
-        {
+    public void setWHScale(float whScale) {
+        if (mWHScale != whScale) {
             mWHScale = whScale;
             scale();
         }
@@ -61,10 +55,8 @@ public class FViewScaleLock
      * @param width
      * @param height
      */
-    public void setContainer(int width, int height)
-    {
-        if (mContainerWidth != width || mContainerHeight != height)
-        {
+    public void setContainer(int width, int height) {
+        if (mContainerWidth != width || mContainerHeight != height) {
             mContainerWidth = width;
             mContainerHeight = height;
             scale();
@@ -76,29 +68,24 @@ public class FViewScaleLock
      *
      * @param container
      */
-    public void setContainer(View container)
-    {
+    public void setContainer(View container) {
         final View old = mContainer;
-        if (old != container)
-        {
+        if (old != container) {
             if (old != null)
                 old.removeOnLayoutChangeListener(mOnLayoutChangeListenerContainer);
 
             mContainer = container;
 
-            if (mContainer != null)
-            {
+            if (mContainer != null) {
                 mContainer.addOnLayoutChangeListener(mOnLayoutChangeListenerContainer);
                 scale();
             }
         }
     }
 
-    private final View.OnLayoutChangeListener mOnLayoutChangeListenerContainer = new View.OnLayoutChangeListener()
-    {
+    private final View.OnLayoutChangeListener mOnLayoutChangeListenerContainer = new View.OnLayoutChangeListener() {
         @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
-        {
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
             setContainer(v.getWidth(), v.getHeight());
         }
     };
@@ -108,35 +95,29 @@ public class FViewScaleLock
      *
      * @param view
      */
-    public void setView(View view)
-    {
+    public void setView(View view) {
         final View old = mView;
-        if (old != view)
-        {
+        if (old != view) {
             if (old != null)
                 old.removeOnLayoutChangeListener(mOnLayoutChangeListener);
 
             mView = view;
 
-            if (mView != null)
-            {
+            if (mView != null) {
                 mView.addOnLayoutChangeListener(mOnLayoutChangeListener);
                 scale();
             }
         }
     }
 
-    private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener()
-    {
+    private final View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
         @Override
-        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
-        {
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
             scale();
         }
     };
 
-    private boolean checkParams()
-    {
+    private boolean checkParams() {
         if (mWHScale <= 0)
             return false;
 
@@ -146,12 +127,9 @@ public class FViewScaleLock
         return true;
     }
 
-    private void scale()
-    {
-        if (checkParams())
-        {
-            switch (mScaleSide)
-            {
+    private void scale() {
+        if (checkParams()) {
+            switch (mScaleSide) {
                 case Width:
                     scaleWidth();
                     break;
@@ -164,8 +142,7 @@ public class FViewScaleLock
         }
     }
 
-    private void scaleWidth()
-    {
+    private void scaleWidth() {
         final int width = mView.getWidth();
         final int height = mView.getHeight();
 
@@ -173,8 +150,7 @@ public class FViewScaleLock
             return;
 
         final int scaleWidth = getScaleWidth(mWHScale, height);
-        if (mContainerWidth > 0 && scaleWidth > mContainerWidth)
-        {
+        if (mContainerWidth > 0 && scaleWidth > mContainerWidth) {
             // 修正宽高
             final int fixWidth = mContainerWidth;
             final int fixHeight = getScaleHeight(mWHScale, fixWidth);
@@ -182,14 +158,12 @@ public class FViewScaleLock
             return;
         }
 
-        if (width != scaleWidth)
-        {
+        if (width != scaleWidth) {
             updateViewWidth(scaleWidth);
         }
     }
 
-    private void scaleHeight()
-    {
+    private void scaleHeight() {
         final int width = mView.getWidth();
         final int height = mView.getHeight();
 
@@ -197,8 +171,7 @@ public class FViewScaleLock
             return;
 
         final int scaleHeight = getScaleHeight(mWHScale, width);
-        if (mContainerHeight > 0 && scaleHeight > mContainerHeight)
-        {
+        if (mContainerHeight > 0 && scaleHeight > mContainerHeight) {
             // 修正宽高
             final int fixHeight = mContainerHeight;
             final int fixWidth = getScaleWidth(mWHScale, fixHeight);
@@ -206,42 +179,32 @@ public class FViewScaleLock
             return;
         }
 
-        if (height != scaleHeight)
-        {
+        if (height != scaleHeight) {
             updateViewHeight(scaleHeight);
         }
     }
 
-    private void updateViewWidth(final int scaleWidth)
-    {
-        if (checkParams())
-        {
+    private void updateViewWidth(final int scaleWidth) {
+        if (checkParams()) {
             final int height = mView.getLayoutParams().height;
             updateViewSize(scaleWidth, height);
         }
     }
 
-    private void updateViewHeight(final int scaleHeight)
-    {
-        if (checkParams())
-        {
+    private void updateViewHeight(final int scaleHeight) {
+        if (checkParams()) {
             final int width = mView.getLayoutParams().width;
             updateViewSize(width, scaleHeight);
         }
     }
 
-    private void updateViewSize(final int width, final int height)
-    {
-        mView.post(new Runnable()
-        {
+    private void updateViewSize(final int width, final int height) {
+        mView.post(new Runnable() {
             @Override
-            public void run()
-            {
-                if (checkParams())
-                {
+            public void run() {
+                if (checkParams()) {
                     final ViewGroup.LayoutParams params = mView.getLayoutParams();
-                    if (params.width != width || params.height != height)
-                    {
+                    if (params.width != width || params.height != height) {
                         params.width = width;
                         params.height = height;
                         mView.setLayoutParams(params);
@@ -254,20 +217,17 @@ public class FViewScaleLock
     /**
      * 要缩放的边
      */
-    public enum ScaleSide
-    {
+    public enum ScaleSide {
         Width,
         Height
     }
 
-    private static int getScaleWidth(float whScale, int height)
-    {
+    private static int getScaleWidth(float whScale, int height) {
         final float size = (whScale * height) + 0.5f;
         return (int) size;
     }
 
-    private static int getScaleHeight(float whScale, int width)
-    {
+    private static int getScaleHeight(float whScale, int width) {
         final float size = (width / whScale) + 0.5f;
         return (int) size;
     }

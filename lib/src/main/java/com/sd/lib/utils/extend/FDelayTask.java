@@ -3,8 +3,7 @@ package com.sd.lib.utils.extend;
 import android.os.Handler;
 import android.os.Looper;
 
-public abstract class FDelayTask
-{
+public abstract class FDelayTask {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     /** 是否已经被post到Handler */
@@ -17,8 +16,7 @@ public abstract class FDelayTask
      *
      * @return
      */
-    public boolean hasPost()
-    {
+    public boolean hasPost() {
         return mHasPost;
     }
 
@@ -27,8 +25,7 @@ public abstract class FDelayTask
      *
      * @return
      */
-    public boolean isPaused()
-    {
+    public boolean isPaused() {
         return mIsPaused;
     }
 
@@ -37,8 +34,7 @@ public abstract class FDelayTask
      *
      * @param delay (单位毫秒)
      */
-    public final synchronized void runDelay(long delay)
-    {
+    public final synchronized void runDelay(long delay) {
         if (delay < 0)
             delay = 0;
 
@@ -51,8 +47,7 @@ public abstract class FDelayTask
     /**
      * 立即在当前线程执行，如果有延迟任务会先移除延迟任务
      */
-    public final synchronized void runImmediately()
-    {
+    public final synchronized void runImmediately() {
         removeDelay();
         mRunnable.run();
     }
@@ -62,13 +57,11 @@ public abstract class FDelayTask
      *
      * @return
      */
-    public final synchronized boolean removeDelay()
-    {
+    public final synchronized boolean removeDelay() {
         MAIN_HANDLER.removeCallbacks(mRunnable);
         mIsPaused = false;
 
-        if (mHasPost)
-        {
+        if (mHasPost) {
             mHasPost = false;
             FDelayTask.this.onPostRemove();
             return true;
@@ -79,12 +72,9 @@ public abstract class FDelayTask
     /**
      * 暂停
      */
-    public final synchronized void pause()
-    {
-        if (!mIsPaused)
-        {
-            if (mHasPost)
-            {
+    public final synchronized void pause() {
+        if (!mIsPaused) {
+            if (mHasPost) {
                 mIsPaused = true;
                 onPause();
             }
@@ -94,28 +84,21 @@ public abstract class FDelayTask
     /**
      * 恢复
      */
-    public final synchronized void resume()
-    {
-        if (mIsPaused)
-        {
-            if (mHasPost)
-            {
+    public final synchronized void resume() {
+        if (mIsPaused) {
+            if (mHasPost) {
                 mIsPaused = false;
                 onResume();
-            } else
-            {
+            } else {
                 runImmediately();
             }
         }
     }
 
-    private final Runnable mRunnable = new Runnable()
-    {
+    private final Runnable mRunnable = new Runnable() {
         @Override
-        public void run()
-        {
-            synchronized (FDelayTask.this)
-            {
+        public void run() {
+            synchronized (FDelayTask.this) {
                 mHasPost = false;
 
                 if (mIsPaused)
@@ -136,28 +119,24 @@ public abstract class FDelayTask
      *
      * @param delay
      */
-    protected void onPost(long delay)
-    {
+    protected void onPost(long delay) {
     }
 
     /**
      * 任务从Handler被取消回调
      */
-    protected void onPostRemove()
-    {
+    protected void onPostRemove() {
     }
 
     /**
      * 任务被暂停回调
      */
-    protected void onPause()
-    {
+    protected void onPause() {
     }
 
     /**
      * 任务从暂停被恢复回调
      */
-    protected void onResume()
-    {
+    protected void onResume() {
     }
 }

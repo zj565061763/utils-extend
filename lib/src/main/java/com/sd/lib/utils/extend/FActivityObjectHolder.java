@@ -10,15 +10,13 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class FActivityObjectHolder
-{
+public final class FActivityObjectHolder {
     private static final Map<Activity, FActivityObjectHolder> MAP_HOLDER = new WeakHashMap<>();
 
     private final WeakReference<Activity> mActivity;
     private final Map<Class<? extends Item>, Item> mItemHolder = new ConcurrentHashMap<>();
 
-    private FActivityObjectHolder(Activity activity)
-    {
+    private FActivityObjectHolder(Activity activity) {
         if (activity == null)
             throw new NullPointerException("activity is null");
 
@@ -28,8 +26,7 @@ public final class FActivityObjectHolder
             activity.getApplication().registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
     }
 
-    private Activity getActivity()
-    {
+    private Activity getActivity() {
         return mActivity.get();
     }
 
@@ -40,8 +37,7 @@ public final class FActivityObjectHolder
      * @param <T>
      * @return
      */
-    public synchronized <T extends Item> T getItem(Class<T> clazz)
-    {
+    public synchronized <T extends Item> T getItem(Class<T> clazz) {
         checkItemClass(clazz);
 
         final Item item = mItemHolder.get(clazz);
@@ -56,13 +52,11 @@ public final class FActivityObjectHolder
      * @param clazz
      * @return
      */
-    public synchronized <T extends Item> T getOrCreateItem(Class<T> clazz)
-    {
+    public synchronized <T extends Item> T getOrCreateItem(Class<T> clazz) {
         checkItemClass(clazz);
 
         Item item = mItemHolder.get(clazz);
-        if (item == null)
-        {
+        if (item == null) {
             item = createItem(clazz);
             if (item == null)
                 throw new NullPointerException("createItem return null");
@@ -79,8 +73,7 @@ public final class FActivityObjectHolder
     /**
      * 清空并销毁
      */
-    public synchronized void clear()
-    {
+    public synchronized void clear() {
         destroy();
         mItemHolder.clear();
     }
@@ -88,51 +81,40 @@ public final class FActivityObjectHolder
     /**
      * 销毁
      */
-    private synchronized void destroy()
-    {
-        for (Item item : mItemHolder.values())
-        {
+    private synchronized void destroy() {
+        for (Item item : mItemHolder.values()) {
             item.destroy();
         }
     }
 
-    private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
-    {
+    private final Application.ActivityLifecycleCallbacks mActivityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState)
-        {
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         }
 
         @Override
-        public void onActivityStarted(Activity activity)
-        {
+        public void onActivityStarted(Activity activity) {
         }
 
         @Override
-        public void onActivityResumed(Activity activity)
-        {
+        public void onActivityResumed(Activity activity) {
         }
 
         @Override
-        public void onActivityPaused(Activity activity)
-        {
+        public void onActivityPaused(Activity activity) {
         }
 
         @Override
-        public void onActivityStopped(Activity activity)
-        {
+        public void onActivityStopped(Activity activity) {
         }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState)
-        {
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
         }
 
         @Override
-        public void onActivityDestroyed(Activity activity)
-        {
-            if (activity == getActivity())
-            {
+        public void onActivityDestroyed(Activity activity) {
+            if (activity == getActivity()) {
                 activity.getApplication().unregisterActivityLifecycleCallbacks(this);
                 final FActivityObjectHolder holder = remove(activity);
                 if (holder != null)
@@ -141,14 +123,12 @@ public final class FActivityObjectHolder
         }
     };
 
-    public static synchronized FActivityObjectHolder of(Activity activity)
-    {
+    public static synchronized FActivityObjectHolder of(Activity activity) {
         if (activity == null)
             return null;
 
         FActivityObjectHolder holder = MAP_HOLDER.get(activity);
-        if (holder == null)
-        {
+        if (holder == null) {
             holder = new FActivityObjectHolder(activity);
             if (!activity.isFinishing())
                 MAP_HOLDER.put(activity, holder);
@@ -156,31 +136,25 @@ public final class FActivityObjectHolder
         return holder;
     }
 
-    private static synchronized FActivityObjectHolder remove(Activity activity)
-    {
+    private static synchronized FActivityObjectHolder remove(Activity activity) {
         if (activity == null)
             return null;
 
         return MAP_HOLDER.remove(activity);
     }
 
-    private static <T extends Item> T createItem(Class<T> clazz)
-    {
-        try
-        {
+    private static <T extends Item> T createItem(Class<T> clazz) {
+        try {
             return clazz.newInstance();
-        } catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InstantiationException e)
-        {
+        } catch (InstantiationException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private static <T extends Item> void checkItemClass(Class<T> clazz)
-    {
+    private static <T extends Item> void checkItemClass(Class<T> clazz) {
         if (clazz == null)
             throw new NullPointerException("clazz is null");
 
@@ -191,8 +165,7 @@ public final class FActivityObjectHolder
             throw new IllegalArgumentException("clazz is abstract " + clazz);
     }
 
-    public interface Item
-    {
+    public interface Item {
         /**
          * 初始化
          *
@@ -206,25 +179,21 @@ public final class FActivityObjectHolder
         void destroy();
     }
 
-    public abstract static class BaseItem implements Item
-    {
+    public abstract static class BaseItem implements Item {
         private boolean mIsDestroyed;
 
-        public final boolean isDestroyed()
-        {
+        public final boolean isDestroyed() {
             return mIsDestroyed;
         }
 
         @Override
-        public final void init(Activity activity)
-        {
+        public final void init(Activity activity) {
             mIsDestroyed = false;
             initImpl(activity);
         }
 
         @Override
-        public final void destroy()
-        {
+        public final void destroy() {
             destroyImpl();
             mIsDestroyed = true;
         }

@@ -3,8 +3,7 @@ package com.sd.lib.utils.extend;
 /**
  * 缩放计算处理
  */
-public class FScaleFit
-{
+public class FScaleFit {
     private final Type mType;
 
     private int mContainerWidth;
@@ -13,13 +12,11 @@ public class FScaleFit
     private int mScaledWidth;
     private int mScaledHeight;
 
-    public FScaleFit()
-    {
+    public FScaleFit() {
         this(Type.FitMax);
     }
 
-    public FScaleFit(Type type)
-    {
+    public FScaleFit(Type type) {
         if (type == null)
             throw new IllegalArgumentException("type is null");
         mType = type;
@@ -30,8 +27,7 @@ public class FScaleFit
      *
      * @return
      */
-    public Type getType()
-    {
+    public Type getType() {
         return mType;
     }
 
@@ -40,8 +36,7 @@ public class FScaleFit
      *
      * @return
      */
-    public int getScaledWidth()
-    {
+    public int getScaledWidth() {
         return mScaledWidth;
     }
 
@@ -50,8 +45,7 @@ public class FScaleFit
      *
      * @return
      */
-    public int getScaledHeight()
-    {
+    public int getScaledHeight() {
         return mScaledHeight;
     }
 
@@ -61,8 +55,7 @@ public class FScaleFit
      * @param width
      * @param height
      */
-    public void setContainer(int width, int height)
-    {
+    public void setContainer(int width, int height) {
         mContainerWidth = width;
         mContainerHeight = height;
     }
@@ -74,16 +67,14 @@ public class FScaleFit
      * @param height
      * @return
      */
-    public boolean scale(int width, int height)
-    {
+    public boolean scale(int width, int height) {
         if (mContainerWidth <= 0 || mContainerHeight <= 0)
             return false;
 
         if (width <= 0 || height <= 0)
             return false;
 
-        switch (mType)
-        {
+        switch (mType) {
             case FitWidth:
                 scaleFitWidth(width, height);
                 break;
@@ -103,8 +94,7 @@ public class FScaleFit
         return true;
     }
 
-    private void scaleFitWidth(int width, int height)
-    {
+    private void scaleFitWidth(int width, int height) {
         final float scale = (float) mContainerWidth / width;
         final float finalHeight = scale * height;
 
@@ -112,8 +102,7 @@ public class FScaleFit
         mScaledHeight = (int) (finalHeight + 0.5f);
     }
 
-    private void scaleFitHeight(int width, int height)
-    {
+    private void scaleFitHeight(int width, int height) {
         final float scale = (float) mContainerHeight / height;
         final float finalWidth = scale * width;
 
@@ -121,18 +110,15 @@ public class FScaleFit
         mScaledHeight = mContainerHeight;
     }
 
-    private void scaleFitMax(int width, int height)
-    {
-        if (width == mContainerWidth && height == mContainerHeight)
-        {
+    private void scaleFitMax(int width, int height) {
+        if (width == mContainerWidth && height == mContainerHeight) {
             mScaledWidth = width;
             mScaledHeight = height;
             return;
         }
 
         scaleFitWidth(width, height);
-        if (mScaledWidth == mContainerWidth)
-        {
+        if (mScaledWidth == mContainerWidth) {
             if (mScaledHeight <= mContainerHeight)
                 return;
         }
@@ -140,18 +126,15 @@ public class FScaleFit
         scaleFitHeight(width, height);
     }
 
-    private void scaleFitCrop(int width, int height)
-    {
-        if (width == mContainerWidth && height == mContainerHeight)
-        {
+    private void scaleFitCrop(int width, int height) {
+        if (width == mContainerWidth && height == mContainerHeight) {
             mScaledWidth = width;
             mScaledHeight = height;
             return;
         }
 
         scaleFitWidth(width, height);
-        if (mScaledWidth == mContainerWidth)
-        {
+        if (mScaledWidth == mContainerWidth) {
             if (mScaledHeight >= mContainerHeight)
                 return;
         }
@@ -159,8 +142,7 @@ public class FScaleFit
         scaleFitHeight(width, height);
     }
 
-    public enum Type
-    {
+    public enum Type {
         /**
          * 缩放宽度到容器的宽度
          */

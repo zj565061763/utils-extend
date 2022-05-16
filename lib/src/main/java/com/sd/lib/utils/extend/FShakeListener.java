@@ -10,8 +10,7 @@ import android.hardware.SensorManager;
 /**
  * 摇一摇监听
  */
-public class FShakeListener
-{
+public class FShakeListener {
     private static final int ACC_SHAKE = 19;
     /**
      * 触发计算的间隔
@@ -34,33 +33,27 @@ public class FShakeListener
 
     private Callback mCallback;
 
-    public FShakeListener(Context context)
-    {
+    public FShakeListener(Context context) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
-    public void setCallback(Callback callback)
-    {
+    public void setCallback(Callback callback) {
         mCallback = callback;
     }
 
-    public void start()
-    {
+    public void start() {
         stop();
         mSensorManager.registerListener(mSensorEventListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void stop()
-    {
+    public void stop() {
         mSensorManager.unregisterListener(mSensorEventListener);
     }
 
-    private final SensorEventListener mSensorEventListener = new SensorEventListener()
-    {
+    private final SensorEventListener mSensorEventListener = new SensorEventListener() {
         @Override
-        public void onSensorChanged(SensorEvent event)
-        {
+        public void onSensorChanged(SensorEvent event) {
             final long currentTime = System.currentTimeMillis();
             final long deltaTime = currentTime - mLastSensorChangedTime;
 
@@ -81,20 +74,17 @@ public class FShakeListener
             mLastY = y;
             mLastZ = z;
 
-            if (Math.abs(deltaX) >= ACC_SHAKE || Math.abs(deltaY) >= ACC_SHAKE || Math.abs(deltaZ) >= ACC_SHAKE)
-            {
+            if (Math.abs(deltaX) >= ACC_SHAKE || Math.abs(deltaY) >= ACC_SHAKE || Math.abs(deltaZ) >= ACC_SHAKE) {
                 notifyCallback();
             }
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy)
-        {
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
 
-    private void notifyCallback()
-    {
+    private void notifyCallback() {
         final long current = System.currentTimeMillis();
 
         if (current - mLastNotifyTime < DURATION_NOTIFY)
@@ -106,8 +96,7 @@ public class FShakeListener
             mCallback.onShake();
     }
 
-    public interface Callback
-    {
+    public interface Callback {
         void onShake();
     }
 }

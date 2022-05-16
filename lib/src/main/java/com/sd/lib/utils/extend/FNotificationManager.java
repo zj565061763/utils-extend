@@ -13,20 +13,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 通知管理
  */
-public class FNotificationManager
-{
+public class FNotificationManager {
     private static FNotificationManager sInstance;
 
     private Context mContext;
     private NotificationManager mManager;
     private final Map<String, NotificationChannel> mChannelHolder = new ConcurrentHashMap<>();
 
-    public static FNotificationManager getInstance()
-    {
-        if (sInstance == null)
-        {
-            synchronized (FNotificationManager.class)
-            {
+    public static FNotificationManager getInstance() {
+        if (sInstance == null) {
+            synchronized (FNotificationManager.class) {
                 if (sInstance == null)
                     sInstance = new FNotificationManager();
             }
@@ -34,8 +30,7 @@ public class FNotificationManager
         return sInstance;
     }
 
-    private FNotificationManager()
-    {
+    private FNotificationManager() {
     }
 
     /**
@@ -43,16 +38,14 @@ public class FNotificationManager
      *
      * @param context
      */
-    public synchronized void init(Context context)
-    {
+    public synchronized void init(Context context) {
         if (mContext != null || mManager != null)
             return;
 
         mContext = context.getApplicationContext();
         mManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= 26)
-        {
+        if (Build.VERSION.SDK_INT >= 26) {
             final NotificationChannel defaultChannel = getDefaultChannel();
             final String channelName = mContext.getResources().getString(R.string.lib_utils_extend_default_channel_name);
             if (!TextUtils.isEmpty(channelName))
@@ -67,8 +60,7 @@ public class FNotificationManager
      *
      * @return
      */
-    public NotificationManager getManager()
-    {
+    public NotificationManager getManager() {
         if (mManager == null)
             throw new RuntimeException("you must call init(context) before this");
         return mManager;
@@ -79,8 +71,7 @@ public class FNotificationManager
      *
      * @return
      */
-    public NotificationChannel getDefaultChannel()
-    {
+    public NotificationChannel getDefaultChannel() {
         return getChannel(mContext.getPackageName());
     }
 
@@ -90,16 +81,13 @@ public class FNotificationManager
      * @param channelId
      * @return
      */
-    public NotificationChannel getChannel(String channelId)
-    {
+    public NotificationChannel getChannel(String channelId) {
         if (TextUtils.isEmpty(channelId))
             return null;
 
-        if (Build.VERSION.SDK_INT >= 26)
-        {
+        if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = mChannelHolder.get(channelId);
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = new NotificationChannel(channelId, "channel name", NotificationManager.IMPORTANCE_DEFAULT);
                 mChannelHolder.put(channelId, channel);
             }
@@ -113,8 +101,7 @@ public class FNotificationManager
      *
      * @return
      */
-    public Notification.Builder newBuilder()
-    {
+    public Notification.Builder newBuilder() {
         return newBuilder(null);
     }
 
@@ -124,16 +111,13 @@ public class FNotificationManager
      * @param channelId
      * @return
      */
-    public Notification.Builder newBuilder(String channelId)
-    {
-        if (Build.VERSION.SDK_INT >= 26)
-        {
+    public Notification.Builder newBuilder(String channelId) {
+        if (Build.VERSION.SDK_INT >= 26) {
             if (TextUtils.isEmpty(channelId))
                 channelId = getDefaultChannel().getId();
 
             return new Notification.Builder(mContext, channelId);
-        } else
-        {
+        } else {
             return new Notification.Builder(mContext);
         }
     }

@@ -7,8 +7,7 @@ import android.os.Looper;
  * 用{@link FDelayTask}替代
  */
 @Deprecated
-public abstract class FDelayRunnable implements Runnable
-{
+public abstract class FDelayRunnable implements Runnable {
     private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     /**
@@ -16,8 +15,7 @@ public abstract class FDelayRunnable implements Runnable
      *
      * @param delay (单位毫秒)
      */
-    public final void runDelay(long delay)
-    {
+    public final void runDelay(long delay) {
         removeDelay();
         MAIN_HANDLER.postDelayed(this, delay);
     }
@@ -25,8 +23,7 @@ public abstract class FDelayRunnable implements Runnable
     /**
      * 立即在当前线程执行，如果有延迟任务会先移除延迟任务
      */
-    public final void runImmediately()
-    {
+    public final void runImmediately() {
         removeDelay();
         run();
     }
@@ -36,13 +33,10 @@ public abstract class FDelayRunnable implements Runnable
      *
      * @param delay (单位毫秒) 小于等于0-立即在当前线程执行，大于0-延迟执行
      */
-    public final void runDelayOrImmediately(long delay)
-    {
-        if (delay > 0)
-        {
+    public final void runDelayOrImmediately(long delay) {
+        if (delay > 0) {
             runDelay(delay);
-        } else
-        {
+        } else {
             runImmediately();
         }
     }
@@ -50,8 +44,7 @@ public abstract class FDelayRunnable implements Runnable
     /**
      * 移除延迟任务
      */
-    public final void removeDelay()
-    {
+    public final void removeDelay() {
         MAIN_HANDLER.removeCallbacks(this);
     }
 }

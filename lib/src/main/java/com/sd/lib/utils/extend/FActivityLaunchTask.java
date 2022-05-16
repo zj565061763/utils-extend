@@ -12,8 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * 只有目标Activity已经在栈中才执行的任务，如果目标Activity不在栈中，则会一直等到目标Activity入栈的时候执行
  */
-public abstract class FActivityLaunchTask
-{
+public abstract class FActivityLaunchTask {
     private WeakReference<Activity> mActivity;
 
     /**
@@ -21,16 +20,14 @@ public abstract class FActivityLaunchTask
      *
      * @param context
      */
-    public final static void init(Context context)
-    {
+    public final static void init(Context context) {
         Manager.INSTANCE.init(context);
     }
 
     /**
      * 提交当前任务
      */
-    public final void submit()
-    {
+    public final void submit() {
         Manager.INSTANCE.submit(this);
     }
 
@@ -39,8 +36,7 @@ public abstract class FActivityLaunchTask
      *
      * @return
      */
-    protected Activity getActivity()
-    {
+    protected Activity getActivity() {
         if (mActivity == null)
             throw new RuntimeException("Not available until execute() method is called");
 
@@ -51,8 +47,7 @@ public abstract class FActivityLaunchTask
         return Manager.INSTANCE.getLastActivity();
     }
 
-    private void executeInternal(Activity activity)
-    {
+    private void executeInternal(Activity activity) {
         if (activity == null)
             throw new IllegalArgumentException("activity is null");
 
@@ -72,31 +67,25 @@ public abstract class FActivityLaunchTask
      */
     protected abstract void execute();
 
-    private static class Manager
-    {
+    private static class Manager {
         private static final Manager INSTANCE = new Manager();
 
         private Application mApplication;
         private final List<Activity> mListActivity = new CopyOnWriteArrayList<>();
         private final List<FActivityLaunchTask> mListTask = new CopyOnWriteArrayList<>();
 
-        public void init(Context context)
-        {
+        public void init(Context context) {
             if (mApplication != null)
                 return;
 
             mApplication = (Application) context.getApplicationContext();
-            mApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks()
-            {
+            mApplication.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
                 @Override
-                public void onActivityCreated(Activity activity, Bundle savedInstanceState)
-                {
+                public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                     mListActivity.add(activity);
 
-                    for (FActivityLaunchTask item : mListTask)
-                    {
-                        if (activity.getClass() == item.getTargetClass())
-                        {
+                    for (FActivityLaunchTask item : mListTask) {
+                        if (activity.getClass() == item.getTargetClass()) {
                             mListTask.remove(item);
                             item.executeInternal(activity);
                         }
@@ -104,44 +93,35 @@ public abstract class FActivityLaunchTask
                 }
 
                 @Override
-                public void onActivityStarted(Activity activity)
-                {
+                public void onActivityStarted(Activity activity) {
                 }
 
                 @Override
-                public void onActivityResumed(Activity activity)
-                {
+                public void onActivityResumed(Activity activity) {
                 }
 
                 @Override
-                public void onActivityPaused(Activity activity)
-                {
+                public void onActivityPaused(Activity activity) {
                 }
 
                 @Override
-                public void onActivityStopped(Activity activity)
-                {
+                public void onActivityStopped(Activity activity) {
                 }
 
                 @Override
-                public void onActivitySaveInstanceState(Activity activity, Bundle outState)
-                {
+                public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
                 }
 
                 @Override
-                public void onActivityDestroyed(Activity activity)
-                {
+                public void onActivityDestroyed(Activity activity) {
                     mListActivity.remove(activity);
                 }
             });
         }
 
-        public final void submit(FActivityLaunchTask task)
-        {
-            for (Activity activity : mListActivity)
-            {
-                if (activity.getClass() == task.getTargetClass())
-                {
+        public final void submit(FActivityLaunchTask task) {
+            for (Activity activity : mListActivity) {
+                if (activity.getClass() == task.getTargetClass()) {
                     task.executeInternal(activity);
                     return;
                 }
@@ -150,8 +130,7 @@ public abstract class FActivityLaunchTask
             mListTask.add(task);
         }
 
-        public final Activity getLastActivity()
-        {
+        public final Activity getLastActivity() {
             if (mListActivity.isEmpty())
                 return null;
 

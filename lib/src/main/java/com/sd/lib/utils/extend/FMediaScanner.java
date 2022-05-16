@@ -16,8 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 扫描文件添加到相册
  */
-public abstract class FMediaScanner
-{
+public abstract class FMediaScanner {
     private final MediaScannerConnection mConnection;
     private final List<File> mListFile = new ArrayList<>();
 
@@ -26,38 +25,30 @@ public abstract class FMediaScanner
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Map<Runnable, String> mMapRunnable = new ConcurrentHashMap<>();
 
-    public FMediaScanner(Context context)
-    {
+    public FMediaScanner(Context context) {
         context = context.getApplicationContext();
         mConnection = new MediaScannerConnection(context, mConnectionClient);
     }
 
-    private final MediaScannerConnection.MediaScannerConnectionClient mConnectionClient = new MediaScannerConnection.MediaScannerConnectionClient()
-    {
+    private final MediaScannerConnection.MediaScannerConnectionClient mConnectionClient = new MediaScannerConnection.MediaScannerConnectionClient() {
         @Override
-        public void onMediaScannerConnected()
-        {
+        public void onMediaScannerConnected() {
             scanFileInternal();
         }
 
         @Override
-        public void onScanCompleted(final String path, final Uri uri)
-        {
-            final Runnable runnable = new Runnable()
-            {
+        public void onScanCompleted(final String path, final Uri uri) {
+            final Runnable runnable = new Runnable() {
                 @Override
-                public void run()
-                {
-                    synchronized (FMediaScanner.this)
-                    {
+                public void run() {
+                    synchronized (FMediaScanner.this) {
                         mMapRunnable.remove(this);
                     }
                     FMediaScanner.this.onScanCompleted(path, uri);
                 }
             };
 
-            synchronized (FMediaScanner.this)
-            {
+            synchronized (FMediaScanner.this) {
                 mMapRunnable.put(runnable, "");
                 mHandler.post(runnable);
 
@@ -73,8 +64,7 @@ public abstract class FMediaScanner
      *
      * @param file
      */
-    public synchronized void scanFile(File file)
-    {
+    public synchronized void scanFile(File file) {
         if (file == null || !file.exists())
             return;
 
@@ -85,13 +75,11 @@ public abstract class FMediaScanner
         scanFileInternal();
     }
 
-    private synchronized void scanFileInternal()
-    {
+    private synchronized void scanFileInternal() {
         if (mListFile.isEmpty())
             return;
 
-        if (!mConnection.isConnected())
-        {
+        if (!mConnection.isConnected()) {
             mConnection.connect();
             return;
         }
@@ -100,24 +88,20 @@ public abstract class FMediaScanner
             return;
 
         final File file = mListFile.remove(0);
-        if (file.exists())
-        {
+        if (file.exists()) {
             final String path = file.getAbsolutePath();
             final String extension = MimeTypeMap.getFileExtensionFromUrl(path);
             final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
             mIsScanFile = true;
             mConnection.scanFile(path, mimeType);
-        } else
-        {
+        } else {
             scanFileInternal();
         }
     }
 
-    private void cancelRunnable()
-    {
-        for (Runnable item : mMapRunnable.keySet())
-        {
+    private void cancelRunnable() {
+        for (Runnable item : mMapRunnable.keySet()) {
             mHandler.removeCallbacks(item);
         }
         mMapRunnable.clear();
@@ -126,8 +110,7 @@ public abstract class FMediaScanner
     /**
      * 取消
      */
-    public synchronized void cancel()
-    {
+    public synchronized void cancel() {
         cancelRunnable();
         mConnection.disconnect();
     }

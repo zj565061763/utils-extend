@@ -11,28 +11,22 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <V>
  */
 @Deprecated
-public class FUniqueValueMap<K, V>
-{
+public class FUniqueValueMap<K, V> {
     private final Map<K, V> mMap = new ConcurrentHashMap<>();
     private final Map<V, K> mMapReverse = new ConcurrentHashMap<>();
 
-    public void put(K key, V value)
-    {
+    public void put(K key, V value) {
         if (key == null || value == null)
             return;
 
         final K cacheKey = mMapReverse.get(value);
-        if (cacheKey == null)
-        {
+        if (cacheKey == null) {
             // 存储键值对
-        } else
-        {
-            if (key.equals(cacheKey))
-            {
+        } else {
+            if (key.equals(cacheKey)) {
                 // 已经存储过了
                 return;
-            } else
-            {
+            } else {
                 // 移除旧的键值对，存储新的键值对
                 mMap.remove(cacheKey);
             }
@@ -42,8 +36,7 @@ public class FUniqueValueMap<K, V>
         mMapReverse.put(value, key);
     }
 
-    public V remove(Object key)
-    {
+    public V remove(Object key) {
         if (key == null)
             return null;
 
@@ -58,16 +51,14 @@ public class FUniqueValueMap<K, V>
         return value;
     }
 
-    public V get(Object key)
-    {
+    public V get(Object key) {
         if (key == null)
             return null;
 
         return mMap.get(key);
     }
 
-    public K removeValue(Object value)
-    {
+    public K removeValue(Object value) {
         if (value == null)
             return null;
 
@@ -82,27 +73,23 @@ public class FUniqueValueMap<K, V>
         return key;
     }
 
-    public K getKey(Object value)
-    {
+    public K getKey(Object value) {
         if (value == null)
             return null;
 
         return mMapReverse.get(value);
     }
 
-    public int size()
-    {
+    public int size() {
         return mMap.size();
     }
 
-    public void clear()
-    {
+    public void clear() {
         mMap.clear();
         mMapReverse.clear();
     }
 
-    public Map<K, V> toMap()
-    {
+    public Map<K, V> toMap() {
         return new HashMap<>(mMap);
     }
 }

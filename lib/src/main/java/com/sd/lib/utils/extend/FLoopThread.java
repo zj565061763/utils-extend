@@ -3,8 +3,7 @@ package com.sd.lib.utils.extend;
 /**
  * 循环线程
  */
-public abstract class FLoopThread
-{
+public abstract class FLoopThread {
     private InternalThread mThread;
     private boolean mIsStarted = false;
 
@@ -13,15 +12,12 @@ public abstract class FLoopThread
      *
      * @return
      */
-    public final boolean isStarted()
-    {
+    public final boolean isStarted() {
         return mIsStarted;
     }
 
-    public synchronized final void start()
-    {
-        if (mThread == null)
-        {
+    public synchronized final void start() {
+        if (mThread == null) {
             mThread = new InternalThread();
             mThread.start();
             setStarted(true);
@@ -31,20 +27,16 @@ public abstract class FLoopThread
     /**
      * 停止循环
      */
-    public synchronized final void stop()
-    {
-        if (mThread != null)
-        {
+    public synchronized final void stop() {
+        if (mThread != null) {
             mThread.interrupt();
             mThread = null;
             setStarted(false);
         }
     }
 
-    private void setStarted(boolean started)
-    {
-        if (mIsStarted != started)
-        {
+    private void setStarted(boolean started) {
+        if (mIsStarted != started) {
             mIsStarted = started;
             onStateChanged(started);
         }
@@ -55,8 +47,7 @@ public abstract class FLoopThread
      *
      * @param started
      */
-    protected void onStateChanged(boolean started)
-    {
+    protected void onStateChanged(boolean started) {
     }
 
     /**
@@ -66,22 +57,16 @@ public abstract class FLoopThread
      */
     protected abstract long onLoop();
 
-    private final class InternalThread extends Thread
-    {
+    private final class InternalThread extends Thread {
         @Override
-        public void run()
-        {
-            while (!isInterrupted())
-            {
+        public void run() {
+            while (!isInterrupted()) {
                 final long sleepTime = onLoop();
 
-                if (sleepTime > 0)
-                {
-                    try
-                    {
+                if (sleepTime > 0) {
+                    try {
                         sleep(sleepTime);
-                    } catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         break;
                     }
                 }

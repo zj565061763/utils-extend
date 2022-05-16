@@ -5,8 +5,7 @@ import android.view.View;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class FVisibilityHandler
-{
+public class FVisibilityHandler {
     private final Map<View, Integer> mMapView = new WeakHashMap<>();
 
     /**
@@ -14,13 +13,11 @@ public class FVisibilityHandler
      *
      * @param views
      */
-    public void visible(View... views)
-    {
+    public void visible(View... views) {
         if (views == null)
             return;
 
-        for (View item : views)
-        {
+        for (View item : views) {
             if (item != null)
                 mMapView.put(item, View.VISIBLE);
         }
@@ -31,13 +28,11 @@ public class FVisibilityHandler
      *
      * @param views
      */
-    public void invisible(View... views)
-    {
+    public void invisible(View... views) {
         if (views == null)
             return;
 
-        for (View item : views)
-        {
+        for (View item : views) {
             if (item != null)
                 mMapView.put(item, View.INVISIBLE);
         }
@@ -48,13 +43,11 @@ public class FVisibilityHandler
      *
      * @param views
      */
-    public void gone(View... views)
-    {
+    public void gone(View... views) {
         if (views == null)
             return;
 
-        for (View item : views)
-        {
+        for (View item : views) {
             if (item != null)
                 mMapView.put(item, View.GONE);
         }
@@ -65,13 +58,11 @@ public class FVisibilityHandler
      *
      * @param views
      */
-    public void remove(View... views)
-    {
+    public void remove(View... views) {
         if (views == null)
             return;
 
-        for (View item : views)
-        {
+        for (View item : views) {
             if (item != null)
                 mMapView.remove(item);
         }
@@ -80,13 +71,11 @@ public class FVisibilityHandler
     /**
      * 触发所有View的可见状态变化
      */
-    public void invoke()
-    {
+    public void invoke() {
         if (mMapView.isEmpty())
             return;
 
-        for (Map.Entry<View, Integer> item : mMapView.entrySet())
-        {
+        for (Map.Entry<View, Integer> item : mMapView.entrySet()) {
             item.getKey().setVisibility(item.getValue());
         }
     }

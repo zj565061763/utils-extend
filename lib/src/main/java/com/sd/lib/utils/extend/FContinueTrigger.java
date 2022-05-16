@@ -1,7 +1,6 @@
 package com.sd.lib.utils.extend;
 
-public class FContinueTrigger
-{
+public class FContinueTrigger {
     /**
      * 满足触发条件的连续触发次数
      */
@@ -10,8 +9,7 @@ public class FContinueTrigger
     private int mCurrentTriggerCount;
     private long mLastTriggerTime;
 
-    public FContinueTrigger(int targetTriggerCount)
-    {
+    public FContinueTrigger(int targetTriggerCount) {
         if (targetTriggerCount < 2)
             throw new IllegalArgumentException("targetTriggerCount must be >= 2");
 
@@ -23,8 +21,7 @@ public class FContinueTrigger
      *
      * @return
      */
-    public final int getTargetTriggerCount()
-    {
+    public final int getTargetTriggerCount() {
         return mTargetTriggerCount;
     }
 
@@ -33,8 +30,7 @@ public class FContinueTrigger
      *
      * @return
      */
-    public final int getCurrentTriggerCount()
-    {
+    public final int getCurrentTriggerCount() {
         return mCurrentTriggerCount;
     }
 
@@ -43,8 +39,7 @@ public class FContinueTrigger
      *
      * @return
      */
-    public final int getLeftTriggerCount()
-    {
+    public final int getLeftTriggerCount() {
         final int count = mTargetTriggerCount - mCurrentTriggerCount;
         return count < 0 ? 0 : count;
     }
@@ -52,8 +47,7 @@ public class FContinueTrigger
     /**
      * 重置
      */
-    public synchronized final void reset()
-    {
+    public synchronized final void reset() {
         mCurrentTriggerCount = 0;
         mLastTriggerTime = 0;
     }
@@ -64,8 +58,7 @@ public class FContinueTrigger
      * @param triggerMaxDuration 两次触发之间的最大有效间隔
      * @return true-达到目标触发次数
      */
-    public synchronized boolean trigger(long triggerMaxDuration)
-    {
+    public synchronized boolean trigger(long triggerMaxDuration) {
         if (triggerMaxDuration <= 0)
             throw new IllegalArgumentException("triggerMaxDuration must be > 0");
 
@@ -77,12 +70,10 @@ public class FContinueTrigger
         final long currentTime = System.currentTimeMillis();
         final long delta = currentTime - mLastTriggerTime;
 
-        if (delta > triggerMaxDuration)
-        {
+        if (delta > triggerMaxDuration) {
             // 超过最大有效间隔，重新开始计数
             mCurrentTriggerCount = 1;
-        } else
-        {
+        } else {
             mCurrentTriggerCount++;
             if (mCurrentTriggerCount >= mTargetTriggerCount)
                 result = true;

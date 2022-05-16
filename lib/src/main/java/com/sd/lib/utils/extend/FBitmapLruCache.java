@@ -6,23 +6,17 @@ import android.util.LruCache;
 /**
  * Bitmap的lru算法缓存管理
  */
-public class FBitmapLruCache extends LruCache<String, Bitmap>
-{
+public class FBitmapLruCache extends LruCache<String, Bitmap> {
     private static FBitmapLruCache sInstance;
 
-    private FBitmapLruCache()
-    {
+    private FBitmapLruCache() {
         super((int) ((double) Runtime.getRuntime().maxMemory() / 16));
     }
 
-    public static FBitmapLruCache getInstance()
-    {
-        if (sInstance == null)
-        {
-            synchronized (FBitmapLruCache.class)
-            {
-                if (sInstance == null)
-                {
+    public static FBitmapLruCache getInstance() {
+        if (sInstance == null) {
+            synchronized (FBitmapLruCache.class) {
+                if (sInstance == null) {
                     sInstance = new FBitmapLruCache();
                 }
             }
@@ -31,8 +25,7 @@ public class FBitmapLruCache extends LruCache<String, Bitmap>
     }
 
     @Override
-    protected final int sizeOf(String key, Bitmap value)
-    {
+    protected final int sizeOf(String key, Bitmap value) {
         return value.getByteCount();
     }
 }
